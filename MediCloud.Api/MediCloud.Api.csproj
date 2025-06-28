@@ -12,4 +12,10 @@
         <PackageReference Include="MySql.EntityFrameworkCore" Version="9.0.3" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\MediCloud.Application\MediCloud.Application.csproj" />
+      <ProjectReference Include="..\MediCloud.Contracts\MediCloud.Contracts.csproj" />
+      <ProjectReference Include="..\MediCloud.Infrastructure\MediCloud.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>

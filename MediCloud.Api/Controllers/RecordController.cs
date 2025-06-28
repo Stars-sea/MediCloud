@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace MediCloud.Server.Controllers;
+namespace MediCloud.Api.Controllers;
 
 [ApiController]
 public class RecordController : ControllerBase {
