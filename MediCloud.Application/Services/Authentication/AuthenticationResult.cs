@@ -1,7 +1,8 @@
+using MediCloud.Domain.Entities;
+
 namespace MediCloud.Application.Services.Authentication;
 
 public record AuthenticationResult(
-    Guid   Id,
-    string Email,
+    User   User,
     string Token
 );

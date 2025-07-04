@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Services;
+using MediCloud.Domain.Entities;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,7 +13,7 @@ public class JwtTokenGenerator(
     IDateTimeProvider     dateTimeProvider,
     IOptions<JwtSettings> jwtSettings
 ) : IJwtTokenGenerator {
-    public string GenerateToken(string username, string userId, string email) {
+    public string GenerateToken(User user) {
         JwtSettings settings = jwtSettings.Value;
 
         SigningCredentials signingCredentials = new(
@@ -21,9 +22,9 @@ public class JwtTokenGenerator(
         );
 
         Claim[] claims = [
-            new(JwtRegisteredClaimNames.Name, username),
-            new(JwtRegisteredClaimNames.Email, email),
-            new(JwtRegisteredClaimNames.Sub, userId),
+            new(JwtRegisteredClaimNames.Name, user.UserName!),
+            new(JwtRegisteredClaimNames.Email, user.Email!),
+            new(JwtRegisteredClaimNames.Sub, user.Id),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         ];
 

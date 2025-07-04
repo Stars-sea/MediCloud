@@ -1,10 +1,10 @@
+using MediCloud.Api.Common.Errors;
 using MediCloud.Application;
 using MediCloud.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services
@@ -13,13 +13,18 @@ builder.Services
 
 builder.Services.AddControllers();
 
+builder.Services.AddSingleton<ProblemDetailsFactory, MediCloudProblemDetailsFactory>();
+
 WebApplication app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
-    app.MapOpenApi();
+    app.MapOpenApi("/openapi/openapi.json");
+
+app.UseExceptionHandler("/error");
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 app.MapControllers();
+
+app.Run();
