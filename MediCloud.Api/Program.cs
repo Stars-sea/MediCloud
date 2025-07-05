@@ -1,3 +1,4 @@
+using MediCloud.Api;
 using MediCloud.Api.Common.Errors;
 using MediCloud.Application;
 using MediCloud.Infrastructure;
@@ -11,6 +12,7 @@ builder.Services
        .AddApplication()
        .AddInfrastructure(builder.Configuration);
 
+builder.Services.AddIdentity();
 builder.Services.AddControllers();
 
 builder.Services.AddSingleton<ProblemDetailsFactory, MediCloudProblemDetailsFactory>();
