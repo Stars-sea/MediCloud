@@ -1,5 +1,3 @@
-using ErrorOr;
-
 namespace MediCloud.Domain.Common.Errors;
 
 public static partial class Errors {
