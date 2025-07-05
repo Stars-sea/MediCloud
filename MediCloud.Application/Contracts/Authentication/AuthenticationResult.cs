@@ -1,6 +1,6 @@
 using MediCloud.Domain.Entities;
 
-namespace MediCloud.Application.Authentication.Common;
+namespace MediCloud.Application.Contracts.Authentication;
 
 public record AuthenticationResult(
     User   User,

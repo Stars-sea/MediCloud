@@ -1,37 +1,39 @@
-using ErrorOr;
-using MediatR;
-using MediCloud.Application.Authentication.Commands.Register;
-using MediCloud.Application.Authentication.Common;
-using MediCloud.Application.Authentication.Queries.Login;
+using MassTransit;
+using MediCloud.Application.Contracts.Authentication;
 using MediCloud.Contracts.Authentication;
+using MediCloud.Domain.Common.Errors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediCloud.Api.Controllers;
 
 [Route("auth")]
 public class AuthenticationController(
-    ISender sender
+    IRequestClient<LoginQuery>      loginRequestClient,
+    IRequestClient<RegisterCommand> registerRequestClient
 ) : ApiController {
     [HttpPost("login")]
     public async Task<ActionResult<AuthenticationResponse>> Login([FromBody] LoginRequest request) {
-        ErrorOr<AuthenticationResult> authResult =
-            await sender.Send(new LoginQuery(request.Email, request.Password));
-
-        return authResult.Match(
-            result => Ok(MapResultToResponse(result)),
-            Problem
+        Response loginResponse = await loginRequestClient.GetResponse<AuthenticationResult, Error>(
+            new LoginQuery(request.Email, request.Password)
         );
+        return loginResponse switch {
+            (_, AuthenticationResult result) => MapResultToResponse(result),
+            (_, Error error)                 => Problem(error),
+            _                                => throw new InvalidOperationException()
+        };
     }
 
     [HttpPost("register")]
     public async Task<ActionResult<AuthenticationResponse>> Register([FromBody] RegisterRequest request) {
-        ErrorOr<AuthenticationResult> authResult =
-            await sender.Send(new RegisterCommand(request.Username, request.Email, request.Password));
-
-        return authResult.Match(
-            result => Ok(MapResultToResponse(result)),
-            Problem
+        Response registerResponse = await registerRequestClient.GetResponse<AuthenticationResult, Error>(
+            new RegisterCommand(request.Username, request.Email, request.Password)
         );
+
+        return registerResponse switch {
+            (_, AuthenticationResult result) => MapResultToResponse(result),
+            (_, Error error)                 => Problem(error),
+            _                                => throw new InvalidOperationException()
+        };
     }
 
     [NonAction]
