@@ -6,5 +6,10 @@ public static partial class Errors {
             "User.DuplicatedEmail",
             "User with given email already exists."
         );
+
+        public static Error RegistrationFailed => Error.Failure(
+            "User.RegistrationFailed",
+            "Failed to register user."
+        );
     }
 }

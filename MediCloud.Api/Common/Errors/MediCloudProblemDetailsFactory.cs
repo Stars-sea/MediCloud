@@ -1,6 +1,6 @@
 using System.Diagnostics;
-using ErrorOr;
 using MediCloud.Api.Common.Http;
+using MediCloud.Domain.Common.Errors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
