@@ -1,10 +1,12 @@
 using MediCloud.Api.Common.Http;
 using MediCloud.Domain.Common.Errors;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediCloud.Api.Controllers;
 
 [ApiController]
+[Authorize]
 public abstract class ApiController : ControllerBase {
     
     [NonAction]

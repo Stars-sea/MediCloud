@@ -2,11 +2,13 @@ using MassTransit;
 using MediCloud.Application.Contracts.Authentication;
 using MediCloud.Contracts.Authentication;
 using MediCloud.Domain.Common.Errors;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediCloud.Api.Controllers;
 
 [Route("auth")]
+[AllowAnonymous]
 public class AuthenticationController(
     IRequestClient<LoginQuery>      loginRequestClient,
     IRequestClient<RegisterCommand> registerRequestClient

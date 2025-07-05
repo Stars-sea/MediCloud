@@ -9,13 +9,10 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services
+       .AddPresentation()
+       .AddIdentity()
        .AddApplication()
        .AddInfrastructure(builder.Configuration);
-
-builder.Services.AddIdentity();
-builder.Services.AddControllers();
-
-builder.Services.AddSingleton<ProblemDetailsFactory, MediCloudProblemDetailsFactory>();
 
 WebApplication app = builder.Build();
 
@@ -25,7 +22,7 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler("/error");
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
