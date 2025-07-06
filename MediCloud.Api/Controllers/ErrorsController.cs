@@ -5,6 +5,7 @@ namespace MediCloud.Api.Controllers;
 
 [ApiController]
 public class ErrorsController : ControllerBase {
+
     [HttpGet("/error")]
     public IActionResult Error() {
         Exception? exception = HttpContext.Features.Get<IExceptionHandlerFeature>()?.Error;
@@ -14,4 +15,5 @@ public class ErrorsController : ControllerBase {
             statusCode: StatusCodes.Status500InternalServerError
         );
     }
+
 }

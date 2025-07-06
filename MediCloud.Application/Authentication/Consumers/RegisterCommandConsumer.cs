@@ -11,6 +11,7 @@ public class RegisterCommandConsumer(
     IJwtTokenGenerator jwtTokenGenerator,
     UserManager<User>  userManager
 ) : IConsumer<RegisterCommand> {
+
     public async Task Consume(ConsumeContext<RegisterCommand> context) {
         RegisterCommand command = context.Message;
 
@@ -21,7 +22,7 @@ public class RegisterCommandConsumer(
 
         User user = new() {
             Email    = command.Email,
-            UserName = command.Username,
+            UserName = command.Username
         };
 
         IdentityResult result = await userManager.CreateAsync(user, command.Password);
@@ -36,4 +37,5 @@ public class RegisterCommandConsumer(
         string token = jwtTokenGenerator.GenerateToken(user);
         await context.RespondAsync(new AuthenticationResult(user, token));
     }
+
 }

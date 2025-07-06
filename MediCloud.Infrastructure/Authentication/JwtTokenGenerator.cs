@@ -13,6 +13,7 @@ public class JwtTokenGenerator(
     IDateTimeProvider     dateTimeProvider,
     IOptions<JwtSettings> jwtSettings
 ) : IJwtTokenGenerator {
+
     public string GenerateToken(User user) {
         JwtSettings settings = jwtSettings.Value;
 
@@ -29,8 +30,8 @@ public class JwtTokenGenerator(
         ];
 
         JwtSecurityToken token = new(
-            issuer: settings.Issuer,
-            audience: settings.Audience,
+            settings.Issuer,
+            settings.Audience,
             expires: dateTimeProvider.UtcNow.AddMinutes(settings.ExpiryMinutes),
             claims: claims,
             signingCredentials: signingCredentials
@@ -38,4 +39,5 @@ public class JwtTokenGenerator(
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
 }

@@ -11,6 +11,7 @@ public class LoginQueryConsumer(
     UserManager<User>  userManager,
     IJwtTokenGenerator jwtTokenGenerator
 ) : IConsumer<LoginQuery> {
+
     public async Task Consume(ConsumeContext<LoginQuery> context) {
         LoginQuery query = context.Message;
 
@@ -23,4 +24,5 @@ public class LoginQueryConsumer(
         string token = jwtTokenGenerator.GenerateToken(user);
         await context.RespondAsync(new AuthenticationResult(user, token));
     }
+
 }

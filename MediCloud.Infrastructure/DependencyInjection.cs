@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace MediCloud.Infrastructure;
 
 public static class DependencyInjection {
+
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration) {
         services.AddDbContext<MediCloudDbContext>(options =>
             options.UseMySQL(configuration.GetConnectionString("MEDI_CLOUD")!)
@@ -28,19 +29,21 @@ public static class DependencyInjection {
     public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration) {
         JwtSettings jwtSettings = configuration.GetSection(JwtSettings.SectionKey).Get<JwtSettings>()!;
         services.AddSingleton(Options.Create(jwtSettings));
-        
+
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
-        
+
         services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters {
-                    ValidateIssuer           = true,
-                    ValidateAudience         = true,
-                    ValidateLifetime         = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer              = jwtSettings.Issuer,
-                    ValidAudience            = jwtSettings.Audience,
-                    IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
-                });
+                        ValidateIssuer           = true,
+                        ValidateAudience         = true,
+                        ValidateLifetime         = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer              = jwtSettings.Issuer,
+                        ValidAudience            = jwtSettings.Audience,
+                        IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
+                    }
+                );
         return services;
     }
+
 }

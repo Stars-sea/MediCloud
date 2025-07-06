@@ -13,6 +13,7 @@ public class AuthenticationController(
     IRequestClient<LoginQuery>      loginRequestClient,
     IRequestClient<RegisterCommand> registerRequestClient
 ) : ApiController {
+
     [HttpPost("login")]
     public async Task<ActionResult<AuthenticationResponse>> Login([FromBody] LoginRequest request) {
         Response loginResponse = await loginRequestClient.GetResponse<AuthenticationResult, Error>(
@@ -39,11 +40,13 @@ public class AuthenticationController(
     }
 
     [NonAction]
-    private static AuthenticationResponse MapResultToResponse(AuthenticationResult result)
-        => new(
+    private static AuthenticationResponse MapResultToResponse(AuthenticationResult result) {
+        return new AuthenticationResponse(
             result.User.Id,
             result.User.Email!,
             result.User.UserName!,
             result.Token
         );
+    }
+
 }

@@ -12,9 +12,10 @@ public class MediCloudProblemDetailsFactory(
     IOptions<ApiBehaviorOptions>?    options,
     IOptions<ProblemDetailsOptions>? problemDetailsOptions = null
 ) : ProblemDetailsFactory {
-    
-    private readonly ApiBehaviorOptions?            _options   = options?.Value;
+
     private readonly Action<ProblemDetailsContext>? _configure = problemDetailsOptions?.Value.CustomizeProblemDetails;
+
+    private readonly ApiBehaviorOptions? _options = options?.Value;
 
     public override ProblemDetails CreateProblemDetails(
         HttpContext httpContext,
@@ -47,7 +48,7 @@ public class MediCloudProblemDetailsFactory(
     ) {
         ArgumentNullException.ThrowIfNull(modelStateDictionary, nameof(modelStateDictionary));
         statusCode ??= 400;
-        
+
         ValidationProblemDetails validationProblemDetails = new(modelStateDictionary) {
             Status   = statusCode,
             Type     = type,
@@ -60,7 +61,7 @@ public class MediCloudProblemDetailsFactory(
         ApplyProblemDetailsDefaults(httpContext, validationProblemDetails, statusCode.Value);
         return validationProblemDetails;
     }
-    
+
     private void ApplyProblemDetailsDefaults(
         HttpContext    httpContext,
         ProblemDetails problemDetails,
@@ -85,4 +86,5 @@ public class MediCloudProblemDetailsFactory(
             }
         );
     }
+
 }

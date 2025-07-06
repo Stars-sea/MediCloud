@@ -8,7 +8,7 @@ namespace MediCloud.Api.Controllers;
 [ApiController]
 [Authorize]
 public abstract class ApiController : ControllerBase {
-    
+
     [NonAction]
     protected ObjectResult Problem(params List<Error> errors) {
         HttpContext.Items[HttpContextItemKeys.Errors] = errors;
@@ -20,8 +20,9 @@ public abstract class ApiController : ControllerBase {
             ErrorType.NotFound     => StatusCodes.Status404NotFound,
             ErrorType.Forbidden    => StatusCodes.Status403Forbidden,
             ErrorType.Conflict     => StatusCodes.Status409Conflict,
-            _                      => StatusCodes.Status500InternalServerError,
+            _                      => StatusCodes.Status500InternalServerError
         };
         return Problem(statusCode: statusCode, title: firstError?.Description);
     }
+
 }

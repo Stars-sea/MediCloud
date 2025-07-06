@@ -7,23 +7,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MediCloud.Domain\MediCloud.Domain.csproj" />
+        <ProjectReference Include="..\MediCloud.Domain\MediCloud.Domain.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
-        <HintPath>..\..\..\..\..\..\home\starssea\.nuget\packages\microsoft.aspnetcore.app.ref\9.0.4\ref\net9.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-      </Reference>
+        <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+            <HintPath>..\..\..\..\..\..\home\starssea\.nuget\packages\microsoft.aspnetcore.app.ref\9.0.4\ref\net9.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Authentication\" />
-      <Folder Include="Common\Interfaces\Persistence\" />
+        <Folder Include="Authentication\"/>
+        <Folder Include="Common\Interfaces\Persistence\"/>
     </ItemGroup>
 
 </Project>
