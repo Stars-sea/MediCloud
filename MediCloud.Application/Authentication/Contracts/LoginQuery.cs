@@ -1,4 +1,4 @@
-namespace MediCloud.Application.Contracts.Authentication;
+namespace MediCloud.Application.Authentication.Contracts;
 
 public record LoginQuery(
     string Email,

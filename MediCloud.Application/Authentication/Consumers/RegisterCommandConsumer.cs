@@ -1,11 +1,11 @@
 using MassTransit;
+using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Common.Interfaces.Authentication;
-using MediCloud.Application.Contracts.Authentication;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace MediCloud.Application.Consumers.Authentication;
+namespace MediCloud.Application.Authentication.Consumers;
 
 public class RegisterCommandConsumer(
     IJwtTokenGenerator jwtTokenGenerator,
