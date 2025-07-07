@@ -19,50 +19,50 @@ public record Error(
 ) {
 
     public static Error Failure(
-        string code        = "A failure has occurred.",
-        string description = "General.Failure"
+        string code        = "General.Failure",
+        string description = "A failure has occurred."
     ) {
         return new Error(code, description, ErrorType.Failure);
     }
 
     public static Error Unexpected(
-        string code        = "A unexpected error has occurred.",
-        string description = "General.Unexpected"
+        string code        = "General.Unexpected",
+        string description = "A unexpected error has occurred."
     ) {
         return new Error(code, description, ErrorType.Unexpected);
     }
 
     public static Error Validation(
-        string code        = "A validation error has occurred.",
-        string description = "General.Validation"
+        string code        = "General.Validation",
+        string description = "A validation error has occurred."
     ) {
         return new Error(code, description, ErrorType.Validation);
     }
 
     public static Error Conflict(
-        string code        = "A conflict error has occurred.",
-        string description = "General.Conflict"
+        string code        = "General.Conflict",
+        string description = "A conflict error has occurred."
     ) {
         return new Error(code, description, ErrorType.Conflict);
     }
 
     public static Error NotFound(
-        string code        = "A 'Not Found' error has occurred.",
-        string description = "General.NotFound"
+        string code        = "General.NotFound",
+        string description = "A 'Not Found' error has occurred."
     ) {
         return new Error(code, description, ErrorType.NotFound);
     }
 
     public static Error Unauthorized(
-        string code        = "A 'Unauthorized' error has occurred.",
-        string description = "General.Unauthorized"
+        string code        = "General.Unauthorized",
+        string description = "A 'Unauthorized' error has occurred."
     ) {
         return new Error(code, description, ErrorType.Unauthorized);
     }
 
     public static Error Forbidden(
-        string code        = "A 'Forbidden' error has occurred.",
-        string description = "General.Forbidden"
+        string code        = "General.Forbidden",
+        string description = "A 'Forbidden' error has occurred."
     ) {
         return new Error(code, description, ErrorType.Forbidden);
     }

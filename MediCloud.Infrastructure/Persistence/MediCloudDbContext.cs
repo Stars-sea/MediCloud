@@ -1,9 +1,8 @@
-using MediCloud.Domain.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using MediCloud.Domain.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediCloud.Infrastructure.Persistence;
 
-public class MediCloudDbContext(DbContextOptions options) : IdentityDbContext<User>(options) {
-
+public class MediCloudDbContext(DbContextOptions options) : DbContext(options) {
+    public DbSet<User> Users { get; set; }
 }

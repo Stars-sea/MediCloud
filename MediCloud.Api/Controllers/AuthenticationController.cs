@@ -16,25 +16,25 @@ public class AuthenticationController(
 
     [HttpPost("login")]
     public async Task<ActionResult<AuthenticationResponse>> Login([FromBody] LoginRequest request) {
-        Response loginResponse = await loginRequestClient.GetResponse<AuthenticationResult, Error>(
+        Response loginResponse = await loginRequestClient.GetResponse<AuthenticationResult, IList<Error>>(
             new LoginQuery(request.Email, request.Password)
         );
         return loginResponse switch {
             (_, AuthenticationResult result) => MapResultToResponse(result),
-            (_, Error error)                 => Problem(error),
+            (_, IList<Error> errors)         => Problem(errors),
             _                                => throw new InvalidOperationException()
         };
     }
 
     [HttpPost("register")]
     public async Task<ActionResult<AuthenticationResponse>> Register([FromBody] RegisterRequest request) {
-        Response registerResponse = await registerRequestClient.GetResponse<AuthenticationResult, Error>(
+        Response registerResponse = await registerRequestClient.GetResponse<AuthenticationResult, IList<Error>>(
             new RegisterCommand(request.Username, request.Email, request.Password)
         );
 
         return registerResponse switch {
             (_, AuthenticationResult result) => MapResultToResponse(result),
-            (_, Error error)                 => Problem(error),
+            (_, IList<Error> errors)         => Problem(errors),
             _                                => throw new InvalidOperationException()
         };
     }
@@ -42,9 +42,9 @@ public class AuthenticationController(
     [NonAction]
     private static AuthenticationResponse MapResultToResponse(AuthenticationResult result) {
         return new AuthenticationResponse(
-            result.User.Id,
-            result.User.Email!,
-            result.User.UserName!,
+            result.User.Id.ToString(),
+            result.User.Email,
+            result.User.Username,
             result.Token
         );
     }

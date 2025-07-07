@@ -1,8 +1,10 @@
 ﻿using System.Text;
 using MediCloud.Application.Common.Interfaces.Authentication;
+using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
 using MediCloud.Infrastructure.Authentication;
 using MediCloud.Infrastructure.Persistence;
+using MediCloud.Infrastructure.Persistence.Repositories;
 using MediCloud.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -16,13 +18,20 @@ namespace MediCloud.Infrastructure;
 public static class DependencyInjection {
 
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration) {
+        services.AddPersistence(configuration);
+        services.AddAuth(configuration);
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration) {
         services.AddDbContext<MediCloudDbContext>(options =>
             options.UseMySQL(configuration.GetConnectionString("MEDI_CLOUD")!)
         );
 
-        services.AddAuth(configuration);
-        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-
+        services.AddSingleton<IUserRepository, UserRepository>();
+        
         return services;
     }
 

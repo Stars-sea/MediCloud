@@ -10,7 +10,7 @@ namespace MediCloud.Api.Controllers;
 public abstract class ApiController : ControllerBase {
 
     [NonAction]
-    protected ObjectResult Problem(params List<Error> errors) {
+    protected ObjectResult Problem(params IEnumerable<Error> errors) {
         HttpContext.Items[HttpContextItemKeys.Errors] = errors;
 
         Error? firstError = errors.FirstOrDefault();

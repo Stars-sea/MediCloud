@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Services;
-using MediCloud.Domain.Entities;
+using MediCloud.Domain.User;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -23,9 +23,9 @@ public class JwtTokenGenerator(
         );
 
         Claim[] claims = [
-            new(JwtRegisteredClaimNames.Name, user.UserName!),
-            new(JwtRegisteredClaimNames.Email, user.Email!),
-            new(JwtRegisteredClaimNames.Sub, user.Id),
+            new(JwtRegisteredClaimNames.Name, user.Username),
+            new(JwtRegisteredClaimNames.Email, user.Email),
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         ];
 

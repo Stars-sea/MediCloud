@@ -8,7 +8,6 @@ builder.Services.AddOpenApi();
 
 builder.Services
        .AddPresentation()
-       .AddIdentity()
        .AddApplication()
        .AddInfrastructure(builder.Configuration);
 

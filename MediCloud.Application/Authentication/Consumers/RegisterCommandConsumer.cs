@@ -1,36 +1,33 @@
 using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Common.Interfaces.Authentication;
+using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Domain.Common.Errors;
-using MediCloud.Domain.Entities;
-using Microsoft.AspNetCore.Identity;
+using MediCloud.Domain.User;
 
 namespace MediCloud.Application.Authentication.Consumers;
 
 public class RegisterCommandConsumer(
     IJwtTokenGenerator jwtTokenGenerator,
-    UserManager<User>  userManager
+    IUserRepository    userRepository
 ) : IConsumer<RegisterCommand> {
 
     public async Task Consume(ConsumeContext<RegisterCommand> context) {
         RegisterCommand command = context.Message;
 
-        if (await userManager.FindByEmailAsync(command.Email) is not null) {
-            await context.RespondAsync(Errors.User.DuplicateEmail);
+        if (await userRepository.FindByEmailAsync(command.Email) is not null) {
+            await context.RespondAsync(new List<Error> {
+                    Errors.User.DuplicateEmail
+                }
+            );
             return;
         }
 
-        User user = new() {
-            Email    = command.Email,
-            UserName = command.Username
-        };
+        User user = User.Factory.Create(command.Email, command.Password);
 
-        IdentityResult result = await userManager.CreateAsync(user, command.Password);
-        if (!result.Succeeded) {
-            if (result.Errors.FirstOrDefault() is { } error)
-                await context.RespondAsync(Error.Conflict(error.Code, error.Description));
-            else
-                await context.RespondAsync(Errors.User.RegistrationFailed);
+        IList<Error> errors = await userRepository.CreateAsync(user, command.Password);
+        if (errors.Any()) {
+            await context.RespondAsync(errors);
             return;
         }
 

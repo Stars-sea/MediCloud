@@ -1,4 +1,4 @@
-using MediCloud.Domain.Entities;
+using MediCloud.Domain.User;
 
 namespace MediCloud.Application.Authentication.Contracts;
 
