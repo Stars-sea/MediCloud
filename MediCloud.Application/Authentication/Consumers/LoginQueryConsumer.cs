@@ -15,7 +15,7 @@ public class LoginQueryConsumer(
         LoginQuery query = context.Message;
 
         if (await userRepository.FindByEmailAsync(query.Email) is not { } user ||
-            !await userRepository.CheckPasswordAsync(user, query.Password)) {
+            !await userRepository.VerifyPasswordAsync(user, query.Password)) {
             await context.RespondAsync(new List<Error> {
                     Errors.Auth.InvalidCred
                 }

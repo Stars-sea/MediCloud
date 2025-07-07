@@ -15,10 +15,11 @@ public abstract class ApiController : ControllerBase {
 
         Error? firstError = errors.FirstOrDefault();
         int statusCode = firstError?.Type switch {
+            ErrorType.Unexpected   => StatusCodes.Status400BadRequest,
             ErrorType.Validation   => StatusCodes.Status400BadRequest,
             ErrorType.Unauthorized => StatusCodes.Status401Unauthorized,
-            ErrorType.NotFound     => StatusCodes.Status404NotFound,
             ErrorType.Forbidden    => StatusCodes.Status403Forbidden,
+            ErrorType.NotFound     => StatusCodes.Status404NotFound,
             ErrorType.Conflict     => StatusCodes.Status409Conflict,
             _                      => StatusCodes.Status500InternalServerError
         };

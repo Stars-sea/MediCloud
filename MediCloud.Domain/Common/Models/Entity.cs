@@ -1,9 +1,15 @@
 namespace MediCloud.Domain.Common.Models;
 
-public abstract class Entity<TId>(TId id) : IEquatable<Entity<TId>>
-    where TId : notnull {
+public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull {
 
-    public virtual TId Id { get; } = id;
+    // ReSharper disable once MemberCanBeProtected.Global
+    public virtual TId Id { get; }
+
+#pragma warning disable CS8618
+    protected Entity() { }  // Kept for reflection
+#pragma warning restore CS8618
+
+    protected Entity(TId id) { Id = id; }
 
     public bool Equals(Entity<TId>? other) { return Equals((object?)other); }
 

@@ -7,8 +7,10 @@ public interface IUserRepository {
 
     Task<User?> FindByEmailAsync(string email);
     
-    Task<bool> CheckPasswordAsync(User user, string password);
+    Task<bool> VerifyPasswordAsync(User user, string password);
     
     Task<IList<Error>> CreateAsync(User user, string password);
+    
+    Task<IList<Error>> ChangePasswordAsync(User user, string oldPassword, string newPassword);
 
 }

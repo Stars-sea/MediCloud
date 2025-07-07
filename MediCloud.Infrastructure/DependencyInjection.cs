@@ -21,6 +21,9 @@ public static class DependencyInjection {
         services.AddPersistence(configuration);
         services.AddAuth(configuration);
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+        
+        services.AddSingleton<IPasswordHasher, PasswordHasher>();
+        services.AddSingleton<IPasswordValidator, PasswordValidator>();
 
         return services;
     }
@@ -30,7 +33,7 @@ public static class DependencyInjection {
             options.UseMySQL(configuration.GetConnectionString("MEDI_CLOUD")!)
         );
 
-        services.AddSingleton<IUserRepository, UserRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         
         return services;
     }

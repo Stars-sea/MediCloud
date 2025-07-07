@@ -1,12 +1,22 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using MediCloud.Domain.Common.Models;
 using MediCloud.Domain.User.ValueObjects;
 
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
+
 namespace MediCloud.Domain.User;
 
 public sealed class User : AggregateRoot<UserId, Guid> {
 
+#pragma warning disable CS8618
+#pragma warning disable CS9264
+    // ReSharper disable once UnusedMember.Local
+    private User() { } // Kept for reflection
+#pragma warning restore CS9264
+#pragma warning restore CS8618
+    
     private User(
         UserId id,
         string email,
@@ -16,71 +26,39 @@ public sealed class User : AggregateRoot<UserId, Guid> {
         Username = username;
     }
 
+    [EmailAddress]
+    [StringLength(256)]
     public string Email { get; set; }
 
-    public string Username { get; set; }
+    [StringLength(50)]
+    public string Username {
+        get;
+        set {
+            if (!IsValidUsername(value))
+                throw new FormatException("Invalid username format.");
+            field = value;
+        }
+    }
 
+    [StringLength(1024)]
     public string PasswordHash { get; set; } = string.Empty;
-
-    public override bool Equals(object? obj) =>
-        obj is User user && Id.Equals(user.Id);
-
-    public override int GetHashCode() => Id.GetHashCode();
-
+    
+    private static bool IsValidUsername(string username) {
+        if (string.IsNullOrWhiteSpace(username))
+            return false;
+            
+        try {
+            return Regex.IsMatch(username,
+                @"^[\w-_]{3,50}$", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250)
+            );
+        }
+        catch (RegexMatchTimeoutException) { return false; }
+        catch (ArgumentException) { return false; }
+    }
+    
     public static class Factory {
 
-        private static bool IsValidEmail(string email) {
-            if (string.IsNullOrWhiteSpace(email))
-                return false;
-
-            try {
-                // Normalize the domain
-                email = Regex.Replace(email, @"(@)(.+)$", DomainMapper,
-                    RegexOptions.None, TimeSpan.FromMilliseconds(200)
-                );
-
-                // Examines the domain part of the email and normalizes it.
-                string DomainMapper(Match match) {
-                    // Use IdnMapping class to convert Unicode domain names.
-                    IdnMapping idn = new();
-
-                    // Pull out and process domain name (throws ArgumentException on invalid)
-                    string domainName = idn.GetAscii(match.Groups[2].Value);
-
-                    return match.Groups[1].Value + domainName;
-                }
-            }
-            catch (RegexMatchTimeoutException) { return false; }
-            catch (ArgumentException) { return false; }
-
-            try {
-                return Regex.IsMatch(email,
-                    @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
-                    RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250)
-                );
-            }
-            catch (RegexMatchTimeoutException) { return false; }
-        }
-
-        private static bool IsValidUsername(string username) {
-            if (string.IsNullOrWhiteSpace(username))
-                return false;
-            
-            try {
-                return Regex.IsMatch(username,
-                    @"^[\w-_]{3,30}$", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250)
-                );
-            }
-            catch (RegexMatchTimeoutException) { return false; }
-            catch (ArgumentException) { return false; }
-        }
-
         public static User Create(string email, string username) {
-            if (!IsValidEmail(email))
-                throw new FormatException("Invalid email format");
-            if (!IsValidUsername(username))
-                throw new FormatException("Invalid username format");
-
             return new User(UserId.CreateUnique(), email, username);
         }
 

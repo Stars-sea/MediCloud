@@ -9,7 +9,7 @@ public abstract class AggregateRootId<TId>(TId value) : ValueObject where TId : 
     }
 
     public override string ToString() {
-        return Value.ToString() ?? typeof(AggregateRootId<TId>).Name;
+        return Value.ToString()!;
     }
 
 }
