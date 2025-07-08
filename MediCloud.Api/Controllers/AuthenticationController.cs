@@ -1,5 +1,6 @@
 using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
+using MediCloud.Application.Common.Contracts;
 using MediCloud.Contracts.Authentication;
 using MediCloud.Domain.Common.Errors;
 using Microsoft.AspNetCore.Authorization;
@@ -16,27 +17,26 @@ public class AuthenticationController(
 
     [HttpPost("login")]
     public async Task<ActionResult<AuthenticationResponse>> Login([FromBody] LoginRequest request) {
-        Response loginResponse = await loginRequestClient.GetResponse<AuthenticationResult, IList<Error>>(
-            new LoginQuery(request.Email, request.Password)
+        Response<Result<AuthenticationResult>> loginResponse =
+            await loginRequestClient.GetResponse<Result<AuthenticationResult>>(
+                new LoginQuery(request.Email, request.Password)
+            );
+
+        return loginResponse.Message.Match(
+            r => Ok(MapResultToResponse(r)), Problem
         );
-        return loginResponse switch {
-            (_, AuthenticationResult result) => MapResultToResponse(result),
-            (_, IList<Error> errors)         => Problem(errors),
-            _                                => throw new InvalidOperationException()
-        };
     }
 
     [HttpPost("register")]
     public async Task<ActionResult<AuthenticationResponse>> Register([FromBody] RegisterRequest request) {
-        Response registerResponse = await registerRequestClient.GetResponse<AuthenticationResult, IList<Error>>(
-            new RegisterCommand(request.Username, request.Email, request.Password)
-        );
+        Response<Result<AuthenticationResult>> registerResponse =
+            await registerRequestClient.GetResponse<Result<AuthenticationResult>>(
+                new RegisterCommand(request.Username, request.Email, request.Password)
+            );
 
-        return registerResponse switch {
-            (_, AuthenticationResult result) => MapResultToResponse(result),
-            (_, IList<Error> errors)         => Problem(errors),
-            _                                => throw new InvalidOperationException()
-        };
+        return registerResponse.Message.Match(
+            r => Ok(MapResultToResponse(r)), Problem
+        );
     }
 
     [NonAction]

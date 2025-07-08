@@ -21,7 +21,7 @@ public static class DependencyInjection {
         services.AddPersistence(configuration);
         services.AddAuth(configuration);
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-        
+
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IPasswordValidator, PasswordValidator>();
 
@@ -34,7 +34,7 @@ public static class DependencyInjection {
         );
 
         services.AddScoped<IUserRepository, UserRepository>();
-        
+
         return services;
     }
 

@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using System.Text.RegularExpressions;
 using MediCloud.Domain.Common.Models;
 using MediCloud.Domain.User.ValueObjects;
@@ -12,8 +11,7 @@ public sealed class User : AggregateRoot<UserId, Guid> {
 
 #pragma warning disable CS8618
 #pragma warning disable CS9264
-    // ReSharper disable once UnusedMember.Local
-    private User() { } // Kept for reflection
+    public User() { } // Kept for reflection
 #pragma warning restore CS9264
 #pragma warning restore CS8618
     
@@ -59,7 +57,7 @@ public sealed class User : AggregateRoot<UserId, Guid> {
     public static class Factory {
 
         public static User Create(string email, string username) {
-            return new User(UserId.CreateUnique(), email, username);
+            return new User(UserId.Factory.CreateUnique(), email, username);
         }
 
     }

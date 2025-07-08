@@ -13,8 +13,9 @@ public class UserRepository(
 ) : IUserRepository {
 
     public async Task<User?> FindByEmailAsync(string email) {
-        return await dbContext.Users.SingleOrDefaultAsync(u
-            => string.Equals(u.Email, email, StringComparison.OrdinalIgnoreCase)
+        string upperEmail = email.ToUpper();
+        return await dbContext.Users.FirstOrDefaultAsync(u =>
+            u.Email.ToUpper().Equals(upperEmail)
         );
     }
 
@@ -43,13 +44,13 @@ public class UserRepository(
 
         IList<Error> errors = await passwordValidator.ValidateAsync(newPassword);
         if (errors.Any()) return errors;
-        
+
         string passwordHash = passwordHasher.HashPassword(newPassword);
         user.PasswordHash = passwordHash;
 
         dbContext.Users.Update(user);
         await dbContext.SaveChangesAsync();
-        
+
         return [];
     }
 
