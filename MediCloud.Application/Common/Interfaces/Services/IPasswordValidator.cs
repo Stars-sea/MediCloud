@@ -1,9 +1,9 @@
-using MediCloud.Domain.Common.Errors;
+using MediCloud.Domain.Common.Contracts;
 
 namespace MediCloud.Application.Common.Interfaces.Services;
 
 public interface IPasswordValidator {
 
-    Task<IList<Error>> ValidateAsync(string password);
+    Task<Result> ValidateAsync(string password);
 
 }

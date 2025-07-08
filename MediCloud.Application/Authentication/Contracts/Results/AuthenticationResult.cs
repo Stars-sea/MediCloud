@@ -1,6 +1,6 @@
 using MediCloud.Domain.User;
 
-namespace MediCloud.Application.Authentication.Contracts;
+namespace MediCloud.Application.Authentication.Contracts.Results;
 
 public record AuthenticationResult(
     User   User,

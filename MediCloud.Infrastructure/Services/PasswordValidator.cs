@@ -1,4 +1,5 @@
 using MediCloud.Application.Common.Interfaces.Services;
+using MediCloud.Domain.Common.Contracts;
 using MediCloud.Domain.Common.Errors;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -10,7 +11,7 @@ public sealed class PasswordValidator : IPasswordValidator {
 
     public const int MinLength = 8;
 
-    public Task<IList<Error>> ValidateAsync(string password) {
+    public Task<Result> ValidateAsync(string password) {
         List<Error> errors = [];
         
         if (string.IsNullOrWhiteSpace(password) || password.Length < MinLength)
@@ -28,7 +29,7 @@ public sealed class PasswordValidator : IPasswordValidator {
         if (!password.Any(IsUpper))
             errors.Add(Errors.Password.RequiresUpper);
         
-        return Task.FromResult<IList<Error>>(errors);
+        return Task.FromResult<Result>(errors);
     }
 
     public static bool IsDigit(char c) { return c is >= '0' and <= '9'; }

@@ -1,7 +1,8 @@
 using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
-using MediCloud.Application.Common.Contracts;
+using MediCloud.Application.Authentication.Contracts.Results;
 using MediCloud.Contracts.Authentication;
+using MediCloud.Domain.Common.Contracts;
 using MediCloud.Domain.Common.Errors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -26,7 +26,14 @@ public sealed class User : AggregateRoot<UserId, Guid> {
 
     [EmailAddress]
     [StringLength(256)]
-    public string Email { get; set; }
+    public string Email {
+        get => field;
+        set {
+            if (!new EmailAddressAttribute().IsValid(value))
+                throw new ValidationException("Email address is not a valid email address.");
+            field = value;
+        }
+    }
 
     [StringLength(50)]
     public string Username {

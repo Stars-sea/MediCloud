@@ -1,7 +1,9 @@
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
+using MediCloud.Domain.Common.Contracts;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.User;
+using MediCloud.Domain.User.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediCloud.Infrastructure.Persistence.Repositories;
@@ -12,10 +14,19 @@ public class UserRepository(
     IPasswordValidator passwordValidator
 ) : IUserRepository {
 
+    public async Task<User?> FindByIdAsync(UserId id) { return await dbContext.Users.FindAsync(id); }
+
     public async Task<User?> FindByEmailAsync(string email) {
         string upperEmail = email.ToUpper();
         return await dbContext.Users.FirstOrDefaultAsync(u =>
             u.Email.ToUpper().Equals(upperEmail)
+        );
+    }
+
+    public async Task<User?> FindByUsernameAsync(string username) {
+        string upperUsername = username.ToUpper();
+        return await dbContext.Users.FirstOrDefaultAsync(u =>
+            u.Username.ToUpper().Equals(upperUsername)
         );
     }
 
@@ -26,32 +37,42 @@ public class UserRepository(
         return Task.FromResult(passwordHasher.VerifyHashedPassword(user.PasswordHash, password));
     }
 
-    public async Task<IList<Error>> CreateAsync(User user, string password) {
-        IList<Error> errors = await passwordValidator.ValidateAsync(password);
-        if (errors.Any()) return errors;
+    public async Task<Result> CreateAsync(User user, string password) {
+        Result result = await passwordValidator.ValidateAsync(password);
+        if (!result.IsSuccess) return result;
 
-        string passwordHash = passwordHasher.HashPassword(password);
-        user.PasswordHash = passwordHash;
+        user.PasswordHash = passwordHasher.HashPassword(password);
         await dbContext.Users.AddAsync(user);
-        await dbContext.SaveChangesAsync();
+        
+        try { await dbContext.SaveChangesAsync(); }
+        catch (DbUpdateException) { return Errors.User.FailedToUpdate; }
 
-        return [];
+        return Result.Ok;
     }
 
-    public async Task<IList<Error>> ChangePasswordAsync(User user, string oldPassword, string newPassword) {
-        if (!await VerifyPasswordAsync(user, oldPassword))
-            return [Errors.Auth.InvalidCred];
-
-        IList<Error> errors = await passwordValidator.ValidateAsync(newPassword);
-        if (errors.Any()) return errors;
-
-        string passwordHash = passwordHasher.HashPassword(newPassword);
-        user.PasswordHash = passwordHash;
-
+    public async Task<Result> UpdateAsync(User user) {
         dbContext.Users.Update(user);
-        await dbContext.SaveChangesAsync();
+        try { await dbContext.SaveChangesAsync(); }
+        catch (DbUpdateException) { return Errors.User.FailedToUpdate; }
 
-        return [];
+        return Result.Ok;
+    }
+
+    public async Task<Result> DeleteAsync(User user) {
+        dbContext.Users.Remove(user);
+        try { await dbContext.SaveChangesAsync(); }
+        catch (DbUpdateException) { return Errors.User.FailedToUpdate; }
+
+        return Result.Ok;
+    }
+
+    public async Task<Result> SetPasswordAsync(User user, string password) {
+        Result result = await passwordValidator.ValidateAsync(password);
+        if (!result.IsSuccess) return result;
+
+        user.PasswordHash = passwordHasher.HashPassword(password);
+
+        return await UpdateAsync(user);
     }
 
 }

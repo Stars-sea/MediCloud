@@ -1,9 +1,11 @@
+using System.ComponentModel.DataAnnotations;
 using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
-using MediCloud.Application.Common.Contracts;
+using MediCloud.Application.Authentication.Contracts.Results;
 using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Persistence;
+using MediCloud.Domain.Common.Contracts;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.User;
 
@@ -20,12 +22,13 @@ public class RegisterCommandConsumer(
         if (await userRepository.FindByEmailAsync(command.Email) is not null)
             return Errors.User.DuplicateEmail;
 
-        User user = User.Factory.Create(command.Email, command.Username);
+        User user;
+        try { user = User.Factory.Create(command.Email, command.Username); }
+        catch (ValidationException) { return Errors.User.InvalidEmail; }
+        catch (FormatException) { return Errors.User.InvalidUsername; }
 
-        IList<Error> errors = await userRepository.CreateAsync(user, command.Password);
-        if (errors.Any()) {
-            return errors.ToArray();
-        }
+        Result result = await userRepository.CreateAsync(user, command.Password);
+        if (!result.IsSuccess) return result.Errors;
 
         string token = jwtTokenGenerator.GenerateToken(user);
         return new AuthenticationResult(user, token);
