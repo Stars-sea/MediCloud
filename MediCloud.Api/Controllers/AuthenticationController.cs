@@ -3,7 +3,6 @@ using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Authentication.Contracts.Results;
 using MediCloud.Contracts.Authentication;
 using MediCloud.Domain.Common.Contracts;
-using MediCloud.Domain.Common.Errors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,7 +42,7 @@ public class AuthenticationController(
     [NonAction]
     private static AuthenticationResponse MapResultToResponse(AuthenticationResult result) {
         return new AuthenticationResponse(
-            result.User.Id.ToString(),
+            result.User.Id.ToString()!,
             result.User.Email,
             result.User.Username,
             result.Token

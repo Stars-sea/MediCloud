@@ -10,24 +10,29 @@ namespace MediCloud.Infrastructure.Services;
 public sealed class PasswordValidator : IPasswordValidator {
 
     public const int MinLength = 8;
+    
+    public const int MaxLength = 32;
 
     public Task<Result> ValidateAsync(string password) {
         List<Error> errors = [];
         
         if (string.IsNullOrWhiteSpace(password) || password.Length < MinLength)
-            errors.Add(Errors.Password.TooShort);
+            errors.Add(Errors.Auth.PasswordTooShort);
+        
+        if (password.Length > MaxLength)
+            errors.Add(Errors.Auth.PasswordTooLong);
 
         if (password.All(IsLetterOrDigit))
-            errors.Add(Errors.Password.RequiresNonAlphanumeric);
+            errors.Add(Errors.Auth.PasswordRequiresNonAlphanumeric);
         
         if (!password.Any(IsDigit))
-            errors.Add(Errors.Password.RequiresDigit);
+            errors.Add(Errors.Auth.PasswordRequiresDigit);
         
         if (!password.Any(IsLower))
-            errors.Add(Errors.Password.RequiresLower);
+            errors.Add(Errors.Auth.PasswordRequiresLower);
         
         if (!password.Any(IsUpper))
-            errors.Add(Errors.Password.RequiresUpper);
+            errors.Add(Errors.Auth.PasswordRequiresUpper);
         
         return Task.FromResult<Result>(errors);
     }

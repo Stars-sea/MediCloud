@@ -16,7 +16,7 @@ public class DeleteCommandConsumer(
 
         if (await userRepository.FindByEmailAsync(command.Email) is not { } user ||
             !user.Username.Equals(command.Username, StringComparison.OrdinalIgnoreCase))
-            return Errors.User.UsernameEmailNotMatch;
+            return Errors.Auth.UsernameEmailNotMatch;
 
         if (!await userRepository.VerifyPasswordAsync(user, command.Password))
             return Errors.Auth.InvalidCred;

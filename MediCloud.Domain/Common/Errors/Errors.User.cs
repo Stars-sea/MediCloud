@@ -19,11 +19,6 @@ public static partial class Errors {
             "Username is not valid."
         );
 
-        public static Error UsernameEmailNotMatch => Error.Unexpected(
-            "User.UsernameEmailNotMatch",
-            "User with given email does not match username."
-        );
-
         public static Error FailedToUpdate => Error.Conflict(
             "User.FailedToUpdate",
             "Failed to update user."
