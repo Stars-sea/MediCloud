@@ -1,8 +1,8 @@
 using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
+using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Persistence;
-using MediCloud.Domain.Common.Contracts;
 using MediCloud.Domain.Common.Errors;
 
 namespace MediCloud.Application.Authentication.Consumers;

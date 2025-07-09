@@ -1,6 +1,6 @@
+using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
-using MediCloud.Domain.Common.Contracts;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.User;
 using MediCloud.Domain.User.ValueObjects;
@@ -16,16 +16,16 @@ public class UserRepository(
 
     public async Task<User?> FindByIdAsync(UserId id) { return await dbContext.Users.FindAsync(id); }
 
-    public async Task<User?> FindByEmailAsync(string email) {
+    public Task<User?> FindByEmailAsync(string email) {
         string upperEmail = email.ToUpper();
-        return await dbContext.Users.FirstOrDefaultAsync(u =>
+        return dbContext.Users.FirstOrDefaultAsync(u =>
             u.Email.ToUpper().Equals(upperEmail)
         );
     }
 
-    public async Task<User?> FindByUsernameAsync(string username) {
+    public Task<User?> FindByUsernameAsync(string username) {
         string upperUsername = username.ToUpper();
-        return await dbContext.Users.FirstOrDefaultAsync(u =>
+        return dbContext.Users.FirstOrDefaultAsync(u =>
             u.Username.ToUpper().Equals(upperUsername)
         );
     }
@@ -71,8 +71,21 @@ public class UserRepository(
         if (!result.IsSuccess) return result;
 
         user.PasswordHash = passwordHasher.HashPassword(password);
-
-        return await UpdateAsync(user);
+        return await UpdateSecurityStampAsync(user);
     }
 
+    public Task<Result> SetLastLoginAtAsync(User user, DateTime date) {
+        user.LastLoginAt = date;
+        return UpdateAsync(user);
+    }
+
+    public Task<Result> UpdateLastLoginDateAsync(User user) {
+        return SetLastLoginAtAsync(user, DateTime.UtcNow);
+    }
+
+    public Task<Result> UpdateSecurityStampAsync(User user) {
+        user.UpdateSecurityStamp();
+        return UpdateAsync(user);
+    }
+    
 }

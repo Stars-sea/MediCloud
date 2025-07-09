@@ -1,5 +1,5 @@
+using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces.Services;
-using MediCloud.Domain.Common.Contracts;
 using MediCloud.Domain.Common.Errors;
 
 // ReSharper disable MemberCanBePrivate.Global

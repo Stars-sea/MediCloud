@@ -1,10 +1,11 @@
 using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Authentication.Contracts.Results;
+using MediCloud.Application.Common.Contracts;
+using MediCloud.Application.Common.Contracts.Authentication;
 using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Persistence;
-using MediCloud.Domain.Common.Contracts;
 using MediCloud.Domain.Common.Errors;
 
 namespace MediCloud.Application.Authentication.Consumers;
@@ -21,8 +22,13 @@ public class LoginQueryConsumer(
             !await userRepository.VerifyPasswordAsync(user, query.Password))
             return Errors.Auth.InvalidCred;
 
-        string token = jwtTokenGenerator.GenerateToken(user);
-        return new AuthenticationResult(user, token);
+        Result<JwtGenerateResult> result = jwtTokenGenerator.GenerateToken(user);
+        if (!result.IsSuccess) return result.Errors;
+
+        await userRepository.UpdateLastLoginDateAsync(user);
+        
+        (string token, DateTime expires) = result.Value!;
+        return new AuthenticationResult(user, token, expires);
     }
 
 }

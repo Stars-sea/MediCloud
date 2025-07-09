@@ -1,4 +1,4 @@
-using MediCloud.Domain.Common.Contracts;
+using MediCloud.Application.Common.Contracts;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.User;
 using MediCloud.Domain.User.ValueObjects;
@@ -22,5 +22,11 @@ public interface IUserRepository {
     Task<Result> DeleteAsync(User user);
     
     Task<Result> SetPasswordAsync(User user, string password);
+    
+    Task<Result> SetLastLoginAtAsync(User user, DateTime date);
+    
+    Task<Result> UpdateLastLoginDateAsync(User user);
+    
+    Task<Result> UpdateSecurityStampAsync(User user);
 
 }

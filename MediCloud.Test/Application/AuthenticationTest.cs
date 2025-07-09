@@ -2,8 +2,8 @@
 using MassTransit.Testing;
 using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Authentication.Contracts.Results;
+using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces.Persistence;
-using MediCloud.Domain.Common.Contracts;
 using MediCloud.Domain.User;
 using MediCloud.Test.Common;
 using Microsoft.Extensions.DependencyInjection;

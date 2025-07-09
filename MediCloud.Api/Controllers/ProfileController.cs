@@ -1,9 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
+using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Contracts.Profile;
-using MediCloud.Domain.Common.Contracts;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.User;
 using MediCloud.Domain.User.ValueObjects;
@@ -37,6 +37,8 @@ public class ProfileController(
         return Ok(new MyProfileResponse(
                 user.Id.ToString(),
                 user.Username,
+                user.CreatedAt,
+                user.LastLoginAt,
                 user.Email,
                 expiresOffset.UtcDateTime
             )
@@ -48,7 +50,7 @@ public class ProfileController(
         User? user = await userRepository.FindByUsernameAsync(username);
         return user is null
             ? Problem(Errors.User.UserNotFound)
-            : Ok(new ProfileResponse(user.Id.ToString(), user.Username));
+            : Ok(new ProfileResponse(user.Id.ToString(), user.Username, user.CreatedAt, user.LastLoginAt));
     }
 
     [HttpDelete("{username}")]

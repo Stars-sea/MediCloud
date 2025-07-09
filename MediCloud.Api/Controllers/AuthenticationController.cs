@@ -1,8 +1,8 @@
 using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Authentication.Contracts.Results;
+using MediCloud.Application.Common.Contracts;
 using MediCloud.Contracts.Authentication;
-using MediCloud.Domain.Common.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,10 +17,9 @@ public class AuthenticationController(
 
     [HttpPost("login")]
     public async Task<ActionResult<AuthenticationResponse>> Login([FromBody] LoginRequest request) {
-        Response<Result<AuthenticationResult>> loginResponse =
-            await loginRequestClient.GetResponse<Result<AuthenticationResult>>(
-                new LoginQuery(request.Email, request.Password)
-            );
+        var loginResponse = await loginRequestClient.GetResponse<Result<AuthenticationResult>>(
+            new LoginQuery(request.Email, request.Password)
+        );
 
         return loginResponse.Message.Match(
             r => Ok(MapResultToResponse(r)), Problem
@@ -29,10 +28,9 @@ public class AuthenticationController(
 
     [HttpPost("register")]
     public async Task<ActionResult<AuthenticationResponse>> Register([FromBody] RegisterRequest request) {
-        Response<Result<AuthenticationResult>> registerResponse =
-            await registerRequestClient.GetResponse<Result<AuthenticationResult>>(
-                new RegisterCommand(request.Username, request.Email, request.Password)
-            );
+        var registerResponse = await registerRequestClient.GetResponse<Result<AuthenticationResult>>(
+            new RegisterCommand(request.Username, request.Email, request.Password)
+        );
 
         return registerResponse.Message.Match(
             r => Ok(MapResultToResponse(r)), Problem
@@ -45,7 +43,8 @@ public class AuthenticationController(
             result.User.Id.ToString(),
             result.User.Email,
             result.User.Username,
-            result.Token
+            result.Token,
+            result.Expires
         );
     }
 

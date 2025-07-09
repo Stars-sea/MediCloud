@@ -1,6 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using MediCloud.Application.Common.Contracts;
+using MediCloud.Application.Common.Contracts.Authentication;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Services;
 using MediCloud.Domain.User;
@@ -14,7 +16,7 @@ public class JwtTokenGenerator(
     IOptions<JwtSettings> jwtSettings
 ) : IJwtTokenGenerator {
 
-    public string GenerateToken(User user) {
+    public Result<JwtGenerateResult> GenerateToken(User user) {
         JwtSettings settings = jwtSettings.Value;
 
         SigningCredentials signingCredentials = new(
@@ -25,19 +27,24 @@ public class JwtTokenGenerator(
         Claim[] claims = [
             new(JwtRegisteredClaimNames.Name, user.Username),
             new(JwtRegisteredClaimNames.Email, user.Email),
-            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()!),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(IJwtTokenGenerator.SecurityStampClaim, user.SecurityStamp)
         ];
 
+        DateTime expires = dateTimeProvider.UtcNow.AddMinutes(settings.ExpiryMinutes);
         JwtSecurityToken token = new(
             settings.Issuer,
             settings.Audience,
-            expires: dateTimeProvider.UtcNow.AddMinutes(settings.ExpiryMinutes),
+            expires: expires,
             claims: claims,
             signingCredentials: signingCredentials
         );
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        return new JwtGenerateResult(
+            new JwtSecurityTokenHandler().WriteToken(token),
+            expires
+        );
     }
 
 }

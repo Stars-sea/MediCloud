@@ -2,10 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Authentication.Contracts.Results;
+using MediCloud.Application.Common.Contracts;
+using MediCloud.Application.Common.Contracts.Authentication;
 using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Persistence;
-using MediCloud.Domain.Common.Contracts;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.User;
 
@@ -30,8 +31,13 @@ public class RegisterCommandConsumer(
         Result result = await userRepository.CreateAsync(user, command.Password);
         if (!result.IsSuccess) return result.Errors;
 
-        string token = jwtTokenGenerator.GenerateToken(user);
-        return new AuthenticationResult(user, token);
+        Result<JwtGenerateResult> generateResult = jwtTokenGenerator.GenerateToken(user);
+        if (!generateResult.IsSuccess) return generateResult.Errors;
+
+        await userRepository.UpdateLastLoginDateAsync(user);
+        
+        (string token, DateTime expires) = generateResult.Value!;
+        return new AuthenticationResult(user, token, expires);
     }
 
 }

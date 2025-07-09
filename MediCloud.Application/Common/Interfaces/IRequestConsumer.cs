@@ -1,5 +1,5 @@
 using MassTransit;
-using MediCloud.Domain.Common.Contracts;
+using MediCloud.Application.Common.Contracts;
 
 namespace MediCloud.Application.Common.Interfaces;
 
