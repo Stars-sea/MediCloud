@@ -2,6 +2,8 @@
 
 # Microsoft .NET properties
 csharp_preferred_modifier_order = private, internal, protected, public, file, new, required, async, virtual, sealed, readonly, override, extern, unsafe, volatile, static, abstract:suggestion
+csharp_style_var_elsewhere = false:none
+csharp_style_var_when_type_is_apparent = true:none
 
 # ReSharper properties
 resharper_arguments_skip_single = true
