@@ -9,6 +9,11 @@ public static partial class Errors {
             "User with given email already exists."
         );
 
+        public static Error UserNotFound => Error.NotFound(
+            "User.NotFound",
+            "User with given info does not exist."
+        );
+
         public static Error InvalidEmail => Error.Unexpected(
             "User.InvalidEmail",
             "Email address is not valid."

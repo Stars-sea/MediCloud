@@ -1,7 +1,4 @@
 using MediCloud.Api.Common.Errors;
-using MediCloud.Domain.User;
-using MediCloud.Infrastructure.Persistence;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace MediCloud.Api;
