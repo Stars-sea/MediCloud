@@ -24,6 +24,9 @@ public static class DependencyInjection {
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IPasswordValidator, PasswordValidator>();
+        
+        services.AddDistributedMemoryCache();
+        services.AddSingleton<ICacheService, CacheService>();
 
         return services;
     }
