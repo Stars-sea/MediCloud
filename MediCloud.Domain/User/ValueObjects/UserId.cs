@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using MediCloud.Domain.Common.Models;
 
 namespace MediCloud.Domain.User.ValueObjects;
@@ -6,11 +7,10 @@ public sealed class UserId : AggregateRootId<Guid> {
 
     public override Guid Value { get; }
 
+    [JsonConstructor]
     private UserId(Guid value) { Value = value; }
 
     public static implicit operator Guid(UserId userId) => userId.Value;
-
-    public override IEnumerable<object?> GetEqualityComponents() { yield return Value; }
 
     public static class Factory {
 

@@ -2,8 +2,7 @@ namespace MediCloud.Domain.Common.Models;
 
 public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull {
 
-    // ReSharper disable once MemberCanBeProtected.Global
-    public virtual TId Id { get; }
+    public TId Id { get; set; }
 
 #pragma warning disable CS8618
     protected Entity() { }  // Kept for reflection
@@ -19,6 +18,7 @@ public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull 
 
     public static bool operator !=(Entity<TId> left, Entity<TId> right) { return !Equals(left, right); }
 
+    // ReSharper disable once NonReadonlyMemberInGetHashCode
     public override int GetHashCode() { return Id.GetHashCode(); }
 
 }

@@ -42,7 +42,7 @@ public class AuthenticationController(
     [NonAction]
     private static AuthenticationResponse MapResultToResponse(AuthenticationResult result) {
         return new AuthenticationResponse(
-            result.User.Id.ToString()!,
+            result.User.Id.ToString(),
             result.User.Email,
             result.User.Username,
             result.Token

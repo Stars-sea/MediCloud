@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using MediCloud.Domain.Common.Models;
 using MediCloud.Domain.User.ValueObjects;
@@ -11,7 +12,7 @@ public sealed class User : AggregateRoot<UserId, Guid> {
 
 #pragma warning disable CS8618
 #pragma warning disable CS9264
-    public User() { } // Kept for reflection
+    [JsonConstructor] private User() { }
 #pragma warning restore CS9264
 #pragma warning restore CS8618
     
@@ -27,7 +28,7 @@ public sealed class User : AggregateRoot<UserId, Guid> {
     [EmailAddress]
     [StringLength(256)]
     public string Email {
-        get => field;
+        get;
         set {
             if (!new EmailAddressAttribute().IsValid(value))
                 throw new ValidationException("Email address is not a valid email address.");
