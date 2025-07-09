@@ -13,8 +13,8 @@ using MediCloud.Domain.User;
 namespace MediCloud.Application.Authentication.Consumers;
 
 public class RegisterCommandConsumer(
-    IJwtTokenGenerator jwtTokenGenerator,
-    IUserRepository    userRepository
+    IJwtTokenManager jwtTokenManager,
+    IUserRepository  userRepository
 ) : IRequestConsumer<RegisterCommand, AuthenticationResult> {
 
     public async Task<Result<AuthenticationResult>> Consume(ConsumeContext<RegisterCommand> context) {
@@ -31,11 +31,11 @@ public class RegisterCommandConsumer(
         Result result = await userRepository.CreateAsync(user, command.Password);
         if (!result.IsSuccess) return result.Errors;
 
-        Result<JwtGenerateResult> generateResult = jwtTokenGenerator.GenerateToken(user);
+        Result<JwtGenerateResult> generateResult = jwtTokenManager.GenerateToken(user);
         if (!generateResult.IsSuccess) return generateResult.Errors;
 
         await userRepository.UpdateLastLoginDateAsync(user);
-        
+
         (string token, DateTime expires) = generateResult.Value!;
         return new AuthenticationResult(user, token, expires);
     }

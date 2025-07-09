@@ -1,8 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using MassTransit;
-using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces.Persistence;
+using MediCloud.Application.Profile.Contracts;
 using MediCloud.Contracts.Profile;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.User;
@@ -13,15 +13,16 @@ namespace MediCloud.Api.Controllers;
 
 [Route("profile")]
 public class ProfileController(
-    IUserRepository               userRepository,
-    IRequestClient<DeleteCommand> deleteRequestClient
+    IUserRepository                    userRepository,
+    IRequestClient<SetPasswordCommand> setPasswordRequestClient,
+    IRequestClient<DeleteCommand>      deleteRequestClient
 ) : ApiController {
 
     [HttpGet("me")]
     public async Task<ActionResult<MyProfileResponse>> GetMe() {
         UserId userId;
         try {
-            string id = User.Claims.First(c => c.Type == JwtRegisteredClaimNames.Sub).Value;
+            string id = User.FindFirst(JwtRegisteredClaimNames.Sub)!.Value;
             userId = UserId.Factory.Create(Guid.Parse(id));
         }
         catch { return Problem(Errors.Auth.InvalidCred); }
@@ -30,7 +31,7 @@ public class ProfileController(
             return Problem(Errors.Auth.InvalidCred);
 
         long expires = Convert.ToInt64(
-            User.Claims.First(c => c.Type == JwtRegisteredClaimNames.Exp).Value
+            User.FindFirst(JwtRegisteredClaimNames.Exp)!.Value
         );
         DateTimeOffset expiresOffset = DateTimeOffset.FromUnixTimeSeconds(expires);
 
@@ -53,13 +54,26 @@ public class ProfileController(
             : Ok(new ProfileResponse(user.Id.ToString(), user.Username, user.CreatedAt, user.LastLoginAt));
     }
 
+    [HttpPost("password")]
+    public async Task<ActionResult> SetPassword([FromBody] ChangePasswordRequest request) {
+        string email = User.FindFirst(JwtRegisteredClaimNames.Email)!.Value;
+
+        var setPasswordResponse = await setPasswordRequestClient.GetResponse<Result>(
+            new SetPasswordCommand(email, request.OldPassword, request.NewPassword)
+        );
+
+        return setPasswordResponse.Message.Match(
+            ActionResult () => Ok(),
+            Problem
+        );
+    }
+
     [HttpDelete("{username}")]
     public async Task<ActionResult<DeleteResponse>> Delete(string username, [FromBody] DeleteRequest request) {
-        string? email = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Email)?.Value;
+        string? email = User.FindFirst(JwtRegisteredClaimNames.Email)?.Value;
         if (email is null)
             return Problem(Errors.User.InvalidEmail);
-
-        // TODO: Add Jti to blacklist
+        
         var deleteResponse =
             await deleteRequestClient.GetResponse<Result>(
                 new DeleteCommand(username, email, request.Password)

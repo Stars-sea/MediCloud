@@ -1,4 +1,4 @@
-namespace MediCloud.Application.Authentication.Contracts;
+namespace MediCloud.Application.Profile.Contracts;
 
 public record DeleteCommand(
     string Username,

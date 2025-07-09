@@ -24,7 +24,7 @@ public static class DependencyInjection {
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IPasswordValidator, PasswordValidator>();
-        
+
         services.AddDistributedMemoryCache();
         services.AddSingleton<ICacheService, CacheService>();
 
@@ -45,7 +45,7 @@ public static class DependencyInjection {
         JwtSettings jwtSettings = configuration.GetSection(JwtSettings.SectionKey).Get<JwtSettings>()!;
         services.AddSingleton(Options.Create(jwtSettings));
 
-        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddSingleton<IJwtTokenManager, JwtTokenManager>();
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
@@ -59,6 +59,8 @@ public static class DependencyInjection {
                             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
                         };
                         options.MapInboundClaims = false;
+
+                        options.Events = new JwtBearerEventsHandler();
                     }
                 );
         return services;

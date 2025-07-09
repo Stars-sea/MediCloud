@@ -4,6 +4,7 @@ using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Authentication.Contracts.Results;
 using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces.Persistence;
+using MediCloud.Application.Profile.Contracts;
 using MediCloud.Domain.User;
 using MediCloud.Test.Common;
 using Microsoft.Extensions.DependencyInjection;
