@@ -1,3 +1,4 @@
+using MassTransit;
 using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Persistence;
@@ -12,7 +13,7 @@ public class FindUserByIdQueryHandler(
     IUserRepository userRepository
 ) : IRequestHandler<FindUserByIdQuery, Result<User>> {
 
-    public async Task<Result<User>> Handle(FindUserByIdQuery request) {
+    public async Task<Result<User>> Handle(FindUserByIdQuery request, ConsumeContext<FindUserByIdQuery> ctx) {
         try {
             UserId userId = UserId.Factory.Create(Guid.Parse(request.UserId));
             return await userRepository.FindByIdAsync(userId) ?? throw new NullReferenceException();

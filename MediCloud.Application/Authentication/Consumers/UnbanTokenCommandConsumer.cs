@@ -5,11 +5,11 @@ using MediCloud.Application.Common.Interfaces.Authentication;
 namespace MediCloud.Application.Authentication.Consumers;
 
 public class UnbanTokenCommandConsumer(
-    IJwtTokenManager jwtTokenManager
+    IJwtTokenBlacklist jwtTokenBlacklist
 ) : IConsumer<UnbanTokenCommand> {
 
     public Task Consume(ConsumeContext<UnbanTokenCommand> context) {
-        return jwtTokenManager.UnbanTokenAsync(context.Message.Jti);
+        return jwtTokenBlacklist.UnbanTokenAsync(context.Message.Jti);
     }
 
 }

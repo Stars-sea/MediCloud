@@ -48,7 +48,8 @@ public static class DependencyInjection {
         JwtSettings jwtSettings = configuration.GetSection(JwtSettings.SectionKey).Get<JwtSettings>()!;
         services.AddSingleton(Options.Create(jwtSettings));
 
-        services.AddSingleton<IJwtTokenManager, JwtTokenManager>();
+        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>()
+                .AddSingleton<IJwtTokenBlacklist, JwtTokenBlacklist>();
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {

@@ -1,3 +1,4 @@
+using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Authentication.Contracts.Results;
 using MediCloud.Application.Common.Contracts;
@@ -10,16 +11,16 @@ using MediCloud.Domain.Common.Errors;
 namespace MediCloud.Application.Authentication.Handlers;
 
 public class LoginQueryHandler(
-    IUserRepository  userRepository,
-    IJwtTokenManager jwtTokenManager
+    IUserRepository    userRepository,
+    IJwtTokenGenerator jwtTokenGenerator
 ) : IRequestHandler<LoginQuery, Result<AuthenticationResult>> {
 
-    public async Task<Result<AuthenticationResult>> Handle(LoginQuery request) {
+    public async Task<Result<AuthenticationResult>> Handle(LoginQuery request, ConsumeContext<LoginQuery> ctx) {
         if (await userRepository.FindByEmailAsync(request.Email) is not { } user ||
             !await userRepository.VerifyPasswordAsync(user, request.Password))
             return Errors.Auth.InvalidCred;
 
-        Result<JwtGenerateResult> result = jwtTokenManager.GenerateToken(user);
+        Result<JwtGenerateResult> result = jwtTokenGenerator.GenerateToken(user);
         if (!result.IsSuccess) return result.Errors;
 
         await userRepository.UpdateLastLoginDateAsync(user);

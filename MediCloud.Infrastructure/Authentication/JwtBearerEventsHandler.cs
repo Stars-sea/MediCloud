@@ -29,7 +29,7 @@ public class JwtBearerEventsHandler : JwtBearerEvents {
         string? jti = context.Principal?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
         if (jti is null) return false;
         
-        var tokenManager = context.HttpContext.RequestServices.GetRequiredService<IJwtTokenManager>();
+        var tokenManager = context.HttpContext.RequestServices.GetRequiredService<IJwtTokenBlacklist>();
 
         return !await tokenManager.IsTokenBanned(jti);
     }
@@ -49,7 +49,7 @@ public class JwtBearerEventsHandler : JwtBearerEvents {
     }
 
     private static bool VerifySecurityStamp(TokenValidatedContext context, User user) {
-        string? securityStamp = context.Principal?.FindFirst(IJwtTokenManager.SecurityStampClaim)?.Value;
+        string? securityStamp = context.Principal?.FindFirst(IJwtTokenBlacklist.SecurityStampClaim)?.Value;
         string  currentStamp  = user.SecurityStamp;
 
         return string.Equals(securityStamp, currentStamp);

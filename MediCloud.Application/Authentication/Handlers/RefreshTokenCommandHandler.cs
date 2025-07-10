@@ -11,24 +11,26 @@ using MediCloud.Domain.Common.Errors;
 namespace MediCloud.Application.Authentication.Handlers;
 
 public class RefreshTokenCommandHandler(
-    IUserRepository   userRepository,
-    IJwtTokenManager  jwtTokenManager,
-    IMessageScheduler messageScheduler
+    IUserRepository    userRepository,
+    IJwtTokenGenerator jwtTokenGenerator
 ) : IRequestHandler<RefreshTokenCommand, Result<AuthenticationResult>> {
 
-    public async Task<Result<AuthenticationResult>> Handle(RefreshTokenCommand request) {
+    public async Task<Result<AuthenticationResult>> Handle(
+        RefreshTokenCommand                 request,
+        ConsumeContext<RefreshTokenCommand> ctx
+    ) {
         (string email, string jti, string expiresStamp) = request;
 
         if (await userRepository.FindByEmailAsync(email) is not { } user)
             return Errors.User.UserNotFound;
-        
+
         DateTime expires = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(expiresStamp)).UtcDateTime;
 
-        Result<JwtGenerateResult> generateResult = jwtTokenManager.GenerateToken(user);
+        Result<JwtGenerateResult> generateResult = jwtTokenGenerator.GenerateToken(user);
         if (!generateResult.IsSuccess) return generateResult.Errors;
 
-        await jwtTokenManager.BanTokenAsync(jti);
-        await messageScheduler.SchedulePublish(expires.AddMinutes(1), new UnbanTokenCommand(jti));
+        await ctx.Publish(new BanTokenCommand(jti));
+        await ctx.SchedulePublish(expires.AddMinutes(1), new UnbanTokenCommand(jti));
 
         (string token, DateTime newExpires) = generateResult.Value!;
         return new AuthenticationResult(user, token, newExpires);

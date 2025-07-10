@@ -9,10 +9,10 @@ public interface IRequestHandler<in TRequest, TResponse> : IConsumer<TRequest>
     where TResponse : Result {
 
     async Task IConsumer<TRequest>.Consume(ConsumeContext<TRequest> context) {
-        await context.RespondAsync(await Handle(context.Message));
+        await context.RespondAsync(await Handle(context.Message, context));
     }
 
-    public Task<TResponse> Handle(TRequest request);
+    public Task<TResponse> Handle(TRequest request, ConsumeContext<TRequest> ctx);
 
 }
 

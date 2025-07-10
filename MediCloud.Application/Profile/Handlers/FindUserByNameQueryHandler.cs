@@ -1,3 +1,4 @@
+using MassTransit;
 using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Persistence;
@@ -11,7 +12,7 @@ public class FindUserByNameQueryHandler(
     IUserRepository userRepository
 ) : IRequestHandler<FindUserByNameQuery, Result<User>> {
 
-    public async Task<Result<User>> Handle(FindUserByNameQuery request) {
+    public async Task<Result<User>> Handle(FindUserByNameQuery request, ConsumeContext<FindUserByNameQuery> ctx) {
         return await userRepository.FindByUsernameAsync(request.UserName) switch {
             { } user => user,
             _        => Errors.User.UserNotFound

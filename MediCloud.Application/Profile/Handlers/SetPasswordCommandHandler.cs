@@ -1,3 +1,4 @@
+using MassTransit;
 using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Persistence;
@@ -10,7 +11,7 @@ public class SetPasswordCommandHandler(
     IUserRepository userRepository
 ) : IRequestHandler<SetPasswordCommand> {
 
-    public async Task<Result> Handle(SetPasswordCommand request) {
+    public async Task<Result> Handle(SetPasswordCommand request, ConsumeContext<SetPasswordCommand> ctx) {
         if (await userRepository.FindByEmailAsync(request.Email) is not { } user ||
             !await userRepository.VerifyPasswordAsync(user, request.OldPassword))
             return Errors.Auth.InvalidCred;

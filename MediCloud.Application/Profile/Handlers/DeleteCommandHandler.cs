@@ -1,3 +1,4 @@
+using MassTransit;
 using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Persistence;
@@ -10,7 +11,7 @@ public class DeleteCommandHandler(
     IUserRepository userRepository
 ) : IRequestHandler<DeleteCommand> {
 
-    public async Task<Result> Handle(DeleteCommand request) {
+    public async Task<Result> Handle(DeleteCommand request, ConsumeContext<DeleteCommand> ctx) {
         if (await userRepository.FindByEmailAsync(request.Email) is not { } user ||
             !user.Username.Equals(request.Username, StringComparison.OrdinalIgnoreCase))
             return Errors.Auth.UsernameEmailNotMatch;
