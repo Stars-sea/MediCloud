@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Authentication.Contracts.Results;
 using MediCloud.Application.Common.Contracts;
@@ -10,25 +9,23 @@ using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.User;
 
-namespace MediCloud.Application.Authentication.Consumers;
+namespace MediCloud.Application.Authentication.Handlers;
 
-public class RegisterCommandConsumer(
+public class RegisterCommandHandler(
     IJwtTokenManager jwtTokenManager,
     IUserRepository  userRepository
-) : IRequestConsumer<RegisterCommand, AuthenticationResult> {
+) : IRequestHandler<RegisterCommand, Result<AuthenticationResult>> {
 
-    public async Task<Result<AuthenticationResult>> Consume(ConsumeContext<RegisterCommand> context) {
-        RegisterCommand command = context.Message;
-
-        if (await userRepository.FindByEmailAsync(command.Email) is not null)
+    public async Task<Result<AuthenticationResult>> Handle(RegisterCommand request) {
+        if (await userRepository.FindByEmailAsync(request.Email) is not null)
             return Errors.User.DuplicateEmail;
 
-        User user;
-        try { user = User.Factory.Create(command.Email, command.Username); }
+        User user;  // TODO: Use FluentValidation
+        try { user = User.Factory.Create(request.Email, request.Username); }
         catch (ValidationException) { return Errors.User.InvalidEmail; }
         catch (FormatException) { return Errors.User.InvalidUsername; }
 
-        Result result = await userRepository.CreateAsync(user, command.Password);
+        Result result = await userRepository.CreateAsync(user, request.Password);
         if (!result.IsSuccess) return result.Errors;
 
         Result<JwtGenerateResult> generateResult = jwtTokenManager.GenerateToken(user);

@@ -1,6 +1,6 @@
 using MassTransit;
 using MediCloud.Application;
-using MediCloud.Application.Authentication.Consumers;
+using MediCloud.Application.Authentication.Handlers;
 using MediCloud.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +25,7 @@ public class SetUp {
         _services.AddInfrastructure(configurationManager);
 
         _services.AddMassTransitTestHarness(x
-            => x.AddConsumers(typeof(RegisterCommandConsumer).Assembly)
+            => x.AddConsumers(typeof(RegisterCommandHandler).Assembly)
         );
     }
 

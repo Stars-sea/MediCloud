@@ -1,10 +1,9 @@
 using MassTransit.Mediator;
 using MediCloud.Application.Common.Contracts;
+using MediCloud.Domain.User;
 
 namespace MediCloud.Application.Profile.Contracts;
 
-public record SetPasswordCommand(
-    string Email,
-    string OldPassword,
-    string NewPassword
-) : Request<Result>;
+public record FindUserByIdQuery(
+    string UserId
+) : Request<Result<User>>;

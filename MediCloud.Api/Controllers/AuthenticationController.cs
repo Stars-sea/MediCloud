@@ -1,7 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
 using MassTransit;
+using MassTransit.Mediator;
 using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Authentication.Contracts.Results;
-using MediCloud.Application.Common.Contracts;
 using MediCloud.Contracts.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,30 +10,41 @@ using Microsoft.AspNetCore.Mvc;
 namespace MediCloud.Api.Controllers;
 
 [Route("auth")]
-[AllowAnonymous]
 public class AuthenticationController(
-    IRequestClient<LoginQuery>      loginRequestClient,
-    IRequestClient<RegisterCommand> registerRequestClient
+    IMediator mediator
 ) : ApiController {
 
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<ActionResult<AuthenticationResponse>> Login([FromBody] LoginRequest request) {
-        var loginResponse = await loginRequestClient.GetResponse<Result<AuthenticationResult>>(
-            new LoginQuery(request.Email, request.Password)
-        );
+        var loginResult = await mediator.SendRequest(new LoginQuery(request.Email, request.Password));
 
-        return loginResponse.Message.Match(
+        return loginResult.Match(
             r => Ok(MapResultToResponse(r)), Problem
         );
     }
 
     [HttpPost("register")]
+    [AllowAnonymous]
     public async Task<ActionResult<AuthenticationResponse>> Register([FromBody] RegisterRequest request) {
-        var registerResponse = await registerRequestClient.GetResponse<Result<AuthenticationResult>>(
+        var registerResult = await mediator.SendRequest(
             new RegisterCommand(request.Username, request.Email, request.Password)
         );
 
-        return registerResponse.Message.Match(
+        return registerResult.Match(
+            r => Ok(MapResultToResponse(r)), Problem
+        );
+    }
+
+    [HttpPost("refresh")]
+    [Authorize]
+    public async Task<ActionResult<AuthenticationResponse>> Refresh() {
+        string email        = User.FindFirst(JwtRegisteredClaimNames.Email)!.Value;
+        string jti          = User.FindFirst(JwtRegisteredClaimNames.Jti)!.Value;
+        string expiresStamp = User.FindFirst(JwtRegisteredClaimNames.Exp)!.Value;
+
+        var refreshResult = await mediator.SendRequest(new RefreshCommand(email, jti, expiresStamp));
+        return refreshResult.Match(
             r => Ok(MapResultToResponse(r)), Problem
         );
     }

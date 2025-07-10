@@ -4,8 +4,8 @@ using MediCloud.Application.Common.Contracts;
 
 namespace MediCloud.Application.Authentication.Contracts;
 
-public record RegisterCommand(
-    string Username,
+public record RefreshCommand(
     string Email,
-    string Password
+    string Jti,
+    string ExpiresStamp
 ) : Request<Result<AuthenticationResult>>;
