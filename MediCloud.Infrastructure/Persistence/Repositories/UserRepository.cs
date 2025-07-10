@@ -10,8 +10,7 @@ namespace MediCloud.Infrastructure.Persistence.Repositories;
 
 public class UserRepository(
     MediCloudDbContext dbContext,
-    IPasswordHasher    passwordHasher,
-    IPasswordValidator passwordValidator
+    IPasswordHasher    passwordHasher
 ) : IUserRepository {
 
     public async Task<User?> FindByIdAsync(UserId id) { return await dbContext.Users.FindAsync(id); }
@@ -38,9 +37,6 @@ public class UserRepository(
     }
 
     public async Task<Result> CreateAsync(User user, string password) {
-        Result result = await passwordValidator.ValidateAsync(password);
-        if (!result.IsSuccess) return result;
-
         user.PasswordHash = passwordHasher.HashPassword(password);
         await dbContext.Users.AddAsync(user);
         
@@ -66,10 +62,7 @@ public class UserRepository(
         return Result.Ok;
     }
 
-    public async Task<Result> SetPasswordAsync(User user, string password) {
-        Result result = await passwordValidator.ValidateAsync(password);
-        if (!result.IsSuccess) return result;
-
+    public async Task<Result> SetPasswordAsync(User user, string password) { 
         user.PasswordHash = passwordHasher.HashPassword(password);
         return await UpdateSecurityStampAsync(user);
     }

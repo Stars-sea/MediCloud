@@ -24,10 +24,7 @@ public class RegisterCommandHandler(
         if (await userRepository.FindByEmailAsync(request.Email) is not null)
             return Errors.User.DuplicateEmail;
 
-        User user; // TODO: Use FluentValidation
-        try { user = User.Factory.Create(request.Email, request.Username); }
-        catch (ValidationException) { return Errors.User.InvalidEmail; }
-        catch (FormatException) { return Errors.User.InvalidUsername; }
+        User user = User.Factory.Create(request.Email, request.Username);
 
         Result result = await userRepository.CreateAsync(user, request.Password);
         if (!result.IsSuccess) return result.Errors;
