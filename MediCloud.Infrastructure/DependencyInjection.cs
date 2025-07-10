@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using MassTransit;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
@@ -18,22 +19,24 @@ namespace MediCloud.Infrastructure;
 public static class DependencyInjection {
 
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration) {
-        services.AddPersistence(configuration);
-        services.AddAuth(configuration);
+        services.AddPersistence(configuration)
+                .AddAuth(configuration)
+                .AddMassTransit(configuration);
+
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
-        services.AddSingleton<IPasswordHasher, PasswordHasher>();
-        services.AddSingleton<IPasswordValidator, PasswordValidator>();
+        services.AddSingleton<IPasswordHasher, PasswordHasher>()
+                .AddSingleton<IPasswordValidator, PasswordValidator>();
 
-        services.AddDistributedMemoryCache();
-        services.AddSingleton<ICacheService, CacheService>();
+        services.AddDistributedMemoryCache()
+                .AddSingleton<ICacheService, CacheService>();
 
         return services;
     }
 
-    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration) {
+    private static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration) {
         services.AddDbContext<MediCloudDbContext>(options =>
-            options.UseMySQL(configuration.GetConnectionString("MEDI_CLOUD")!)
+            options.UseMySQL(configuration.GetConnectionString("Database")!)
         );
 
         services.AddScoped<IUserRepository, UserRepository>();
@@ -41,7 +44,7 @@ public static class DependencyInjection {
         return services;
     }
 
-    public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration) {
+    private static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration) {
         JwtSettings jwtSettings = configuration.GetSection(JwtSettings.SectionKey).Get<JwtSettings>()!;
         services.AddSingleton(Options.Create(jwtSettings));
 
@@ -63,6 +66,22 @@ public static class DependencyInjection {
                         options.Events = new JwtBearerEventsHandler();
                     }
                 );
+        return services;
+    }
+
+    private static IServiceCollection AddMassTransit(this IServiceCollection services, IConfiguration configuration) {
+        services.AddMassTransit(options => {
+                options.UsingRabbitMq((context, cfg) => {
+                        cfg.Host(configuration.GetConnectionString("RabbitMQ"));
+                        cfg.ConfigureEndpoints(context);
+                        cfg.UseDelayedMessageScheduler();
+                    }
+                );
+                options.AddDelayedMessageScheduler();
+
+                options.AddConsumers(typeof(Application.DependencyInjection).Assembly);
+            }
+        );
         return services;
     }
 

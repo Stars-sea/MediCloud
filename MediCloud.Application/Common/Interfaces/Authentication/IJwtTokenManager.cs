@@ -12,8 +12,6 @@ public interface IJwtTokenManager {
 
     Task<Result> BanTokenAsync(string jti, CancellationToken cancellationToken = default);
     
-    Task BanTokenAsync(string jti, DateTime unbanTime, CancellationToken cancellationToken = default);
-    
     Task<Result> UnbanTokenAsync(string jti, CancellationToken cancellationToken = default);
     
     Task<bool> IsTokenBanned(string jti, CancellationToken cancellationToken = default);

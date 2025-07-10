@@ -43,7 +43,7 @@ public class AuthenticationController(
         string jti          = User.FindFirst(JwtRegisteredClaimNames.Jti)!.Value;
         string expiresStamp = User.FindFirst(JwtRegisteredClaimNames.Exp)!.Value;
 
-        var refreshResult = await mediator.SendRequest(new RefreshCommand(email, jti, expiresStamp));
+        var refreshResult = await mediator.SendRequest(new RefreshTokenCommand(email, jti, expiresStamp));
         return refreshResult.Match(
             r => Ok(MapResultToResponse(r)), Problem
         );

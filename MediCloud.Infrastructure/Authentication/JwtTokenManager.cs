@@ -53,10 +53,6 @@ public class JwtTokenManager(
         return Result.Ok;
     }
 
-    public Task BanTokenAsync(string jti, DateTime unbanTime, CancellationToken cancellationToken = default) {
-        throw new NotImplementedException();
-    }
-
     public async Task<Result> UnbanTokenAsync(string jti, CancellationToken cancellationToken = default) {
         await cacheService.RemoveAsync($"jti.blacklist.{jti}", cancellationToken);
         return Result.Ok;

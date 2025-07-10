@@ -4,7 +4,7 @@ using MediCloud.Application.Common.Contracts;
 
 namespace MediCloud.Application.Authentication.Contracts;
 
-public record RefreshCommand(
+public record RefreshTokenCommand(
     string Email,
     string Jti,
     string ExpiresStamp

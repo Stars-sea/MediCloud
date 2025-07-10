@@ -1,3 +1,4 @@
+using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Authentication.Contracts.Results;
 using MediCloud.Application.Common.Contracts;
@@ -9,12 +10,13 @@ using MediCloud.Domain.Common.Errors;
 
 namespace MediCloud.Application.Authentication.Handlers;
 
-public class RefreshCommandHandler(
+public class RefreshTokenCommandHandler(
     IUserRepository   userRepository,
-    IJwtTokenManager  jwtTokenManager
-) : IRequestHandler<RefreshCommand, Result<AuthenticationResult>> {
+    IJwtTokenManager  jwtTokenManager,
+    IMessageScheduler messageScheduler
+) : IRequestHandler<RefreshTokenCommand, Result<AuthenticationResult>> {
 
-    public async Task<Result<AuthenticationResult>> Handle(RefreshCommand request) {
+    public async Task<Result<AuthenticationResult>> Handle(RefreshTokenCommand request) {
         (string email, string jti, string expiresStamp) = request;
 
         if (await userRepository.FindByEmailAsync(email) is not { } user)
@@ -24,8 +26,9 @@ public class RefreshCommandHandler(
 
         Result<JwtGenerateResult> generateResult = jwtTokenManager.GenerateToken(user);
         if (!generateResult.IsSuccess) return generateResult.Errors;
-        
-        await jwtTokenManager.BanTokenAsync(jti, expires);
+
+        await jwtTokenManager.BanTokenAsync(jti);
+        await messageScheduler.SchedulePublish(expires.AddMinutes(1), new UnbanTokenCommand(jti));
 
         (string token, DateTime newExpires) = generateResult.Value!;
         return new AuthenticationResult(user, token, newExpires);
