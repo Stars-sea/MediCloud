@@ -22,7 +22,7 @@ public static class DependencyInjection {
         services.AddPersistence()
                 .AddCachingService()
                 .AddAuth(configuration)
-                .AddMassTransit(configuration);
+                .AddMassTransitTest();
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
@@ -74,11 +74,9 @@ public static class DependencyInjection {
         return services;
     }
 
-    private static IServiceCollection AddMassTransit(this IServiceCollection services, IConfiguration configuration) {
+    private static IServiceCollection AddMassTransitTest(this IServiceCollection services) {
         services.AddMassTransitTestHarness(options => {
-                options.UsingRabbitMq((context, cfg) => {
-                        cfg.Host(configuration.GetConnectionString("RabbitMQ"));
-                        
+                options.UsingInMemory((context, cfg) => {
                         cfg.ConfigureEndpoints(context);
                         cfg.UseDelayedMessageScheduler();
                     }
