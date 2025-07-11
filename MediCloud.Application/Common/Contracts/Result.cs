@@ -15,6 +15,10 @@ public record Result(params Error[] Errors) {
     
     public static implicit operator Result(Error error) => new(error);
     
+    public string AllDescriptions => string.Join('\n', Errors.Select(e => e.Description));
+    
+    public string? FirstDescription => Errors.FirstOrDefault()?.Description;
+    
     public virtual TResult Match<TResult>(Func<TResult> onSuccess, Func<Error[], TResult> onError) {
         return IsSuccess ? onSuccess() : onError(Errors);
     }

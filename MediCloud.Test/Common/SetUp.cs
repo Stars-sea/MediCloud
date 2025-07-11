@@ -1,7 +1,4 @@
-using MassTransit;
 using MediCloud.Application;
-using MediCloud.Application.Authentication.Handlers;
-using MediCloud.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,22 +8,14 @@ public class SetUp {
 
     private const string SettingsFileName = "appsettings.Test.json";
 
-    private static SetUp? _instance;
-
-    public static SetUp Instance => _instance ??= new SetUp();
-
     private readonly ServiceCollection _services = [];
 
-    private SetUp() {
+    public SetUp() {
         ConfigurationManager configurationManager = new();
         configurationManager.AddJsonFile(SettingsFileName, false, true);
 
         _services.AddApplication();
         _services.AddInfrastructure(configurationManager);
-
-        _services.AddMassTransitTestHarness(x
-            => x.AddConsumers(typeof(RegisterCommandHandler).Assembly)
-        );
     }
 
     public ServiceProvider BuildServiceProvider() {

@@ -6,7 +6,7 @@ namespace MediCloud.Application.Profile.Contracts.Validators;
 public sealed class FindByNameQueryValidator : AbstractValidator<FindUserByNameQuery> {
 
     public FindByNameQueryValidator() {
-        RuleFor(x => x.UserName).Username();
+        RuleFor(x => x.Username).Username();
     }
 
 }

@@ -13,7 +13,7 @@ public class FindUserByNameQueryHandler(
 ) : IRequestHandler<FindUserByNameQuery, Result<User>> {
 
     public async Task<Result<User>> Handle(FindUserByNameQuery request, ConsumeContext<FindUserByNameQuery> ctx) {
-        return await userRepository.FindByUsernameAsync(request.UserName) switch {
+        return await userRepository.FindByUsernameAsync(request.Username) switch {
             { } user => user,
             _        => Errors.User.UserNotFound
         };
