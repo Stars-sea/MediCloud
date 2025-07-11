@@ -8,8 +8,12 @@ public class JwtTokenBlacklist(
     ICacheService cacheService
 ) : IJwtTokenBlacklist {
 
-    public async Task<Result> BanTokenAsync(string jti, CancellationToken cancellationToken = default) {
-        await cacheService.SetAsync($"jti.blacklist.{jti}", "", cancellationToken);
+    public async Task<Result> BanTokenAsync(
+        string            jti,
+        DateTimeOffset?   absExpiration     = null,
+        CancellationToken cancellationToken = default
+    ) {
+        await cacheService.SetAsync($"jti.blacklist.{jti}", "", absExpiration, cancellationToken);
         return Result.Ok;
     }
 

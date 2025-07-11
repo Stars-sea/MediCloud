@@ -24,13 +24,12 @@ public class RefreshTokenCommandHandler(
         if (await userRepository.FindByEmailAsync(email) is not { } user)
             return Errors.User.UserNotFound;
 
-        DateTime expires = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(expiresStamp)).UtcDateTime;
+        DateTimeOffset expires = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(expiresStamp));
 
         Result<JwtGenerateResult> generateResult = jwtTokenGenerator.GenerateToken(user);
         if (!generateResult.IsSuccess) return generateResult.Errors;
 
-        await ctx.Publish(new BanTokenCommand(jti));
-        await ctx.SchedulePublish(expires.AddMinutes(1), new UnbanTokenCommand(jti));
+        await ctx.Publish(new BanTokenCommand(jti, expires.AddMinutes(1)));
 
         (string token, DateTime newExpires) = generateResult.Value!;
         return new AuthenticationResult(user, token, newExpires);

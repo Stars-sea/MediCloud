@@ -16,20 +16,47 @@ public class CacheService(
         return cachedValue == null ? null : JsonSerializer.Deserialize<T>(cachedValue);
     }
 
-    public async Task<T> GetAsync<T>(string key, Func<Task<T>> factory, CancellationToken cancellationToken = default) where T : class {
+    public async Task<T> GetAsync<T>(
+        string            key,
+        Func<Task<T>>     factory,
+        TimeSpan          relativeExpiration = default,
+        CancellationToken cancellationToken  = default
+    )
+        where T : class {
         if (await GetAsync<T>(key, cancellationToken) is { } value)
             return value;
 
         T cacheValue = await factory();
-        await SetAsync(key, cacheValue, cancellationToken);
+        await SetAsync(key, cacheValue, relativeExpiration, cancellationToken);
         return cacheValue;
     }
 
-    public async Task SetAsync<T>(string key, T value, CancellationToken cancellationToken = default) where T : class {
+    public async Task SetAsync<T>(
+        string            key,
+        T                 value,
+        DateTimeOffset?   absExpiration     = null,
+        CancellationToken cancellationToken = default
+    ) where T : class {
         string cacheValue = JsonSerializer.Serialize(value);
-        await distributedCache.SetStringAsync(key, cacheValue, cancellationToken);
 
-        CacheKeys.TryAdd(key, false);
+        DistributedCacheEntryOptions options = new() {
+            AbsoluteExpiration = absExpiration
+        };
+        await distributedCache.SetStringAsync(key, cacheValue, options, cancellationToken);
+    }
+
+    public Task SetAsync<T>(
+        string            key,
+        T                 value,
+        TimeSpan          relativeExpiration,
+        CancellationToken cancellationToken = default
+    ) where T : class {
+        string cacheValue = JsonSerializer.Serialize(value);
+
+        DistributedCacheEntryOptions options = new() {
+            AbsoluteExpirationRelativeToNow = relativeExpiration
+        };
+        return distributedCache.SetStringAsync(key, cacheValue, options, cancellationToken);
     }
 
     public async Task RemoveAsync(string key, CancellationToken cancellationToken = default) {

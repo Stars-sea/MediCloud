@@ -6,7 +6,11 @@ public interface IJwtTokenBlacklist {
     
     public const string SecurityStampClaim = "security_stamp";
 
-    Task<Result> BanTokenAsync(string jti, CancellationToken cancellationToken = default);
+    Task<Result> BanTokenAsync(
+        string            jti,
+        DateTimeOffset?   absExpiration     = null,
+        CancellationToken cancellationToken = default
+    );
     
     Task<Result> UnbanTokenAsync(string jti, CancellationToken cancellationToken = default);
     

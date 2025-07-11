@@ -20,15 +20,13 @@ public static class DependencyInjection {
 
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration) {
         services.AddPersistence(configuration)
+                .AddCachingService(configuration)
                 .AddAuth(configuration)
                 .AddMassTransit(configuration);
 
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
-
-        services.AddDistributedMemoryCache()
-                .AddSingleton<ICacheService, CacheService>();
 
         return services;
     }
@@ -39,6 +37,21 @@ public static class DependencyInjection {
         );
 
         services.AddScoped<IUserRepository, UserRepository>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddCachingService(
+        this IServiceCollection services,
+        IConfiguration          configuration
+    ) {
+        services.AddStackExchangeRedisCache(options => {
+                options.Configuration = configuration.GetConnectionString("Redis");
+                options.InstanceName  = "MediCloud";
+            }
+        );
+
+        services.AddSingleton<ICacheService, CacheService>();
 
         return services;
     }

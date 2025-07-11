@@ -9,7 +9,8 @@ public class BanTokenCommandConsumer(
 ) : IConsumer<BanTokenCommand> {
 
     public Task Consume(ConsumeContext<BanTokenCommand> context) {
-        return jwtTokenBlacklist.BanTokenAsync(context.Message.Jti);
+        (string jti, DateTimeOffset? banExpires) = context.Message;
+        return jwtTokenBlacklist.BanTokenAsync(jti, banExpires);
     }
 
 }
