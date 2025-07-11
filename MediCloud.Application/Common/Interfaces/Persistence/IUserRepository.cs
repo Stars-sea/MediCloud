@@ -23,7 +23,7 @@ public interface IUserRepository {
     
     Task<Result> SetPasswordAsync(User user, string password);
     
-    Task<Result> SetLastLoginAtAsync(User user, DateTime date);
+    Task<Result> SetLastLoginAtAsync(User user, DateTimeOffset date);
     
     Task<Result> UpdateLastLoginDateAsync(User user);
     

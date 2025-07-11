@@ -25,7 +25,7 @@ public class LoginQueryHandler(
 
         await userRepository.UpdateLastLoginDateAsync(user);
 
-        (string token, DateTime expires) = result.Value!;
+        (string token, DateTimeOffset expires) = result.Value!;
         return new AuthenticationResult(user, token, expires);
     }
 

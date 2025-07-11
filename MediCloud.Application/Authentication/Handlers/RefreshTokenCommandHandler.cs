@@ -31,8 +31,8 @@ public class RefreshTokenCommandHandler(
 
         await ctx.Publish(new BanTokenCommand(jti, expires.AddMinutes(1)));
 
-        (string token, DateTime newExpires) = generateResult.Value!;
-        return new AuthenticationResult(user, token, newExpires);
+        (string token, DateTimeOffset newTokenExpires) = generateResult.Value!;
+        return new AuthenticationResult(user, token, newTokenExpires);
     }
 
 }

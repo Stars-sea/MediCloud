@@ -24,8 +24,6 @@ public static class DependencyInjection {
                 .AddAuth(configuration)
                 .AddMassTransit(configuration);
 
-        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
         return services;

@@ -34,7 +34,7 @@ public class RegisterCommandHandler(
 
         await userRepository.UpdateLastLoginDateAsync(user);
 
-        (string token, DateTime expires) = generateResult.Value!;
+        (string token, DateTimeOffset expires) = generateResult.Value!;
         return new AuthenticationResult(user, token, expires);
     }
 

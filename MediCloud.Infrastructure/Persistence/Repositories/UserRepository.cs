@@ -67,13 +67,13 @@ public class UserRepository(
         return await UpdateSecurityStampAsync(user);
     }
 
-    public Task<Result> SetLastLoginAtAsync(User user, DateTime date) {
+    public Task<Result> SetLastLoginAtAsync(User user, DateTimeOffset date) {
         user.LastLoginAt = date;
         return UpdateAsync(user);
     }
 
     public Task<Result> UpdateLastLoginDateAsync(User user) {
-        return SetLastLoginAtAsync(user, DateTime.UtcNow);
+        return SetLastLoginAtAsync(user, DateTimeOffset.UtcNow);
     }
 
     public Task<Result> UpdateSecurityStampAsync(User user) {

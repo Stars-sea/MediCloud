@@ -11,10 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace MediCloud.Infrastructure.Authentication;
 
-public class JwtTokenGenerator(
-    IOptions<JwtSettings> jwtSettings,
-    IDateTimeProvider     dateTimeProvider
-) : IJwtTokenGenerator {
+public class JwtTokenGenerator(IOptions<JwtSettings> jwtSettings) : IJwtTokenGenerator {
 
     public Result<JwtGenerateResult> GenerateToken(User user) {
         JwtSettings settings = jwtSettings.Value;
@@ -32,11 +29,11 @@ public class JwtTokenGenerator(
             new(IJwtTokenBlacklist.SecurityStampClaim, user.SecurityStamp)
         ];
 
-        DateTime expires = dateTimeProvider.UtcNow.AddMinutes(settings.ExpiryMinutes);
+        DateTimeOffset expires = DateTimeOffset.UtcNow.AddMinutes(settings.ExpiryMinutes);
         JwtSecurityToken token = new(
             settings.Issuer,
             settings.Audience,
-            expires: expires,
+            expires: expires.UtcDateTime,
             claims: claims,
             signingCredentials: signingCredentials
         );

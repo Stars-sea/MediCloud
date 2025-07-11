@@ -25,8 +25,8 @@ public sealed class User : AggregateRoot<UserId, Guid> {
         Email         = email;
         Username      = username;
         SecurityStamp = Guid.NewGuid().ToString();
-        CreatedAt   = DateTime.UtcNow;
-        LastLoginAt = null;
+        CreatedAt     = DateTimeOffset.Now;
+        LastLoginAt   = default;
     }
 
     [EmailAddress]
@@ -54,9 +54,9 @@ public sealed class User : AggregateRoot<UserId, Guid> {
 
     [StringLength(36)] public string SecurityStamp { get; private set; }
 
-    public DateTime CreatedAt { get; private set; }
+    public DateTimeOffset CreatedAt { get; private set; }
 
-    public DateTime? LastLoginAt { get; set; }
+    public DateTimeOffset LastLoginAt { get; set; }
 
     public void UpdateSecurityStamp() { SecurityStamp = Guid.NewGuid().ToString(); }
 
