@@ -26,6 +26,12 @@ public record Result(params Error[] Errors) {
 
 public record Result<T>(T? Value, params Error[] Errors) : Result(Errors) where T : class {
     
+    /// <summary>
+    /// <para>Convert base type to current type. Kept for reflection</para>
+    /// <see cref="MediCloud.Application.Common.Validators.ValidationConsumeFilter{T}"/>
+    /// </summary>
+    public Result(Result result) : this(null, result.Errors) { }
+    
     public bool TryGet([MaybeNullWhen(false)] out T result) {
         if (!IsSuccess) {
             result = Value!;
