@@ -3,6 +3,8 @@ using MassTransit;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
+using MediCloud.Application.Live.Consumers;
+using MediCloud.Application.Live.Contracts;
 using MediCloud.Infrastructure.Authentication;
 using MediCloud.Infrastructure.Persistence;
 using MediCloud.Infrastructure.Persistence.Repositories;
@@ -82,18 +84,29 @@ public static class DependencyInjection {
 
     private static IServiceCollection AddMassTransit(this IServiceCollection services, IConfiguration configuration) {
         services.AddMassTransit(options => {
-                options.UsingRabbitMq((context, cfg) => {
-                        cfg.Host(configuration.GetConnectionString("RabbitMQ"));
-                        cfg.ConfigureEndpoints(context);
-                        cfg.UseDelayedMessageScheduler();
-                    }
-                );
+                options.UsingRabbitMq(ConfigureRabbitMq);
                 options.AddDelayedMessageScheduler();
 
                 options.AddConsumers(typeof(Application.DependencyInjection).Assembly);
             }
         );
         return services;
+
+        void ConfigureRabbitMq(IBusRegistrationContext context, IRabbitMqBusFactoryConfigurator cfg) {
+            cfg.Host(configuration.GetConnectionString("RabbitMQ"));
+            cfg.ConfigureEndpoints(context);
+            cfg.UseDelayedMessageScheduler();
+
+            cfg.Message<PullStreamCommand>(m => m.SetEntityName("live.exchange"));
+            cfg.Publish<PullStreamCommand>(x => {
+                x.ExchangeType = "fanout";
+                x.BindQueue("live.exchange", nameof(PullStreamCommand));
+            });
+            
+            cfg.ReceiveEndpoint(nameof(StreamRetrievedResponse), (IReceiveEndpointConfigurator e) => {
+                e.Consumer<StreamRetrievedResponseConsumer>(context);
+            });
+        }
     }
 
 }

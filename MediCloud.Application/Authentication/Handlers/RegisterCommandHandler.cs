@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Authentication.Contracts.Results;
