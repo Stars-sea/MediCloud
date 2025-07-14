@@ -3,7 +3,7 @@ using MassTransit;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
-using MediCloud.Application.Live.Consumers;
+using MediCloud.Application.Common.Settings;
 using MediCloud.Application.Live.Contracts;
 using MediCloud.Infrastructure.Authentication;
 using MediCloud.Infrastructure.Persistence;
@@ -27,6 +27,8 @@ public static class DependencyInjection {
                 .AddMassTransit(configuration);
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
+        
+        services.Configure<LiveStreamingSettings>(configuration.GetSection(LiveStreamingSettings.SectionKey));
 
         return services;
     }
@@ -101,10 +103,6 @@ public static class DependencyInjection {
             cfg.Publish<PullStreamCommand>(x => {
                 x.ExchangeType = "fanout";
                 x.BindQueue("live.exchange", nameof(PullStreamCommand));
-            });
-            
-            cfg.ReceiveEndpoint(nameof(StreamRetrievedResponse), (IReceiveEndpointConfigurator e) => {
-                e.Consumer<StreamRetrievedResponseConsumer>(context);
             });
         }
     }

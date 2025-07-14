@@ -1,4 +1,4 @@
-namespace MediCloud.Infrastructure.Authentication;
+namespace MediCloud.Application.Common.Settings;
 
 public class JwtSettings {
 

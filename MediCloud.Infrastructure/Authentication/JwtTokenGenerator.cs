@@ -4,7 +4,7 @@ using System.Text;
 using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Contracts.Authentication;
 using MediCloud.Application.Common.Interfaces.Authentication;
-using MediCloud.Application.Common.Interfaces.Services;
+using MediCloud.Application.Common.Settings;
 using MediCloud.Domain.User;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

@@ -17,12 +17,12 @@ public class LiveController(
         string userId = User.FindFirst(JwtRegisteredClaimNames.Sub)!.Value;
 
         var openResult = await mediator.SendRequest(new OpenLiveCommand(
-                userId, request.Timeout, request.Latency, request.Ffs
+                request.Name, userId
             )
         );
 
         return openResult.Match(
-            result => Ok(new OpenLiveResponse(result.LiveUrl, result.Timeout, result.Latency, result.Ffs)),
+            r => Ok(new OpenLiveResponse(r.LiveId, r.LiveName, r.LiveWatchUrl, r.LivePostUrl, r.Passphrase)),
             Problem
         );
     }

@@ -3,6 +3,7 @@ using MassTransit;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
+using MediCloud.Application.Common.Settings;
 using MediCloud.Infrastructure.Authentication;
 using MediCloud.Infrastructure.Persistence;
 using MediCloud.Infrastructure.Persistence.Repositories;

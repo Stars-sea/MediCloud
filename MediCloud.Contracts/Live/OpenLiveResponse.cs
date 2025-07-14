@@ -1,8 +1,9 @@
 namespace MediCloud.Contracts.Live;
 
 public record OpenLiveResponse(
-    string LiveUrl,
-    int    Timeout,
-    int    Latency,
-    int    Ffs
+    string LiveId,
+    string LiveName,
+    string LiveWatchUrl,
+    string LivePostUrl,
+    string Passphrase
 );
