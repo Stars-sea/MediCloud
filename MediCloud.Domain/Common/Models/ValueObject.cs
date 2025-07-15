@@ -11,9 +11,9 @@ public abstract class ValueObject : IEquatable<ValueObject> {
                GetEqualityComponents().SequenceEqual(valueObject.GetEqualityComponents());
     }
 
-    public static bool operator ==(ValueObject left, ValueObject right) { return Equals(left, right); }
+    public static bool operator ==(ValueObject? left, ValueObject? right) { return Equals(left, right); }
 
-    public static bool operator !=(ValueObject left, ValueObject right) { return !Equals(left, right); }
+    public static bool operator !=(ValueObject? left, ValueObject? right) { return !Equals(left, right); }
 
     public override int GetHashCode() {
         return GetEqualityComponents().Select(x => x?.GetHashCode() ?? 0).Aggregate((x, y) => x ^ y);

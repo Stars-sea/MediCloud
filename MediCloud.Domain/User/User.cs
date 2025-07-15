@@ -2,20 +2,20 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using MediCloud.Domain.Common.Models;
+using MediCloud.Domain.LiveRoom.ValueObjects;
 using MediCloud.Domain.User.ValueObjects;
+
+#pragma warning disable CS8618
+#pragma warning disable CS9264
 
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 
 namespace MediCloud.Domain.User;
 
-public sealed class User : AggregateRoot<UserId, Guid> {
+public class User : AggregateRoot<UserId, Guid> {
 
-#pragma warning disable CS8618
-#pragma warning disable CS9264
     [JsonConstructor]
     private User() { }
-#pragma warning restore CS9264
-#pragma warning restore CS8618
 
     private User(
         UserId id,
@@ -24,9 +24,10 @@ public sealed class User : AggregateRoot<UserId, Guid> {
     ) : base(id) {
         Email         = email;
         Username      = username;
+        LiveRoomId    = null;
         SecurityStamp = Guid.NewGuid().ToString();
         CreatedAt     = DateTimeOffset.Now;
-        LastLoginAt   = default;
+        LastLoginAt   = null;
     }
 
     [EmailAddress]
@@ -50,15 +51,19 @@ public sealed class User : AggregateRoot<UserId, Guid> {
         }
     }
 
+    public LiveRoomId? LiveRoomId { get; set; }
+
     [StringLength(1024)] public string PasswordHash { get; set; } = string.Empty;
 
     [StringLength(36)] public string SecurityStamp { get; private set; }
 
     public DateTimeOffset CreatedAt { get; private set; }
 
-    public DateTimeOffset LastLoginAt { get; set; }
+    public DateTimeOffset? LastLoginAt { get; private set; }
 
     public void UpdateSecurityStamp() { SecurityStamp = Guid.NewGuid().ToString(); }
+
+    public void UpdateLastLoginAt() { LastLoginAt = DateTimeOffset.Now; }
 
     private static bool IsValidUsername(string username) {
         if (string.IsNullOrWhiteSpace(username))

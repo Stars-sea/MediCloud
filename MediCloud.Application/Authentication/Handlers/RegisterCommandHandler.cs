@@ -31,7 +31,8 @@ public class RegisterCommandHandler(
         Result<JwtGenerateResult> generateResult = jwtTokenGenerator.GenerateToken(user);
         if (!generateResult.IsSuccess) return generateResult.Errors;
 
-        await userRepository.UpdateLastLoginDateAsync(user);
+        user.UpdateLastLoginAt();
+        await userRepository.UpdateAsync(user);
 
         (string token, DateTimeOffset expires) = generateResult.Value!;
         return new AuthenticationResult(user, token, expires);

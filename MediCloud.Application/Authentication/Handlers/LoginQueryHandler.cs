@@ -23,7 +23,8 @@ public class LoginQueryHandler(
         Result<JwtGenerateResult> result = jwtTokenGenerator.GenerateToken(user);
         if (!result.IsSuccess) return result.Errors;
 
-        await userRepository.UpdateLastLoginDateAsync(user);
+        user.UpdateLastLoginAt();
+        await userRepository.UpdateAsync(user);
 
         (string token, DateTimeOffset expires) = result.Value!;
         return new AuthenticationResult(user, token, expires);

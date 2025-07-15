@@ -9,19 +9,14 @@ public static partial class Errors {
             "User with given email already exists."
         );
 
+        public static Error AlreadyHasLiveRoom => Error.Conflict(
+            "User.AlreadyHasLiveRoom",
+            "User already has a live room."
+        );
+
         public static Error UserNotFound => Error.NotFound(
             "User.NotFound",
             "User with given info does not exist."
-        );
-
-        public static Error InvalidEmail => Error.Unexpected(
-            "User.InvalidEmail",
-            "Email address is not valid."
-        );
-
-        public static Error InvalidUsername => Error.Unexpected(
-            "User.InvalidUsername",
-            "Username is not valid."
         );
 
         public static Error FailedToUpdate => Error.Conflict(

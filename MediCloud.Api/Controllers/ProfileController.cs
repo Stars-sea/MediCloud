@@ -60,10 +60,7 @@ public class ProfileController(
 
     [HttpDelete("{username}")]
     public async Task<ActionResult<DeleteResponse>> Delete(string username, [FromBody] DeleteRequest request) {
-        string? email = User.FindFirst(JwtRegisteredClaimNames.Email)?.Value;
-        if (email is null)
-            return Problem(Errors.User.InvalidEmail);
-
+        string email = User.FindFirst(JwtRegisteredClaimNames.Email)!.Value;
         var deleteResult = await mediator.SendRequest(new DeleteCommand(username, email, request.Password));
 
         return deleteResult.Match(() => Ok(new DeleteResponse(username, email)), Problem);

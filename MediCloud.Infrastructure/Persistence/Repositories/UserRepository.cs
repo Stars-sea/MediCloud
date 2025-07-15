@@ -64,21 +64,7 @@ public class UserRepository(
 
     public async Task<Result> SetPasswordAsync(User user, string password) { 
         user.PasswordHash = passwordHasher.HashPassword(password);
-        return await UpdateSecurityStampAsync(user);
-    }
-
-    public Task<Result> SetLastLoginAtAsync(User user, DateTimeOffset date) {
-        user.LastLoginAt = date;
-        return UpdateAsync(user);
-    }
-
-    public Task<Result> UpdateLastLoginDateAsync(User user) {
-        return SetLastLoginAtAsync(user, DateTimeOffset.UtcNow);
-    }
-
-    public Task<Result> UpdateSecurityStampAsync(User user) {
         user.UpdateSecurityStamp();
-        return UpdateAsync(user);
+        return await UpdateAsync(user);
     }
-    
 }

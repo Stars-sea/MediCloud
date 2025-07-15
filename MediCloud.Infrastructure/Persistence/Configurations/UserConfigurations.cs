@@ -1,3 +1,4 @@
+using MediCloud.Domain.LiveRoom.ValueObjects;
 using MediCloud.Domain.User;
 using MediCloud.Domain.User.ValueObjects;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,15 @@ public class UserConfigurations : IEntityTypeConfiguration<User> {
                .ValueGeneratedNever()
                .HasConversion(
                    id => id.Value,
-                   id => UserId.Factory.Create(id)
+                   value => UserId.Factory.Create(value)
+               );
+
+        builder.HasIndex(l => l.LiveRoomId).IsUnique();
+        
+        builder.Property(x => x.LiveRoomId)
+               .HasConversion(
+                   id => id!.Value,
+                   value => LiveRoomId.Factory.Create(value)
                );
     }
 

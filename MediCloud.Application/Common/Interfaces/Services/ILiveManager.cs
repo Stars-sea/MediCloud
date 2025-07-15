@@ -1,0 +1,16 @@
+using MediCloud.Application.Common.Contracts;
+using MediCloud.Domain.LiveRoom;
+using MediCloud.Domain.LiveRoom.ValueObjects;
+using MediCloud.Domain.User;
+
+namespace MediCloud.Application.Common.Interfaces.Services;
+
+public interface ILiveManager {
+
+    Task<LiveRoom?> GetLiveRoomFromOwnerAsync(User user);
+    
+    Task<User> GetOwnerFromLiveRoomAsync(LiveRoom room);
+
+    Task<Result<LiveRoom>> CreateLiveRoomAsync(User user, string roomName);
+
+}
