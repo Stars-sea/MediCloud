@@ -12,7 +12,7 @@ public class LiveRepository(
         return await dbContext.Lives.FindAsync(id);
     }
 
-    public async Task UpdateLive(Live live) {
+    public async Task UpdateAsync(Live live) {
         dbContext.Update(live);
         await dbContext.SaveChangesAsync();
     }

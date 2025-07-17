@@ -12,8 +12,10 @@ public class StreamRetrievedResponseConsumer(
         StreamRetrievedResponse response = context.Message;
 
         logger.LogInformation("Consumed stream retrieved response {id} with code {code} ({url} -> {path})",
-            response.Id, response.Code, response.Url, response.Path
+            response.LiveId, response.Code, response.Url, response.Path
         );
+        
+        
 
         return Task.CompletedTask;
     }

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using MediCloud.Domain.Common.Models;
 using MediCloud.Domain.Live.ValueObjects;
@@ -15,12 +16,17 @@ public sealed class Live : AggregateRoot<LiveId, Guid> {
 
     private Live(
         LiveId     liveId,
+        string     liveName,
         UserId     ownerId,
         LiveRoomId liveRoomId
     ) : base(liveId) {
+        LiveName   = liveName;
         OwnerId    = ownerId;
         LiveRoomId = liveRoomId;
     }
+
+    [StringLength(50)]
+    public string LiveName { get; private set; }
 
     public UserId OwnerId { get; private set; }
 
@@ -38,8 +44,8 @@ public sealed class Live : AggregateRoot<LiveId, Guid> {
 
     public static class Factory {
 
-        public static Live Create(UserId ownerId, LiveRoomId liveRoomId) {
-            return new Live(LiveId.Factory.CreateUnique(), ownerId, liveRoomId);
+        public static Live Create(string liveName, UserId ownerId, LiveRoomId liveRoomId) {
+            return new Live(LiveId.Factory.CreateUnique(), liveName, ownerId, liveRoomId);
         }
 
     }

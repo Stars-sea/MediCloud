@@ -6,6 +6,6 @@ public interface ILiveRepository {
 
     Task<Domain.Live.Live?> FindLiveById(LiveId id);
     
-    Task UpdateLive(Domain.Live.Live live);
+    Task UpdateAsync(Domain.Live.Live live);
 
 }

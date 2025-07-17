@@ -28,6 +28,8 @@ public static class DependencyInjection {
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         
+        services.AddScoped<ILiveManager, LiveManager>();
+        
         services.Configure<LiveStreamingSettings>(configuration.GetSection(LiveStreamingSettings.SectionKey));
 
         return services;
@@ -39,6 +41,8 @@ public static class DependencyInjection {
         );
 
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ILiveRepository, LiveRepository>();
+        services.AddScoped<ILiveRoomRepository, LiveRoomRepository>();
 
         return services;
     }

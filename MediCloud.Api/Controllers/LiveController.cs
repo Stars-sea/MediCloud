@@ -3,6 +3,7 @@ using MassTransit;
 using MassTransit.Mediator;
 using MediCloud.Application.Live.Contracts;
 using MediCloud.Contracts.Live;
+using MediCloud.Domain.User.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediCloud.Api.Controllers;
@@ -12,12 +13,17 @@ public class LiveController(
     IMediator mediator
 ) : ApiController {
 
-    [HttpPost]
+    [HttpPost("open")]
     public async Task<ActionResult<OpenLiveResponse>> OpenLive([FromBody] OpenLiveRequest request) {
-        string userId = User.FindFirst(JwtRegisteredClaimNames.Sub)!.Value;
+        UserId id;
+        try {
+            string userId = User.FindFirst(JwtRegisteredClaimNames.Sub)!.Value;
+            id = UserId.Factory.Create(Guid.Parse(userId));
+        }
+        catch (Exception e) { return Problem(e.Message); }
 
         var openResult = await mediator.SendRequest(new OpenLiveCommand(
-                request.Name, userId
+                request.Name, id
             )
         );
 

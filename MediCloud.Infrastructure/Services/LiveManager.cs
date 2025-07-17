@@ -5,6 +5,7 @@ using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.Live;
 using MediCloud.Domain.Live.ValueObjects;
 using MediCloud.Domain.LiveRoom;
+using MediCloud.Domain.LiveRoom.Enums;
 using MediCloud.Domain.User;
 
 namespace MediCloud.Infrastructure.Services;
@@ -41,17 +42,25 @@ public class LiveManager(
         return room;
     }
 
-    public async Task<Live> StartLiveAsync(LiveRoom room) {
-        Live live = Live.Factory.Create(room.OwnerId, room.Id);
+    public async Task<Live> StartLiveAsync(LiveRoom room, string liveName) {
+        Live live = Live.Factory.Create(liveName, room.OwnerId, room.Id);
         live.Start();
         room.AddLive(live);
-        await liveRepository.UpdateLive(live);
+        room.Status = LiveRoomStatus.Active;
+        
+        await liveRepository.UpdateAsync(live);
+        await liveRoomRepository.UpdateAsync(room);
         return live;
     }
 
     public async Task StopLiveAsync(Live live) {
+        LiveRoom room = (await liveRoomRepository.FindByIdAsync(live.LiveRoomId))!;
+        
         live.Stop();
-        await liveRepository.UpdateLive(live);
+        room.Status = LiveRoomStatus.Inactive;
+        
+        await liveRepository.UpdateAsync(live);
+        await liveRoomRepository.UpdateAsync(room);
     }
 
 }
