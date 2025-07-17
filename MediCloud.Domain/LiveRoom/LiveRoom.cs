@@ -35,7 +35,7 @@ public sealed class LiveRoom : AggregateRoot<LiveRoomId, Guid> {
 
     public LiveRoomStatus Status { get; set; }
 
-    public IReadOnlyList<LiveId> LiveIds => _liveIds.ToList();
+    public IReadOnlySet<LiveId> LiveIds => _liveIds;
 
     public void AddLive(Live.Live live) {
         _liveIds.Add(live.Id);

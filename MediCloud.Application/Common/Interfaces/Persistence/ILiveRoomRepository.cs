@@ -1,3 +1,4 @@
+using MediCloud.Application.Common.Contracts;
 using MediCloud.Domain.LiveRoom;
 using MediCloud.Domain.LiveRoom.ValueObjects;
 
@@ -7,8 +8,8 @@ public interface ILiveRoomRepository {
 
     Task<LiveRoom?> FindByIdAsync(LiveRoomId id);
 
-    void Add(LiveRoom room);
+    Task<Result> CreateAsync(LiveRoom room);
     
-    Task UpdateAsync(LiveRoom room);
+    Task<Result> UpdateAsync(LiveRoom room);
 
 }

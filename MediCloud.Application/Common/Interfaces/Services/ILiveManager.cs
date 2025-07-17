@@ -1,6 +1,5 @@
 using MediCloud.Application.Common.Contracts;
 using MediCloud.Domain.LiveRoom;
-using MediCloud.Domain.LiveRoom.ValueObjects;
 using MediCloud.Domain.User;
 
 namespace MediCloud.Application.Common.Interfaces.Services;

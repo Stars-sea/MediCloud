@@ -17,7 +17,7 @@ public class LiveConfiguration : IEntityTypeConfiguration<Live> {
                    value => LiveId.Factory.Create(value)
                );
 
-        builder.HasIndex(x => x.LiveRoomId).IsUnique();
+        builder.HasIndex(x => x.LiveRoomId);
 
         builder.Property(x => x.LiveRoomId)
                .IsRequired()
@@ -26,7 +26,7 @@ public class LiveConfiguration : IEntityTypeConfiguration<Live> {
                    value => LiveRoomId.Factory.Create(value)
                );
 
-        builder.HasIndex(x => x.OwnerId).IsUnique();
+        builder.HasIndex(x => x.OwnerId);
 
         builder.Property(x => x.OwnerId)
                .IsRequired()

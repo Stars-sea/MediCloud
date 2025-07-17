@@ -14,6 +14,21 @@ public static partial class Errors {
             "Live room not found."
         );
 
+        public static Error LiveRoomAlreadyExists => Error.Conflict(
+            "Live.RoomAlreadyExists",
+            "Live room already exists."
+        );
+
+        public static Error LiveRoomFailedToUpdate => Error.Conflict(
+            "LiveRoom.FailedToUpdate",
+            "Failed to update live room."
+        );
+
+        public static Error LiveFailedToCreate => Error.Conflict(
+            "Live.FailedToCreate",
+            "Failed to create live."
+        );
+
     }
 
 }

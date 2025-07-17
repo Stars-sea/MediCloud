@@ -1,8 +1,8 @@
-using System.IdentityModel.Tokens.Jwt;
 using MassTransit;
 using MassTransit.Mediator;
 using MediCloud.Application.Live.Contracts;
 using MediCloud.Contracts.Live;
+using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.User.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,18 +13,27 @@ public class LiveController(
     IMediator mediator
 ) : ApiController {
 
+    [HttpPost("room")]
+    public async Task<ActionResult> Handle([FromBody] CreateLiveRoomRequest request) {
+        UserId? id = TryGetUserId();
+        if (id == null)
+            return Problem(Errors.User.UserNotFound);
+
+        var createResult = await mediator.SendRequest(
+            new CreateLiveRoomCommand(id, request.RoomName)
+        );
+
+        return createResult.Match<ActionResult>(Ok, Problem);
+    }
+
     [HttpPost("open")]
     public async Task<ActionResult<OpenLiveResponse>> OpenLive([FromBody] OpenLiveRequest request) {
-        UserId id;
-        try {
-            string userId = User.FindFirst(JwtRegisteredClaimNames.Sub)!.Value;
-            id = UserId.Factory.Create(Guid.Parse(userId));
-        }
-        catch (Exception e) { return Problem(e.Message); }
+        UserId? id = TryGetUserId();
+        if (id == null)
+            return Problem(Errors.User.UserNotFound);
 
-        var openResult = await mediator.SendRequest(new OpenLiveCommand(
-                request.Name, id
-            )
+        var openResult = await mediator.SendRequest(
+            new OpenLiveCommand(request.Name, id)
         );
 
         return openResult.Match(

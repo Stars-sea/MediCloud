@@ -37,7 +37,7 @@ public class LiveManager(
         user.LiveRoomId = room.Id;
 
         await userRepository.UpdateAsync(user);
-        await liveRoomRepository.UpdateAsync(room);
+        await liveRoomRepository.CreateAsync(room);
 
         return room;
     }
@@ -48,7 +48,7 @@ public class LiveManager(
         room.AddLive(live);
         room.Status = LiveRoomStatus.Active;
         
-        await liveRepository.UpdateAsync(live);
+        await liveRepository.CreateAsync(live);
         await liveRoomRepository.UpdateAsync(room);
         return live;
     }

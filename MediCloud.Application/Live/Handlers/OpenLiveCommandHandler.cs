@@ -7,9 +7,7 @@ using MediCloud.Application.Common.Settings;
 using MediCloud.Application.Live.Contracts;
 using MediCloud.Application.Live.Contracts.Results;
 using MediCloud.Domain.Common.Errors;
-using MediCloud.Domain.LiveRoom;
 using MediCloud.Domain.LiveRoom.Enums;
-using MediCloud.Domain.User;
 using MediCloud.Domain.User.ValueObjects;
 using Microsoft.Extensions.Options;
 
@@ -33,7 +31,7 @@ public class OpenLiveCommandHandler(
 
         if (await liveManager.GetLiveRoomFromOwnerAsync(user) is not { } liveRoom)
             return Errors.Live.LiveRoomNotFound;
-        
+
         if (liveRoom.Status == LiveRoomStatus.Banned)
             return Errors.Live.LiveRoomBanned;
 
