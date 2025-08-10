@@ -39,14 +39,15 @@ public class OpenLiveCommandHandler(
 
         const string passphrase = ""; // TODO
 
-        int timeout = LiveStreamingSettings.Timeout * 1000;
-        int latency = LiveStreamingSettings.Latency * 1000;
-        int ffs     = LiveStreamingSettings.Ffs * 1000;
+        ulong timeout = LiveStreamingSettings.Timeout * 1000UL;
+        ulong latency = LiveStreamingSettings.Latency * 1000UL;
+        ulong ffs     = LiveStreamingSettings.Ffs * 1000UL;
 
         PullStreamCommand command = new(
             live.Id.ToString(), $"{LiveStreamingSettings.SrtServer}?mode=listener",
+            passphrase, timeout, latency, ffs,
             Path.Combine(LiveStreamingSettings.StoragePath, live.Id.ToString()),
-            passphrase, timeout, latency, ffs
+            5, 10, false
         );
 
         await publishEndpoint.Publish(command);

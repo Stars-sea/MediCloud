@@ -3,9 +3,12 @@ namespace MediCloud.Application.Live.Contracts;
 public record PullStreamCommand(
     string Id,
     string Url,
-    string Path,
     string Passphrase,
-    int    Timeout,
-    int    Latency,
-    int    Ffs
+    ulong  Timeout,
+    ulong  Latency,
+    ulong  Ffs,
+    string Path,
+    uint   SegmentTime,
+    uint   ListSize,
+    bool   DeleteSegments
 );

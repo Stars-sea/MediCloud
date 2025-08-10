@@ -14,7 +14,7 @@ public class LiveController(
 ) : ApiController {
 
     [HttpPost("room")]
-    public async Task<ActionResult> Handle([FromBody] CreateLiveRoomRequest request) {
+    public async Task<ActionResult> CreateLiveRoom([FromBody] CreateLiveRoomRequest request) {
         UserId? id = TryGetUserId();
         if (id == null)
             return Problem(Errors.User.UserNotFound);

@@ -8,10 +8,10 @@ public class LiveStreamingSettings {
     
     public string StoragePath { get; set; } = null!;
 
-    public int Timeout { get; set; }
+    public ulong Timeout { get; set; }
 
-    public int Latency { get; set; }
+    public ulong Latency { get; set; }
 
-    public int Ffs { get; set; }
+    public ulong Ffs { get; set; }
 
 }

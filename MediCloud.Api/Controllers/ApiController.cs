@@ -17,7 +17,7 @@ public abstract class ApiController : ControllerBase {
             string userId = User.FindFirst(JwtRegisteredClaimNames.Sub)!.Value;
             return UserId.Factory.Create(Guid.Parse(userId));
         }
-        catch (Exception e) { return null; }
+        catch (Exception) { return null; }
     }
 
     [NonAction]
