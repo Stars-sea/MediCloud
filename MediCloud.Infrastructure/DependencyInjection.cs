@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Minio;
 
 namespace MediCloud.Infrastructure;
 
@@ -36,6 +37,9 @@ public static class DependencyInjection {
     }
 
     private static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration) {
+        MinIOSettings settings = configuration.GetSection(MinIOSettings.SectionKey).Get<MinIOSettings>()!;
+        
+        services.AddMinio(settings.AccessKey, settings.SecretKey);
         services.AddDbContext<MediCloudDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("Database"))
         );
