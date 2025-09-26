@@ -37,7 +37,7 @@ public static class DependencyInjection {
 
     private static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration) {
         services.AddDbContext<MediCloudDbContext>(options =>
-            options.UseMySQL(configuration.GetConnectionString("Database")!)
+            options.UseNpgsql(configuration.GetConnectionString("Database"))
         );
 
         services.AddScoped<IUserRepository, UserRepository>();

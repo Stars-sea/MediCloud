@@ -34,13 +34,13 @@ public sealed class Live : AggregateRoot<LiveId, Guid> {
 
     public bool IsLive { get; private set; }
 
-    public DateTimeOffset StartedAt { get; private set; }
+    public DateTime StartedAt { get; private set; }
 
-    public DateTimeOffset EndedAt { get; private set; }
+    public DateTime EndedAt { get; private set; }
 
-    public void Start() { StartedAt = DateTimeOffset.UtcNow; }
+    public void Start() { StartedAt = DateTime.UtcNow; }
 
-    public void Stop() { EndedAt = DateTimeOffset.UtcNow; }
+    public void Stop() { EndedAt = DateTime.UtcNow; }
 
     public static class Factory {
 

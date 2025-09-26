@@ -26,7 +26,7 @@ public class User : AggregateRoot<UserId, Guid> {
         Username      = username;
         LiveRoomId    = null;
         SecurityStamp = Guid.NewGuid().ToString();
-        CreatedAt     = DateTimeOffset.Now;
+        CreatedAt     = DateTime.UtcNow;
         LastLoginAt   = null;
     }
 
@@ -57,13 +57,13 @@ public class User : AggregateRoot<UserId, Guid> {
 
     [StringLength(36)] public string SecurityStamp { get; private set; }
 
-    public DateTimeOffset CreatedAt { get; private set; }
+    public DateTime CreatedAt { get; private set; }
 
-    public DateTimeOffset? LastLoginAt { get; private set; }
+    public DateTime? LastLoginAt { get; private set; }
 
     public void UpdateSecurityStamp() { SecurityStamp = Guid.NewGuid().ToString(); }
 
-    public void UpdateLastLoginAt() { LastLoginAt = DateTimeOffset.Now; }
+    public void UpdateLastLoginAt() { LastLoginAt = DateTime.UtcNow; }
 
     private static bool IsValidUsername(string username) {
         if (string.IsNullOrWhiteSpace(username))
