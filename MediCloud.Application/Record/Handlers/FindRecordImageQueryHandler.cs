@@ -18,6 +18,8 @@ public class FindRecordImageQueryHandler(
         MemoryStream stream = new();
         if (!await imageStorage.GetImageAsync(userId.ToString(), imageName, stream))
             return Errors.Record.RecordImageNotFound;
+        
+        stream.Position = 0;
         return stream;
     }
 

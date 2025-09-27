@@ -4,7 +4,6 @@ using MediCloud.Domain.User.ValueObjects;
 
 namespace MediCloud.Application.Record.Contracts;
 
-public record FindRecordImageQuery(
-    UserId UserId,
-    string ImageName
-) : Request<Result<Stream>>;
+public record FindRecordsByOwnerQuery(
+    UserId UserId
+) : Request<Result<List<Domain.Record.Record>>>;

@@ -3,6 +3,7 @@ using MassTransit.Mediator;
 using MediCloud.Application.Record.Contracts;
 using MediCloud.Contracts.Record;
 using MediCloud.Domain.Common.Errors;
+using MediCloud.Domain.Record;
 using MediCloud.Domain.Record.ValueObjects;
 using MediCloud.Domain.User.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,16 @@ namespace MediCloud.Api.Controllers;
 public class RecordController(
     IMediator mediator
 ) : ApiController {
+
+    [NonAction]
+    private static FindRecordResponse MapRecord(Record record) {
+        return new FindRecordResponse(
+            record.Id.ToString(),
+            record.OwnerId.ToString(),
+            $"/record/image/{record.ImageName}",
+            record.Remarks
+        );
+    }
 
     [HttpPost]
     public async Task<ActionResult<CreateRecordResponse>> CreateRecord(IFormFile file) {
@@ -44,13 +55,21 @@ public class RecordController(
         );
 
         return findRecordResult.Match(
-            result => Ok(new FindRecordResponse(
-                    result.Id.ToString(),
-                    result.OwnerId.ToString(),
-                    $"/record/image/{result.ImageName}",
-                    result.Remarks
-                )
-            ),
+            result => Ok(MapRecord(result)),
+            Problem
+        );
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<FindRecordResponse>>> FindRecords() {
+        UserId? userId = TryGetUserId();
+        if (userId is null) return Problem(Errors.Auth.InvalidCred);
+
+        var findRecordsResult = await mediator.SendRequest(
+            new FindRecordsByOwnerQuery(userId)
+        );
+        return findRecordsResult.Match(
+            results => Ok(results.Select(MapRecord).ToList()),
             Problem
         );
     }
@@ -65,7 +84,7 @@ public class RecordController(
         );
 
         return findRecordImageResult.Match<ActionResult>(
-            result => File(result, "image/jpeg"),
+            result => File(result, "image/jpeg", $"{imageName}.jpg"),
             Problem
         );
     }
