@@ -21,7 +21,8 @@ public class RecordController(
             record.Id.ToString(),
             record.OwnerId.ToString(),
             $"/record/image/{record.ImageName}",
-            record.Remarks
+            record.Remarks,
+            record.CreatedOn
         );
     }
 
