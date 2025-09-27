@@ -3,12 +3,14 @@ using MassTransit;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
+using MediCloud.Application.Common.Interfaces.Services.Storage;
 using MediCloud.Application.Common.Settings;
 using MediCloud.Application.Live.Contracts;
 using MediCloud.Infrastructure.Authentication;
 using MediCloud.Infrastructure.Persistence;
 using MediCloud.Infrastructure.Persistence.Repositories;
 using MediCloud.Infrastructure.Services;
+using MediCloud.Infrastructure.Services.Storage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -28,18 +30,26 @@ public static class DependencyInjection {
                 .AddMassTransit(configuration);
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
-        
+
         services.AddScoped<ILiveManager, LiveManager>();
-        
+
         services.Configure<LiveStreamingSettings>(configuration.GetSection(LiveStreamingSettings.SectionKey));
 
         return services;
     }
 
     private static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration) {
-        MinIOSettings settings = configuration.GetSection(MinIOSettings.SectionKey).Get<MinIOSettings>()!;
-        
-        services.AddMinio(settings.AccessKey, settings.SecretKey);
+        MinioSettings settings = configuration.GetSection(MinioSettings.SectionKey).Get<MinioSettings>()!;
+        services.AddMinio(x => x
+                               .WithEndpoint(settings.Endpoint)
+                               .WithCredentials(settings.AccessKey, settings.SecretKey)
+                               .WithSSL(false)
+                               .Build(),
+            ServiceLifetime.Singleton
+        );
+        services.AddSingleton<IImageStorage, ImageStorage>();
+
+
         services.AddDbContext<MediCloudDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("Database"))
         );
@@ -47,6 +57,7 @@ public static class DependencyInjection {
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ILiveRepository, LiveRepository>();
         services.AddScoped<ILiveRoomRepository, LiveRoomRepository>();
+        services.AddScoped<IRecordRepository, RecordRepository>();
 
         return services;
     }
@@ -109,9 +120,10 @@ public static class DependencyInjection {
 
             cfg.Message<PullStreamCommand>(m => m.SetEntityName("live.exchange"));
             cfg.Publish<PullStreamCommand>(x => {
-                x.ExchangeType = "fanout";
-                x.BindQueue("live.exchange", nameof(PullStreamCommand));
-            });
+                    x.ExchangeType = "fanout";
+                    x.BindQueue("live.exchange", nameof(PullStreamCommand));
+                }
+            );
         }
     }
 

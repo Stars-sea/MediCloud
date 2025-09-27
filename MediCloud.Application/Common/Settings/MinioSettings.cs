@@ -1,8 +1,10 @@
 namespace MediCloud.Application.Common.Settings;
 
-public class MinIOSettings {
+public class MinioSettings {
 
     public const string SectionKey = "MinIO";
+
+    public string Endpoint { get; set; } = null!;
 
     public string AccessKey { get; set; } = null!;
 
