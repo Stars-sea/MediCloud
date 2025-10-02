@@ -40,6 +40,7 @@ public static class DependencyInjection {
 
     private static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration) {
         MinioSettings settings = configuration.GetSection(MinioSettings.SectionKey).Get<MinioSettings>()!;
+        services.AddSingleton(Options.Create(settings));
         services.AddMinio(x => x
                                .WithEndpoint(settings.Endpoint)
                                .WithCredentials(settings.AccessKey, settings.SecretKey)

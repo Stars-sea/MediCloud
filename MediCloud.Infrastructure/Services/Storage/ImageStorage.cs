@@ -2,110 +2,90 @@ using System.Runtime.CompilerServices;
 using MediCloud.Application.Common.Interfaces.Services.Storage;
 using Microsoft.Extensions.Logging;
 using Minio;
-using Minio.DataModel;
 using Minio.DataModel.Args;
+using Minio.Exceptions;
 
 namespace MediCloud.Infrastructure.Services.Storage;
 
 public class ImageStorage(
-    IMinioClient          client,
+    IMinioClient          minio,
     ILogger<ImageStorage> logger
 ) : IImageStorage {
 
-    public const string BucketName = "medicloud-images";
+    private const string BucketName = "medicloud-images";
 
-    public const string ContentType = "image/jpeg";
+    private const string ContentType = "image/*";
 
-    public async Task<bool> EnsureBucketExists(CancellationToken cancellationToken = default) {
+    // ReSharper disable once UnusedMethodReturnValue.Local
+    private async Task<bool> EnsureBucketExists(CancellationToken token = default) {
         BucketExistsArgs bucketExistsArgs = new BucketExistsArgs().WithBucket(BucketName);
         try {
-            if (await client.BucketExistsAsync(bucketExistsArgs, cancellationToken)) return true;
+            if (await minio.BucketExistsAsync(bucketExistsArgs, token)) return true;
         }
-        catch (Exception e) {
+        catch (MinioException e) {
             logger.LogError(e, "Failed to check bucket {BucketName}", BucketName);
             return false;
         }
-        MakeBucketArgs makeBucketArgs = new MakeBucketArgs().WithBucket(BucketName);
-        await client.MakeBucketAsync(makeBucketArgs, cancellationToken);
 
-        return false;
+        MakeBucketArgs makeBucketArgs = new MakeBucketArgs().WithBucket(BucketName);
+        await minio.MakeBucketAsync(makeBucketArgs, token);
+
+        return true;
+    }
+
+    public async Task<string> PresignedPutUrlAsync(string name, int expiry, CancellationToken token = default) {
+        await EnsureBucketExists(token);
+
+        var args = new PresignedPutObjectArgs()
+                   .WithBucket(BucketName)
+                   .WithExpiry(expiry)
+                   .WithObject(name);
+        return await minio.PresignedPutObjectAsync(args);
+    }
+
+    public async Task<string> PresignedGetUrlAsync(string name, int expiry, CancellationToken token = default) {
+        await EnsureBucketExists(token);
+
+        var args = new PresignedGetObjectArgs()
+                   .WithBucket(BucketName)
+                   .WithExpiry(expiry)
+                   .WithObject(name);
+        return await minio.PresignedGetObjectAsync(args);
+    }
+
+    public async Task PutImageAsync(string name, Stream stream, CancellationToken token = default) {
+        await EnsureBucketExists(token);
+
+        var args = new PutObjectArgs()
+                   .WithBucket(BucketName)
+                   .WithObject(name)
+                   .WithObjectSize(stream.Length)
+                   .WithStreamData(stream)
+                   .WithContentType(ContentType);
+        await minio.PutObjectAsync(args, token);
+    }
+
+    public async Task RemoveImageAsync(string name, CancellationToken token = default) {
+        await EnsureBucketExists(token);
+
+        var args = new RemoveObjectArgs()
+                   .WithBucket(BucketName)
+                   .WithObject(name);
+        await minio.RemoveObjectAsync(args, token);
     }
 
     public async IAsyncEnumerable<string> ListImagesAsync(
         string                                     prefix,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default
+        [EnumeratorCancellation] CancellationToken token = default
     ) {
-        await EnsureBucketExists(cancellationToken);
+        await EnsureBucketExists(token);
 
-        ListObjectsArgs listObjectsArgs =
-            new ListObjectsArgs()
-                .WithBucket(BucketName)
-                .WithPrefix(prefix)
-                .WithRecursive(true)
-                .WithVersions(false);
-        await foreach (Item item in client.ListObjectsEnumAsync(listObjectsArgs, cancellationToken))
-            yield return item.Key[(prefix.Length + 1)..];
-    }
-
-    public async Task<bool> SaveImageAsync(
-        string            prefix,
-        string            name,
-        Stream            image,
-        CancellationToken cancellationToken = default
-    ) {
-        await EnsureBucketExists(cancellationToken);
-
-        PutObjectArgs putObjectArgs =
-            new PutObjectArgs()
-                .WithBucket(BucketName)
-                .WithObject($"{prefix}/{name}")
-                .WithContentType(ContentType)
-                .WithObjectSize(image.Length)
-                .WithStreamData(image);
-        try { await client.PutObjectAsync(putObjectArgs, cancellationToken); }
-        catch (Exception e) {
-            logger.LogWarning(e, "Failed to save image");
-            return false;
-        }
-
-        return true;
-    }
-
-    public async Task<bool> GetImageAsync(
-        string            prefix,
-        string            name,
-        Stream            output,
-        CancellationToken cancellationToken = default
-    ) {
-        await EnsureBucketExists(cancellationToken);
-
-        GetObjectArgs getObjectArgs =
-            new GetObjectArgs()
-                .WithBucket(BucketName)
-                .WithObject($"{prefix}/{name}")
-                .WithCallbackStream(input => input.CopyTo(output));
-        try { await client.GetObjectAsync(getObjectArgs, cancellationToken); }
-        catch (Exception e) {
-            logger.LogWarning(e, "Failed to get image");
-            return false;
-        }
-        return true;
-    }
-
-    public async Task<bool> RemoveImageAsync(string prefix, string name, CancellationToken cancellationToken = default) {
-        await EnsureBucketExists(cancellationToken);
-
-        RemoveObjectArgs removeObjectArgs =
-            new RemoveObjectArgs()
-                .WithBucket(BucketName)
-                .WithObject($"{prefix}/{name}");
-        try { await client.RemoveObjectAsync(removeObjectArgs, cancellationToken); }
-        catch (Exception e) {
-            logger.LogWarning(e, "Failed to remove image");
-            return false;
-        }
-
-        return true;
+        var args = new ListObjectsArgs()
+                   .WithBucket(BucketName)
+                   .WithPrefix(prefix)
+                   .WithRecursive(true);
+        await foreach (var item in minio.ListObjectsEnumAsync(args, token))
+            yield return item.Key;
     }
 
 }

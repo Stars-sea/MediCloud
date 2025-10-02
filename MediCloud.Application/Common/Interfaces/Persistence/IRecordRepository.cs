@@ -6,12 +6,14 @@ namespace MediCloud.Application.Common.Interfaces.Persistence;
 
 public interface IRecordRepository {
 
-    Task<Domain.Record.Record?> FindRecordById(RecordId id);
+    Task<Domain.Record.Record?> FindRecordByIdAsync(RecordId id);
 
-    Task<Result> CreateRecord(Domain.Record.Record record);
-    
-    Task<Result> DeleteRecord(RecordId id);
-    
-    Task<List<Domain.Record.Record>> GetAllRecords(UserId ownerId);
+    Task<Result> CreateRecordAsync(Domain.Record.Record record);
+
+    Task<Result> AddRecordImageAsync(Domain.Record.Record record, string imageName);
+
+    Task<Result> DeleteRecordAsync(RecordId id);
+
+    Task<List<Domain.Record.Record>> GetAllRecordsAsync(UserId ownerId);
 
 }

@@ -9,5 +9,7 @@ public class MinioSettings {
     public string AccessKey { get; set; } = null!;
 
     public string SecretKey { get; set; } = null!;
+    
+    public int UrlExpiryMinutes { get; set; }
 
 }

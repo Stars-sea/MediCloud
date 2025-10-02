@@ -6,15 +6,15 @@ using MediCloud.Application.Record.Contracts;
 
 namespace MediCloud.Application.Record.Handlers;
 
-public class FindRecordsByOwnerQueryHandler(
+public class FindRecordsByOwnerIdQueryHandler(
     IRecordRepository recordRepository
-) : IRequestHandler<FindRecordsByOwnerQuery, Result<List<Domain.Record.Record>>> {
+) : IRequestHandler<FindRecordsByOwnerIdQuery, Result<List<Domain.Record.Record>>> {
 
     public async Task<Result<List<Domain.Record.Record>>> Handle(
-        FindRecordsByOwnerQuery                 request,
-        ConsumeContext<FindRecordsByOwnerQuery> ctx
+        FindRecordsByOwnerIdQuery                 request,
+        ConsumeContext<FindRecordsByOwnerIdQuery> ctx
     ) {
-        return await recordRepository.GetAllRecords(request.UserId);
+        return await recordRepository.GetAllRecordsAsync(request.UserId);
     }
 
 }

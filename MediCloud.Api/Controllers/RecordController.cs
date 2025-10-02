@@ -16,28 +16,25 @@ public class RecordController(
 ) : ApiController {
 
     [NonAction]
-    private static FindRecordResponse MapRecord(Record record) {
-        return new FindRecordResponse(
-            record.Id.ToString(),
+    private static RecordResponse MapRecord(Record record) {
+        string id = record.Id.ToString();
+        return new RecordResponse(
+            id,
             record.OwnerId.ToString(),
-            $"/record/image/{record.ImageName}",
+            record.Title,
+            record.Images.Select(s => $"/record/{id}/image/{s}"),
             record.Remarks,
             record.CreatedOn
         );
     }
 
     [HttpPost]
-    public async Task<ActionResult<CreateRecordResponse>> CreateRecord(IFormFile file) {
-        if (file.Length is >= 16 * 1024 * 1024 or 0) {
-            return Problem(Errors.Record.RecordInvalidImageSize, Errors.Record.RecordFailedToSaveImage);
-        }
-
+    public async Task<ActionResult<CreateRecordResponse>> CreateRecord(CreateRecordRequest request) {
         UserId? userId = TryGetUserId();
         if (userId is null) return Problem(Errors.Auth.InvalidCred);
 
-        await using Stream fileStream = file.OpenReadStream();
         var createRecordResult = await mediator.SendRequest(
-            new AddRecordCommand(userId, fileStream)
+            new AddRecordCommand(userId, request.Title, request.Remarks)
         );
 
         return createRecordResult.Match(
@@ -47,12 +44,12 @@ public class RecordController(
     }
 
     [HttpGet("{recordId}")]
-    public async Task<ActionResult<FindRecordResponse>> FindRecord(string recordId) {
+    public async Task<ActionResult<RecordResponse>> FindRecord(string recordId) {
         UserId? userId = TryGetUserId();
         if (userId is null) return Problem(Errors.Auth.InvalidCred);
 
         var findRecordResult = await mediator.SendRequest(
-            new FindRecordQuery(RecordId.Factory.Create(Guid.Parse(recordId)))
+            new FindRecordByIdQuery(RecordId.Factory.Create(Guid.Parse(recordId)))
         );
 
         return findRecordResult.Match(
@@ -61,31 +58,60 @@ public class RecordController(
         );
     }
 
+    [HttpPost("{recordId}/image")]
+    public async Task<ActionResult<string>> UploadImage(string recordId, IFormFile file) {
+        UserId? userId = TryGetUserId();
+        if (userId is null) return Problem(Errors.Auth.InvalidCred);
+
+        RecordId id = RecordId.Factory.Create(Guid.Parse(recordId));
+
+        var verifyOwnerResult = await mediator.SendRequest(
+            new VerifyRecordOwnerQuery(id, userId)
+        );
+        if (!verifyOwnerResult.IsSuccess)
+            return Problem(verifyOwnerResult.Errors);
+
+        await using var stream = file.OpenReadStream();
+        var addImageResult = await mediator.SendRequest(
+            new AddRecordImageCommand(id, stream)
+        );
+        return addImageResult.Match(Ok, Problem);
+    }
+
+    [HttpGet("{recordId}/image")]
+    public async Task<ActionResult<IEnumerable<string>>> GetImages(string recordId) {
+        RecordId id = RecordId.Factory.Create(Guid.Parse(recordId));
+
+        var findRecordResult = await mediator.SendRequest(
+            new FindRecordByIdQuery(id)
+        );
+
+        return findRecordResult.Match(
+            record => Ok(record.Images), Problem
+        );
+    }
+
+    [HttpGet("{recordId}/image/{imageName}")]
+    public async Task<ActionResult<string>> GetImage(string recordId, string imageName) {
+        RecordId id = RecordId.Factory.Create(Guid.Parse(recordId));
+
+        var findRecordImageResult = await mediator.SendRequest(
+            new GetRecordImageUrlQuery(id, imageName)
+        );
+
+        return findRecordImageResult.Match(Ok, Problem);
+    }
+
     [HttpGet]
-    public async Task<ActionResult<List<FindRecordResponse>>> FindRecords() {
+    public async Task<ActionResult<List<SimpleRecordResponse>>> FindRecords() {
         UserId? userId = TryGetUserId();
         if (userId is null) return Problem(Errors.Auth.InvalidCred);
 
         var findRecordsResult = await mediator.SendRequest(
-            new FindRecordsByOwnerQuery(userId)
+            new FindRecordsByOwnerIdQuery(userId)
         );
         return findRecordsResult.Match(
             results => Ok(results.Select(MapRecord).ToList()),
-            Problem
-        );
-    }
-
-    [HttpGet("image/{imageName}")]
-    public async Task<ActionResult> GetImage(string imageName) {
-        UserId? userId = TryGetUserId();
-        if (userId is null) return Problem(Errors.Auth.InvalidCred);
-
-        var findRecordImageResult = await mediator.SendRequest(
-            new FindRecordImageQuery(userId, imageName)
-        );
-
-        return findRecordImageResult.Match<ActionResult>(
-            result => File(result, "image/jpeg", $"{imageName}.jpg"),
             Problem
         );
     }

@@ -7,12 +7,12 @@ using MediCloud.Domain.Common.Errors;
 
 namespace MediCloud.Application.Record.Handlers;
 
-public class FindRecordQueryHandler(
+public class FindRecordByIdQueryHandler(
     IRecordRepository recordRepository
-) : IRequestHandler<FindRecordQuery, Result<Domain.Record.Record>> {
+) : IRequestHandler<FindRecordByIdQuery, Result<Domain.Record.Record>> {
 
-    public async Task<Result<Domain.Record.Record>> Handle(FindRecordQuery request, ConsumeContext<FindRecordQuery> ctx) {
-        var record = await recordRepository.FindRecordById(request.RecordId);
+    public async Task<Result<Domain.Record.Record>> Handle(FindRecordByIdQuery request, ConsumeContext<FindRecordByIdQuery> ctx) {
+        var record = await recordRepository.FindRecordByIdAsync(request.RecordId);
         if (record is null) return Errors.Record.RecordNotFound;
 
         return record;

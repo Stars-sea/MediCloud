@@ -14,6 +14,11 @@ public static partial class Errors {
             "Failed to delete record"
         );
 
+        public static Error RecordFailedToUpdate => Error.Conflict(
+            "Record.FailedToUpdate",
+            "Failed to update record"
+        );
+
         public static Error RecordNotFound => Error.NotFound(
             "Record.NotFound",
             "Record not found"
@@ -24,11 +29,11 @@ public static partial class Errors {
             "Failed to save image"
         );
 
-        public static Error RecordInvalidImageSize => Error.Conflict(
+        public static Error RecordInvalidImageSize => Error.Validation(
             "Record.InvalidImageSize",
             "Invalid image size"
         );
-        
+
         public static Error RecordImageNotFound => Error.NotFound(
             "Record.ImageNotFound",
             "Image not found"

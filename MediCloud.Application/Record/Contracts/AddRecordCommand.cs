@@ -6,7 +6,7 @@ using MediCloud.Domain.User.ValueObjects;
 namespace MediCloud.Application.Record.Contracts;
 
 public record AddRecordCommand(
-    UserId   UserId,
-    Stream   Image,
-    string   Remarks = ""
+    UserId UserId,
+    string Title,
+    string Remarks
 ) : Request<Result<AddRecordCommandResult>>;

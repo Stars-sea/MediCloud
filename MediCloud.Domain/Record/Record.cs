@@ -13,36 +13,43 @@ public class Record : AggregateRoot<RecordId, Guid> {
     private Record() { }
 
     private Record(
-        RecordId recordId,
+        RecordId id,
         UserId   ownerId,
-        DateTime createdOn,
-        string   imageName,
-        string   remarks
-    ) : base(recordId) {
+        string   title,
+        string   remarks,
+        DateTime createdOn
+    ) : base(id) {
         OwnerId   = ownerId;
-        CreatedOn = createdOn;
-        ImageName = imageName;
+        Title     = title;
         Remarks   = remarks;
+        CreatedOn = createdOn;
     }
 
     public UserId OwnerId { get; private set; }
 
-    public DateTime CreatedOn { get; private set; }
+    public string Title { get; private set; }
 
-    public string ImageName { get; private set; }
+    private readonly List<string> _images = [];
+
+    public IReadOnlyList<string> Images => _images;
 
     public string Remarks { get; private set; }
 
-    public bool IsDeleted { get; private set; } = false;
+    public DateTime CreatedOn { get; private set; }
 
-    public void Delete() {
-        IsDeleted = true;
+    public bool IsDeleted { get; private set; }
+
+    public void AddImage(string image) {
+        if (_images.Contains(image) || _images.Count > 10) return;
+        _images.Add(image);
     }
+
+    public void Delete() { IsDeleted = true; }
 
     public static class Factory {
 
-        public static Record Create(UserId ownerId, string imageName, string remarks) {
-            return new Record(RecordId.Factory.CreateUnique(), ownerId, DateTime.UtcNow, imageName, remarks);
+        public static Record Create(UserId ownerId, string title, string remarks) {
+            return new Record(RecordId.Factory.CreateUnique(), ownerId, title, remarks, DateTime.UtcNow);
         }
 
     }
