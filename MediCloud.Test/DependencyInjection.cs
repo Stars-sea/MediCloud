@@ -20,7 +20,7 @@ namespace MediCloud.Test;
 public static class DependencyInjection {
 
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration) {
-        services.AddPersistence()
+        services.AddPersistence(configuration)
                 .AddCachingService()
                 .AddAuth(configuration)
                 .AddMassTransitTest();
@@ -30,9 +30,9 @@ public static class DependencyInjection {
         return services;
     }
 
-    private static IServiceCollection AddPersistence(this IServiceCollection services) {
+    private static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration) {
         services.AddDbContext<MediCloudDbContext>(options => {
-            options.UseInMemoryDatabase("MediCloud");
+            options.UseNpgsql(configuration.GetConnectionString("Database"));
             options.EnableSensitiveDataLogging(false);
         });
         

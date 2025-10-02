@@ -15,7 +15,6 @@
         </PackageReference>
         <PackageReference Include="MassTransit" Version="8.5.3" />
         <PackageReference Include="MassTransit.TestFramework" Version="8.5.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.4" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
         <PackageReference Include="NUnit" Version="4.4.0" />

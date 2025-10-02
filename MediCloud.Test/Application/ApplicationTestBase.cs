@@ -1,10 +1,11 @@
-using System.Diagnostics;
 using MassTransit.Mediator;
 using MassTransit.Testing;
 using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Domain.User;
+using MediCloud.Infrastructure.Persistence;
 using MediCloud.Test.Common;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MediCloud.Test.Application;
@@ -22,6 +23,14 @@ public abstract class ApplicationTestBase {
     [OneTimeSetUp]
     public async Task SetupService() {
         Provider = new SetUp().BuildServiceProvider();
+
+        // START Scoped init
+        await using (var scope = Provider.CreateAsyncScope()) {
+            var dbContext = scope.ServiceProvider.GetService<MediCloudDbContext>()!;
+            await dbContext.Database.MigrateAsync();
+        }
+        // FINISH Scoped init
+
         Harness  = Provider.GetRequiredService<ITestHarness>();
         Mediator = Provider.GetRequiredService<IMediator>();
 
@@ -30,6 +39,13 @@ public abstract class ApplicationTestBase {
 
     [OneTimeTearDown]
     public async Task CleanUp() {
+        // START Scoped cleanup
+        await using (var scope = Provider.CreateAsyncScope()) {
+            var dbContext = scope.ServiceProvider.GetService<MediCloudDbContext>()!;
+            await dbContext.Database.EnsureDeletedAsync();
+        }
+        // FINISH Scoped cleanup
+
         await Harness.Stop();
 
         await Provider.DisposeAsync();
