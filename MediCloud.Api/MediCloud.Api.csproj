@@ -21,4 +21,9 @@
         <ProjectReference Include="..\MediCloud.Infrastructure\MediCloud.Infrastructure.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" Condition="'$(Configuration)' == 'Release'" />
+        <Content Update="appsettings.json" CopyToPublishDirectory="PreserveNewest" Condition="'$(Configuration)' == 'Release'" />
+    </ItemGroup>
+
 </Project>
