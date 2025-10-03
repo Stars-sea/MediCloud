@@ -27,7 +27,7 @@ public abstract class ApplicationTestBase {
         // START Scoped init
         await using (var scope = Provider.CreateAsyncScope()) {
             var dbContext = scope.ServiceProvider.GetService<MediCloudDbContext>()!;
-            await dbContext.Database.MigrateAsync();
+            await dbContext.Database.EnsureCreatedAsync();
         }
         // FINISH Scoped init
 

@@ -13,16 +13,40 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    
+    services: 
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 123456
+          POSTGRES_DB: medi_cloud_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - uses: actions/checkout@v4
+      
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
+        
     - name: Restore dependencies
       run: dotnet restore
+    
     - name: Build
       run: dotnet build --no-restore
+    
+    - name: Apply database migrations
+      run: |
+        dotnet tool install --global dotnet-ef
+        dotnet ef database update -p ./MediCloud.Infrastructure/MediCloud.Infrastructure.csproj -s MediCloud.Api/MediCloud.Api.csproj
+      
     - name: Test
       run: dotnet test --no-build --verbosity normal
