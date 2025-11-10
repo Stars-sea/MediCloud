@@ -29,6 +29,16 @@ public static partial class Errors {
             "Failed to create live."
         );
 
+        public static Error LiveNotFound => Error.Conflict(
+            "Live.NotFound",
+            "Live not found."
+        );
+
+        public static Error LiveFailedToStop => Error.Conflict(
+            "Live.FailedToStop",
+            "Failed to stop live stream."
+        );
+
     }
 
 }

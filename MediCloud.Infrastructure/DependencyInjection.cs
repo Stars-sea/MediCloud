@@ -4,8 +4,8 @@ using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
 using MediCloud.Application.Common.Interfaces.Services.Storage;
+using MediCloud.Application.Common.Protos;
 using MediCloud.Application.Common.Settings;
-using MediCloud.Application.Live.Contracts;
 using MediCloud.Infrastructure.Authentication;
 using MediCloud.Infrastructure.Persistence;
 using MediCloud.Infrastructure.Persistence.Repositories;
@@ -27,13 +27,10 @@ public static class DependencyInjection {
         services.AddPersistence(configuration)
                 .AddCachingService(configuration)
                 .AddAuth(configuration)
+                .AddLivestream(configuration)
                 .AddMassTransit(configuration);
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
-
-        services.AddScoped<ILiveManager, LiveManager>();
-
-        services.Configure<LiveStreamingSettings>(configuration.GetSection(LiveStreamingSettings.SectionKey));
 
         return services;
     }
@@ -45,9 +42,8 @@ public static class DependencyInjection {
                                .WithEndpoint(settings.Endpoint)
                                .WithCredentials(settings.AccessKey, settings.SecretKey)
                                .WithSSL(false)
-                               .Build(),
-            ServiceLifetime.Singleton
-        );
+                               .Build()
+        ); // Singleton
         services.AddSingleton<IImageStorage, ImageStorage>();
 
 
@@ -104,6 +100,18 @@ public static class DependencyInjection {
         return services;
     }
 
+    private static IServiceCollection AddLivestream(this IServiceCollection services, IConfiguration configuration) {
+        var livestreamSettings = configuration.GetSection(LivestreamSettings.SectionKey).Get<LivestreamSettings>()!;
+        services.AddSingleton(Options.Create(livestreamSettings));
+
+        services.AddScoped<ILiveManager, LiveManager>();
+
+        services.AddGrpcClient<Livestream.LivestreamClient>(options
+            => options.Address = new Uri(livestreamSettings.GrpcServer)
+        );
+        return services;
+    }
+
     private static IServiceCollection AddMassTransit(this IServiceCollection services, IConfiguration configuration) {
         services.AddMassTransit(options => {
                 options.UsingRabbitMq(ConfigureRabbitMq);
@@ -118,13 +126,6 @@ public static class DependencyInjection {
             cfg.Host(configuration.GetConnectionString("RabbitMQ"));
             cfg.ConfigureEndpoints(context);
             cfg.UseDelayedMessageScheduler();
-
-            cfg.Message<PullStreamCommand>(m => m.SetEntityName("live.exchange"));
-            cfg.Publish<PullStreamCommand>(x => {
-                    x.ExchangeType = "fanout";
-                    x.BindQueue("live.exchange", nameof(PullStreamCommand));
-                }
-            );
         }
     }
 

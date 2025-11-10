@@ -11,8 +11,7 @@ namespace MediCloud.Application.Live.Handlers;
 
 public class CreateLiveRoomCommandHandler(
     IUserRepository userRepository,
-    ILiveManager liveManager,
-    ILiveRoomRepository liveRoomRepository
+    ILiveManager    liveManager
 ) : IRequestHandler<CreateLiveRoomCommand, Result> {
 
     public async Task<Result> Handle(CreateLiveRoomCommand request, ConsumeContext<CreateLiveRoomCommand> ctx) {
@@ -21,7 +20,7 @@ public class CreateLiveRoomCommandHandler(
 
         if (await liveManager.GetLiveRoomFromOwnerAsync(user) is not null)
             return Errors.Live.LiveRoomAlreadyExists;
-        
+
         await liveManager.CreateLiveRoomAsync(user, request.RoomName);
         return Result.Ok;
     }

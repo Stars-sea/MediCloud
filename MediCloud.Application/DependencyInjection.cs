@@ -10,11 +10,9 @@ public static class DependencyInjection {
 
     public static IServiceCollection AddApplication(this IServiceCollection services) {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-        
+
         services.AddMediator(x => {
-                x.ConfigureMediator((context, cfg) => {
-                    cfg.UseConsumeFilter(typeof(ValidationConsumeFilter<>), context);
-                });
+                x.ConfigureMediator((context, cfg) => cfg.UseConsumeFilter(typeof(ValidationConsumeFilter<>), context));
                 x.AddConsumers(Assembly.GetExecutingAssembly());
             }
         );

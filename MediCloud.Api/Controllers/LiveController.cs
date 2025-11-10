@@ -3,6 +3,7 @@ using MassTransit.Mediator;
 using MediCloud.Application.Live.Contracts;
 using MediCloud.Contracts.Live;
 using MediCloud.Domain.Common.Errors;
+using MediCloud.Domain.Live.ValueObjects;
 using MediCloud.Domain.User.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,6 +41,23 @@ public class LiveController(
             r => Ok(new OpenLiveResponse(r.LiveId, r.LiveName, r.LiveWatchUrl, r.LivePostUrl, r.Passphrase)),
             Problem
         );
+    }
+
+    [HttpPost("stop")]
+    public ActionResult StopLive([FromBody] StopLiveRequest request) {
+        return RedirectToAction("StopLive", routeValues: request.LiveId);
+    }
+
+    [HttpPost("{liveId}/stop")]
+    public async Task<ActionResult> StopLive(string liveId) {
+        UserId? id = TryGetUserId();
+        if (id == null)
+            return Problem(Errors.User.UserNotFound);
+
+        var stopResult = await mediator.SendRequest(
+            new StopLiveCommand(id, LiveId.Factory.Create(Guid.Parse(liveId)))
+        );
+        return stopResult.Match<ActionResult>(Ok, Problem);
     }
 
     [HttpGet("{liveId}/status")]

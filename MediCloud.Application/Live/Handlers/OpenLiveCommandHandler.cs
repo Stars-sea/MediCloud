@@ -6,6 +6,7 @@ using MediCloud.Application.Common.Interfaces.Services;
 using MediCloud.Application.Common.Settings;
 using MediCloud.Application.Live.Contracts;
 using MediCloud.Application.Live.Contracts.Results;
+using MediCloud.Application.Common.Protos;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.LiveRoom.Enums;
 using MediCloud.Domain.User.ValueObjects;
@@ -14,13 +15,13 @@ using Microsoft.Extensions.Options;
 namespace MediCloud.Application.Live.Handlers;
 
 public class OpenLiveCommandHandler(
-    IUserRepository                 userRepository,
-    ILiveManager                    liveManager,
-    IPublishEndpoint                publishEndpoint,
-    IOptions<LiveStreamingSettings> liveStreamingOption
+    IUserRepository              userRepository,
+    ILiveManager                 liveManager,
+    Livestream.LivestreamClient  livestreamClient,
+    IOptions<LivestreamSettings> liveStreamingOption
 ) : IRequestHandler<OpenLiveCommand, Result<OpenLiveCommandResult>> {
 
-    private LiveStreamingSettings LiveStreamingSettings => liveStreamingOption.Value;
+    private LivestreamSettings LivestreamSettings => liveStreamingOption.Value;
 
     public async Task<Result<OpenLiveCommandResult>> Handle(
         OpenLiveCommand                 request,
@@ -39,26 +40,18 @@ public class OpenLiveCommandHandler(
 
         const string passphrase = ""; // TODO
 
-        ulong timeout = LiveStreamingSettings.Timeout * 1000UL;
-        ulong latency = LiveStreamingSettings.Latency * 1000UL;
-        ulong ffs     = LiveStreamingSettings.Ffs * 1000UL;
-
-        PullStreamCommand command = new(
-            live.Id.ToString(), $"{LiveStreamingSettings.SrtServer}?mode=listener",
-            passphrase, timeout, latency, ffs,
-            Path.Combine(LiveStreamingSettings.StoragePath, live.Id.ToString()),
-            5, 10, false
+        var resp = await livestreamClient.StartPullStreamAsync(new StartPullStreamRequest {
+                Url        = LivestreamSettings.SrtServer,
+                Passphrase = passphrase,
+                LiveId     = live.Id.ToString()
+            }
         );
 
-        await publishEndpoint.Publish(command);
+        if (resp != null)
+            return new OpenLiveCommandResult(live.Id.ToString(), request.LiveName, "...", resp.Url, passphrase);
 
-        return new OpenLiveCommandResult(
-            live.Id.ToString(),
-            request.LiveName,
-            "", // TODO
-            $"{LiveStreamingSettings.SrtServer}?mode=caller",
-            passphrase
-        );
+        await liveManager.StopLiveAsync(live);
+        return Errors.Live.LiveFailedToCreate;
     }
 
 }
