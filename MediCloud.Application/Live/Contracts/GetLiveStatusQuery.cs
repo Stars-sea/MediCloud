@@ -1,9 +1,10 @@
 using MassTransit.Mediator;
 using MediCloud.Application.Live.Contracts.Results;
 using MediCloud.Domain.Common;
+using MediCloud.Domain.Live.ValueObjects;
 
 namespace MediCloud.Application.Live.Contracts;
 
 public record GetLiveStatusQuery(
-    string LiveId
+    LiveId LiveId
 ) : Request<Result<GetLiveStatusQueryResult>>;

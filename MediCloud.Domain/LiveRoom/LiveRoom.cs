@@ -35,12 +35,38 @@ public sealed class LiveRoom : AggregateRoot<LiveRoomId, Guid> {
     [StringLength(50)]
     public string RoomName { get; private set; }
 
-    public LiveRoomStatus Status { get; set; }
+    public LiveRoomStatus Status { get; private set; } = LiveRoomStatus.Available;
 
     public IReadOnlySet<LiveId> LiveIds => _liveIds;
 
-    public void AddLive(Live.Live live) {
+    public Result<Live.Live> CreateLive(string liveName) {
+        if (Status == LiveRoomStatus.Banned) return Errors.Live.LiveRoomBanned;
+        if (Status != LiveRoomStatus.Available) return Errors.Live.LiveFailedToCreate;
+
+        Live.Live live = Live.Live.Factory.Create(liveName, OwnerId, Id);
         _liveIds.Add(live.Id);
+        return live;
+    }
+
+    public Result Unban() {
+        if (Status != LiveRoomStatus.Banned)
+            return Errors.Live.LiveRoomFailedToUnban;
+        Status = LiveRoomStatus.Available;
+        return Result.Ok;
+    }
+
+    public Result Ban() {
+        if (Status != LiveRoomStatus.Available)
+            return Errors.Live.LiveRoomFailedToBan;
+        Status = LiveRoomStatus.Banned;
+        return Result.Ok;
+    }
+
+    public Result Delete() {
+        if (Status == LiveRoomStatus.Deleted)
+            return Errors.Live.LiveRoomFailedToDelete;
+        Status = LiveRoomStatus.Deleted;
+        return Result.Ok;
     }
 
     public static class Factory {

@@ -34,19 +34,39 @@ public sealed class Live : AggregateRoot<LiveId, Guid> {
 
     public LiveRoomId LiveRoomId { get; private set; }
 
-    public bool IsLive { get; private set; }
+    public LiveStatus Status { get; private set; } = LiveStatus.Pending;
 
-    public DateTime StartedAt { get; private set; }
+    public DateTime? StartedAt { get; private set; }
 
-    public DateTime EndedAt { get; private set; }
+    public DateTime? EndedAt { get; private set; }
 
-    public void Start() { StartedAt = DateTime.UtcNow; }
+    public Result Rename(string newLiveName) {
+        if (string.IsNullOrWhiteSpace(newLiveName) || newLiveName.Length > 50)
+            return Errors.Live.LiveInvalidName;
+        if (Status == LiveStatus.Stopped) return Errors.Live.LiveNotActive;
 
-    public void Stop() { EndedAt = DateTime.UtcNow; }
+        LiveName = newLiveName;
+        return Result.Ok;
+    }
 
-    public static class Factory {
+    public Result Start() {
+        if (Status != LiveStatus.Pending)
+            return Errors.Live.LiveFailedToStart;
+        StartedAt = DateTime.UtcNow;
+        Status    = LiveStatus.Streaming;
+        return Result.Ok;
+    }
 
-        public static Live Create(string liveName, UserId ownerId, LiveRoomId liveRoomId) {
+    public Result Stop() {
+        if (Status != LiveStatus.Streaming) return Errors.Live.LiveFailedToStop;
+        EndedAt = DateTime.UtcNow;
+        Status  = LiveStatus.Stopped;
+        return Result.Ok;
+    }
+
+    internal static class Factory {
+
+        internal static Live Create(string liveName, UserId ownerId, LiveRoomId liveRoomId) {
             return new Live(LiveId.Factory.CreateUnique(), liveName, ownerId, liveRoomId);
         }
 

@@ -1,7 +1,6 @@
 using MassTransit;
 using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Persistence;
-using MediCloud.Application.Common.Interfaces.Services;
 using MediCloud.Application.Common.Protos;
 using MediCloud.Application.Live.Contracts;
 using MediCloud.Domain.Common;
@@ -10,7 +9,6 @@ using MediCloud.Domain.Common.Errors;
 namespace MediCloud.Application.Live.Handlers;
 
 public class StopLiveCommandHandler(
-    ILiveManager                liveManager,
     ILiveRepository             liveRepository,
     Livestream.LivestreamClient livestreamClient
 ) : IRequestHandler<StopLiveCommand, Result> {
@@ -28,8 +26,11 @@ public class StopLiveCommandHandler(
         }
         catch { return Errors.Live.LiveFailedToStop; }
 
-        await liveManager.StopLiveAsync(live);
-        return Result.Ok;
+        Result result = live.Stop();
+        if (!result.IsSuccess) return result.Errors;
+
+        return await liveRepository.SaveAsync();
     }
 
 }
+

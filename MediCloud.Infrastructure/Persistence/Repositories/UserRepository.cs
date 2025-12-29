@@ -39,32 +39,28 @@ public class UserRepository(
     public async Task<Result> CreateAsync(User user, string password) {
         user.PasswordHash = passwordHasher.HashPassword(password);
         await dbContext.Users.AddAsync(user);
-        
-        try { await dbContext.SaveChangesAsync(); }
-        catch (DbUpdateException) { return Errors.User.FailedToUpdate; }
 
-        return Result.Ok;
+        Result savingResult = await SaveAsync();
+        return !savingResult.IsSuccess ? Errors.User.FailedToCreate : Result.Ok;
     }
 
-    public async Task<Result> UpdateAsync(User user) {
-        dbContext.Users.Update(user);
+    public async Task<Result> SaveAsync() {
         try { await dbContext.SaveChangesAsync(); }
-        catch (DbUpdateException) { return Errors.User.FailedToUpdate; }
+        catch (DbUpdateException) { return Errors.User.FailedToSave; }
 
         return Result.Ok;
     }
 
     public async Task<Result> DeleteAsync(User user) {
         dbContext.Users.Remove(user);
-        try { await dbContext.SaveChangesAsync(); }
-        catch (DbUpdateException) { return Errors.User.FailedToUpdate; }
-
-        return Result.Ok;
+        Result saveResult = await SaveAsync();
+        return !saveResult.IsSuccess ? Errors.User.FailedToDelete : Result.Ok;
     }
 
-    public async Task<Result> SetPasswordAsync(User user, string password) { 
+    public async Task<Result> SetPasswordAsync(User user, string password) {
         user.PasswordHash = passwordHasher.HashPassword(password);
         user.UpdateSecurityStamp();
-        return await UpdateAsync(user);
+        return await SaveAsync();
     }
+
 }

@@ -2,8 +2,7 @@ namespace MediCloud.Domain.LiveRoom.Enums;
 
 public enum LiveRoomStatus {
 
-    Inactive,
-    Active,
+    Available,
     Banned,
     Deleted
 

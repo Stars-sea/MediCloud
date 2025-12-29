@@ -104,8 +104,6 @@ public static class DependencyInjection {
         var livestreamSettings = configuration.GetSection(LivestreamSettings.SectionKey).Get<LivestreamSettings>()!;
         services.AddSingleton(Options.Create(livestreamSettings));
 
-        services.AddScoped<ILiveManager, LiveManager>();
-
         services.AddGrpcClient<Livestream.LivestreamClient>(options
             => options.Address = new Uri(livestreamSettings.GrpcServer)
         );

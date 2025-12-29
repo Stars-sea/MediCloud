@@ -17,17 +17,13 @@ public class LiveRepository(
 
     public async Task<Result> CreateAsync(Live live) {
         await dbContext.Lives.AddAsync(live);
-        try { await dbContext.SaveChangesAsync(); }
-        catch (DbException) { return Errors.Live.LiveFailedToCreate; }
-        
-        return Result.Ok;
+        var saveResult = await SaveAsync();
+        return !saveResult.IsSuccess ? Errors.Live.LiveFailedToCreate : Result.Ok;
     }
 
-    public async Task<Result> UpdateAsync(Live live) {
-        dbContext.Lives.Update(live);
+    public async Task<Result> SaveAsync() {
         try { await dbContext.SaveChangesAsync(); }
-        catch (DbException) { return Errors.Live.LiveFailedToCreate; }
-        
+        catch (DbException) { return Errors.Live.LiveFailedToSave; }
         return Result.Ok;
     }
 
