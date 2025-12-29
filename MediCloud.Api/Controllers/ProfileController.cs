@@ -1,10 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using MassTransit;
 using MassTransit.Mediator;
+using MediCloud.Api.Common.Mappers;
 using MediCloud.Application.Profile.Contracts;
 using MediCloud.Contracts.Profile;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.User;
+using MediCloud.Domain.User.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediCloud.Api.Controllers;
@@ -16,8 +18,11 @@ public class ProfileController(
 
     [HttpGet("me")]
     public async Task<ActionResult<MyProfileResponse>> GetMe() {
-        string userId     = User.FindFirst(JwtRegisteredClaimNames.Sub)!.Value;
-        var    findResult = await mediator.SendRequest(new FindUserByIdQuery(userId));
+        UserId? id = TryGetUserId();
+        if (id == null)
+            return Problem(Errors.Auth.InvalidCred);
+
+        var findResult = await mediator.SendRequest(new FindUserByIdQuery(id));
         if (!findResult.IsSuccess) return Problem(findResult.Errors);
 
         User user = findResult.Value!;
@@ -27,42 +32,28 @@ public class ProfileController(
         );
         DateTimeOffset expiresOffset = DateTimeOffset.FromUnixTimeSeconds(expires);
 
-        return Ok(new MyProfileResponse(
-                user.Id.ToString(),
-                user.Username,
-                user.CreatedAt,
-                user.LastLoginAt,
-                user.Email,
-                expiresOffset.UtcDateTime
-            )
-        );
+        return Ok(user.MapDetailedResp(expiresOffset));
     }
 
     [HttpGet("{username}")]
     public async Task<ActionResult<ProfileResponse>> GetProfile(string username) {
         var findResult = await mediator.SendRequest(new FindUserByNameQuery(username));
-        return findResult.Match(
-            user => Ok(new ProfileResponse(user.Id.ToString(), user.Username, user.CreatedAt, user.LastLoginAt)),
-            Problem
-        );
+        return findResult.Match(user => Ok(user.MapResp()), Problem);
     }
 
     [HttpPost("password")]
     public async Task<ActionResult> SetPassword([FromBody] ChangePasswordRequest request) {
         string email = User.FindFirst(JwtRegisteredClaimNames.Email)!.Value;
 
-        var setPasswordResult = await mediator.SendRequest(
-            new SetPasswordCommand(email, request.OldPassword, request.NewPassword)
-        );
-
-        return setPasswordResult.Match(ActionResult () => Ok(), Problem);
+        var setPasswordResult = await mediator.SendRequest(request.ToCommand(email));
+        return setPasswordResult.Match<ActionResult>(Ok, Problem);
     }
 
     [HttpDelete("{username}")]
     public async Task<ActionResult<DeleteResponse>> Delete(string username, [FromBody] DeleteRequest request) {
         string email = User.FindFirst(JwtRegisteredClaimNames.Email)!.Value;
-        var deleteResult = await mediator.SendRequest(new DeleteCommand(username, email, request.Password));
 
+        var deleteResult = await mediator.SendRequest(request.ToCommand(username, email));
         return deleteResult.Match(() => Ok(new DeleteResponse(username, email)), Problem);
     }
 

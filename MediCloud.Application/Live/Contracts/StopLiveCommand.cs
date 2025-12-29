@@ -5,7 +5,7 @@ using MediCloud.Domain.User.ValueObjects;
 
 namespace MediCloud.Application.Live.Contracts;
 
-public record StopLiveCommand(
+public sealed record StopLiveCommand(
     UserId UserId,
     LiveId LiveId
 ) : Request<Result>;

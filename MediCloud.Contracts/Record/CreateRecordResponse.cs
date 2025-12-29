@@ -1,6 +1,6 @@
 namespace MediCloud.Contracts.Record;
 
-public record CreateRecordResponse(
+public sealed record CreateRecordResponse(
     string         RecordId,
     DateTimeOffset CreatedOn
 );

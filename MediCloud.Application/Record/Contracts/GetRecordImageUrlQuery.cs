@@ -4,7 +4,7 @@ using MediCloud.Domain.Record.ValueObjects;
 
 namespace MediCloud.Application.Record.Contracts;
 
-public record GetRecordImageUrlQuery(
+public sealed record GetRecordImageUrlQuery(
     RecordId Id,
     string   ImageName
 ) : Request<Result<string>>;

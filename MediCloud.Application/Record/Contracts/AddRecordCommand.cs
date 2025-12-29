@@ -5,7 +5,7 @@ using MediCloud.Domain.User.ValueObjects;
 
 namespace MediCloud.Application.Record.Contracts;
 
-public record AddRecordCommand(
+public sealed record AddRecordCommand(
     UserId UserId,
     string Title,
     string Remarks

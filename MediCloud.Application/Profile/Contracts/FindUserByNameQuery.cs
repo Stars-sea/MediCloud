@@ -4,6 +4,6 @@ using MediCloud.Domain.User;
 
 namespace MediCloud.Application.Profile.Contracts;
 
-public record FindUserByNameQuery(
+public sealed record FindUserByNameQuery(
     string Username
 ) : Request<Result<User>>;

@@ -5,5 +5,5 @@ namespace MediCloud.Application.Authentication.Contracts.Results;
 public record AuthenticationResult(
     User           User,
     string         Token,
-    DateTimeOffset Expires
+    DateTimeOffset ExpiresAt
 );

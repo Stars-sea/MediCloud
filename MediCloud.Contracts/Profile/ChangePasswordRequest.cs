@@ -1,6 +1,6 @@
 namespace MediCloud.Contracts.Profile;
 
-public record ChangePasswordRequest(
+public sealed record ChangePasswordRequest(
     string OldPassword,
     string NewPassword
 );

@@ -1,5 +1,5 @@
 namespace MediCloud.Contracts.Live;
 
-public record CreateLiveRoomRequest(
+public sealed record CreateLiveRoomRequest(
     string RoomName
 );

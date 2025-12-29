@@ -2,7 +2,7 @@ using MediCloud.Domain.Live;
 
 namespace MediCloud.Application.Live.Contracts.Results;
 
-public record GetLiveStatusQueryResult(
+public sealed record GetLiveStatusQueryResult(
     string     LiveId,
     string     OwnerId,
     LiveStatus Status

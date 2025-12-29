@@ -6,9 +6,9 @@ using MediCloud.Domain.User.ValueObjects;
 
 namespace MediCloud.Application.Live.Contracts;
 
-public record UpdateLiveStatusCommand(
+public sealed record UpdateLiveStatusCommand(
     UserId      UserId,
     LiveId      LiveId,
     string?     LiveName,
-    LiveStatus? LiveStatus
+    LiveStatus? Status
 ) : Request<Result>;

@@ -4,7 +4,7 @@ using MediCloud.Domain.User.ValueObjects;
 
 namespace MediCloud.Application.Live.Contracts;
 
-public record CreateLiveRoomCommand(
+public sealed record CreateLiveRoomCommand(
     UserId UserId,
     string RoomName
 ) : Request<Result>;

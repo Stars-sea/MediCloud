@@ -3,7 +3,7 @@ using MediCloud.Domain.Common;
 
 namespace MediCloud.Application.Profile.Contracts;
 
-public record SetPasswordCommand(
+public sealed record SetPasswordCommand(
     string Email,
     string OldPassword,
     string NewPassword

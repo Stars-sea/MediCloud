@@ -1,5 +1,5 @@
 ﻿namespace MediCloud.Contracts.Live;
 
-public record CreateLiveRequest(
+public sealed record CreateLiveRequest(
     string LiveName
 );

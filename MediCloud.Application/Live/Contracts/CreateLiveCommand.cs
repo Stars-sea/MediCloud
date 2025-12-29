@@ -5,7 +5,7 @@ using MediCloud.Domain.User.ValueObjects;
 
 namespace MediCloud.Application.Live.Contracts;
 
-public record CreateLiveCommand(
+public sealed record CreateLiveCommand(
     UserId UserId,
     string LiveName
 ) : Request<Result<LiveId>>;

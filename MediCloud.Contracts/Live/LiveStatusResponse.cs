@@ -1,6 +1,6 @@
 namespace MediCloud.Contracts.Live;
 
-public record LiveStatusResponse(
+public sealed record LiveStatusResponse(
     string     LiveId,
     string     OwnerId,
     LiveStatus Status

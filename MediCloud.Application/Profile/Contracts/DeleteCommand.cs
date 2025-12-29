@@ -3,7 +3,7 @@ using MediCloud.Domain.Common;
 
 namespace MediCloud.Application.Profile.Contracts;
 
-public record DeleteCommand(
+public sealed record DeleteCommand(
     string Username,
     string Email,
     string Password

@@ -4,7 +4,7 @@ using MediCloud.Domain.User.ValueObjects;
 
 namespace MediCloud.Application.Record.Contracts;
 
-public record VerifyRecordOwnerQuery(
+public sealed record VerifyRecordOwnerQuery(
     RecordId RecordId,
     UserId   UserId
 ) : Request<Domain.Common.Result>;

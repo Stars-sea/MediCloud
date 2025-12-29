@@ -4,6 +4,6 @@ using MediCloud.Domain.User.ValueObjects;
 
 namespace MediCloud.Application.Record.Contracts;
 
-public record FindRecordsByOwnerIdQuery(
+public sealed record FindRecordsByOwnerIdQuery(
     UserId UserId
 ) : Request<Result<List<Domain.Record.Record>>>;

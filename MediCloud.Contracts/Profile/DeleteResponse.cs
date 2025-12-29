@@ -1,6 +1,6 @@
 namespace MediCloud.Contracts.Profile;
 
-public record DeleteResponse(
+public sealed record DeleteResponse(
     string Username,
     string Email
 );

@@ -1,17 +1,18 @@
 namespace MediCloud.Contracts.Profile;
 
-public record ProfileResponse(
+public sealed record ProfileResponse(
     string          Id,
     string          Username,
     DateTimeOffset  CreatedAt,
     DateTimeOffset? LastLoginAt
 );
 
-public record MyProfileResponse(
+public sealed record MyProfileResponse(
     string          Id,
+    string?         LiveRoomId,
     string          Username,
     DateTimeOffset  CreatedAt,
     DateTimeOffset? LastLoginAt,
     string          Email,
     DateTimeOffset  ExpiresAt
-) : ProfileResponse(Id, Username, CreatedAt, LastLoginAt);
+);

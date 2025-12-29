@@ -1,5 +1,5 @@
 namespace MediCloud.Contracts.Profile;
 
-public record DeleteRequest(
+public sealed record DeleteRequest(
     string Password
 );

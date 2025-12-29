@@ -1,6 +1,6 @@
 namespace MediCloud.Contracts.Record;
 
-public record CreateRecordRequest(
+public sealed record CreateRecordRequest(
     string Title,
     string Remarks
 );

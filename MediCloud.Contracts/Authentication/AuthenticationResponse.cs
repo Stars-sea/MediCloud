@@ -1,6 +1,6 @@
 namespace MediCloud.Contracts.Authentication;
 
-public record AuthenticationResponse(
+public sealed record AuthenticationResponse(
     string         Id,
     string         Email,
     string         Username,

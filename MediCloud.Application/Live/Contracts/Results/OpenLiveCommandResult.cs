@@ -1,6 +1,6 @@
 namespace MediCloud.Application.Live.Contracts.Results;
 
-public record OpenLiveCommandResult(
+public sealed record OpenLiveCommandResult(
     string LiveId,
     string LiveName,
     string LiveWatchUrl,

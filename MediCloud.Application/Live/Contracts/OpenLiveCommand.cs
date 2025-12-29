@@ -5,7 +5,7 @@ using MediCloud.Domain.User.ValueObjects;
 
 namespace MediCloud.Application.Live.Contracts;
 
-public record OpenLiveCommand(
+public sealed record OpenLiveCommand(
     string LiveName,
     UserId UserId
 ) : Request<Result<OpenLiveCommandResult>>;

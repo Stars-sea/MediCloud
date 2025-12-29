@@ -1,9 +1,10 @@
 using MassTransit.Mediator;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.User;
+using MediCloud.Domain.User.ValueObjects;
 
 namespace MediCloud.Application.Profile.Contracts;
 
-public record FindUserByIdQuery(
-    string UserId
+public sealed record FindUserByIdQuery(
+    UserId UserId
 ) : Request<Result<User>>;
