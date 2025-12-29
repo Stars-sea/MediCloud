@@ -1,5 +1,4 @@
-using MediCloud.Application.Common.Contracts;
-using MediCloud.Domain.Common.Errors;
+using MediCloud.Domain.Common;
 using MediCloud.Domain.User;
 using MediCloud.Domain.User.ValueObjects;
 

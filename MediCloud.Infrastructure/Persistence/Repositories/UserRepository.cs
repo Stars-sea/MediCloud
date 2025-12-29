@@ -1,6 +1,6 @@
-using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
+using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.User;
 using MediCloud.Domain.User.ValueObjects;

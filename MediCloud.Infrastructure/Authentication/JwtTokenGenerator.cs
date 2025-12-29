@@ -1,10 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Contracts.Authentication;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Settings;
+using MediCloud.Domain.Common;
 using MediCloud.Domain.User;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

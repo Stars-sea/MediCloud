@@ -1,4 +1,4 @@
-using MediCloud.Application.Common.Contracts;
+using MediCloud.Domain.Common;
 using MediCloud.Domain.Record.ValueObjects;
 using MediCloud.Domain.User.ValueObjects;
 

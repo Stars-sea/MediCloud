@@ -1,6 +1,6 @@
 using MassTransit;
 using MassTransit.Mediator;
-using MediCloud.Application.Common.Contracts;
+using MediCloud.Domain.Common;
 
 namespace MediCloud.Application.Common.Interfaces;
 

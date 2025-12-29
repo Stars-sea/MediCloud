@@ -1,11 +1,11 @@
 using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Authentication.Contracts.Results;
-using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Contracts.Authentication;
 using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Persistence;
+using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;
 
 namespace MediCloud.Application.Authentication.Handlers;

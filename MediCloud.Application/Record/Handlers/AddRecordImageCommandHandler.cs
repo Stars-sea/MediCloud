@@ -1,9 +1,9 @@
 using MassTransit;
-using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services.Storage;
 using MediCloud.Application.Record.Contracts;
+using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.Record.ValueObjects;
 using Microsoft.Extensions.Logging;

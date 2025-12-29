@@ -1,6 +1,6 @@
-using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Services;
+using MediCloud.Domain.Common;
 
 namespace MediCloud.Infrastructure.Authentication;
 

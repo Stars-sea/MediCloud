@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using MediCloud.Domain.Common.Errors;
 
-namespace MediCloud.Application.Common.Contracts;
+namespace MediCloud.Domain.Common;
 
 public record Result(params Error[] Errors) {
 

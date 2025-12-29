@@ -1,9 +1,9 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
-using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Persistence;
+using MediCloud.Domain.Common;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MediCloud.Test.Application;

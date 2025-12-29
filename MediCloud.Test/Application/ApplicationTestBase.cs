@@ -1,11 +1,10 @@
 using MassTransit.Mediator;
 using MassTransit.Testing;
-using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces.Persistence;
+using MediCloud.Domain.Common;
 using MediCloud.Domain.User;
 using MediCloud.Infrastructure.Persistence;
 using MediCloud.Test.Common;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MediCloud.Test.Application;

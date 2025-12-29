@@ -1,8 +1,8 @@
 using MassTransit;
-using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Live.Contracts;
 using MediCloud.Application.Live.Contracts.Results;
+using MediCloud.Domain.Common;
 
 namespace MediCloud.Application.Live.Handlers;
 

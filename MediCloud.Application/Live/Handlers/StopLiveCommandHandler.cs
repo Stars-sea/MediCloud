@@ -1,10 +1,10 @@
 using MassTransit;
-using MediCloud.Application.Common.Contracts;
 using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
 using MediCloud.Application.Common.Protos;
 using MediCloud.Application.Live.Contracts;
+using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;
 
 namespace MediCloud.Application.Live.Handlers;

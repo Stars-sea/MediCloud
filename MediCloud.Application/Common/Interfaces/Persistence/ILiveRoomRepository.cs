@@ -1,4 +1,4 @@
-using MediCloud.Application.Common.Contracts;
+using MediCloud.Domain.Common;
 using MediCloud.Domain.LiveRoom;
 using MediCloud.Domain.LiveRoom.ValueObjects;
 

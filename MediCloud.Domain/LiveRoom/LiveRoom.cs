@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using MediCloud.Domain.Common;
+using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.Common.Models;
 using MediCloud.Domain.Live.ValueObjects;
 using MediCloud.Domain.LiveRoom.Enums;

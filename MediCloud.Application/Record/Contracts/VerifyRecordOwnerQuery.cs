@@ -7,4 +7,4 @@ namespace MediCloud.Application.Record.Contracts;
 public record VerifyRecordOwnerQuery(
     RecordId RecordId,
     UserId   UserId
-) : Request<Common.Contracts.Result>;
+) : Request<Domain.Common.Result>;

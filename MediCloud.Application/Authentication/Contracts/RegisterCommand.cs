@@ -1,6 +1,6 @@
 using MassTransit.Mediator;
 using MediCloud.Application.Authentication.Contracts.Results;
-using MediCloud.Application.Common.Contracts;
+using MediCloud.Domain.Common;
 
 namespace MediCloud.Application.Authentication.Contracts;
 

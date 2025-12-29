@@ -1,7 +1,8 @@
 ﻿using System.Reflection;
 using FluentValidation;
 using MassTransit;
-using MediCloud.Application.Common.Contracts;
+using MassTransit.Mediator;
+using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;
 using ValidationResult = FluentValidation.Results.ValidationResult;
 
@@ -32,7 +33,7 @@ public class ValidationConsumeFilter<TRequest>(
 
     private static object MapValidationResult(ValidationResult result) {
         Type targetType = typeof(TRequest)
-                          .GetInterface(typeof(MassTransit.Mediator.Request<>).Name)!
+                          .GetInterface(typeof(Request<>).Name)!
                           .GetGenericArguments()[0];
 
         Result errorResult = result.Errors.Select(failure =>

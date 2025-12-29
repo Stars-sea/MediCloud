@@ -1,5 +1,5 @@
 using MassTransit.Mediator;
-using MediCloud.Application.Common.Contracts;
+using MediCloud.Domain.Common;
 using MediCloud.Domain.Record.ValueObjects;
 
 namespace MediCloud.Application.Record.Contracts;
