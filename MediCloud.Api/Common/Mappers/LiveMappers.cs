@@ -12,18 +12,21 @@ namespace MediCloud.Api.Common.Mappers;
 [Mapper(EnumMappingStrategy = EnumMappingStrategy.ByName)]
 public static partial class LiveMappers {
 
-    public static LiveId ToLiveId(this string liveId) => LiveId.Factory.Create(Guid.Parse(liveId));
+    public static LiveId ToLiveId(this Guid liveId) => LiveId.Factory.Create(liveId);
 
     public static partial CreateLiveRoomCommand MapCommand(this CreateLiveRoomRequest request, UserId userId);
 
     public static partial CreateLiveCommand MapCommand(this CreateLiveRequest request, UserId userId);
 
-    public static GetLiveStatusQuery ToLiveStatusQuery(this string liveId) => new(liveId.ToLiveId());
+    public static GetLiveStatusQuery ToLiveStatusQuery(this Guid liveId) => new(liveId.ToLiveId());
 
     public static partial UpdateLiveStatusCommand MapCommand(this UpdateLiveStatusRequest request, LiveId liveId, UserId userId);
 
     public static partial DomainStatus MapDomain(this ContractStatus result);
 
+    [MapperIgnoreSource(nameof(GetLiveStatusQueryResult.PostUrl))]
+    [MapperIgnoreSource(nameof(GetLiveStatusQueryResult.Passphrase))]
     public static partial LiveStatusResponse MapResp(this GetLiveStatusQueryResult result);
 
+    public static partial DetailedLiveStatusResponse MapDetailedResp(this GetLiveStatusQueryResult result);
 }

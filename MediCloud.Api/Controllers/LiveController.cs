@@ -33,14 +33,20 @@ public class LiveController(
         return createResult.Match(r => Ok(new CreateLiveResponse(r.ToString())), Problem);
     }
 
-    [HttpGet("{liveId}")]
-    public async Task<ActionResult<LiveStatusResponse>> GetLiveStatus(string liveId) {
-        var statusResult = await mediator.SendRequest(liveId.ToLiveStatusQuery());
-        return statusResult.Match(r => Ok(r.MapResp()), Problem);
+    [HttpGet("{liveId:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LiveStatusResponse))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DetailedLiveStatusResponse))]
+    public async Task<ActionResult> GetLiveStatus(Guid liveId) {
+        UserId? id           = TryGetUserId();
+        var     statusResult = await mediator.SendRequest(liveId.ToLiveStatusQuery());
+        return statusResult.Match(
+            r => Ok(r.OwnerId == id ? r.MapDetailedResp() : r.MapResp()),
+            Problem
+        );
     }
 
-    [HttpPatch("{liveId}")]
-    public async Task<ActionResult> UpdateLiveStatus(string liveId, [FromBody] UpdateLiveStatusRequest request) {
+    [HttpPatch("{liveId:guid}")]
+    public async Task<ActionResult> UpdateLiveStatus(Guid liveId, [FromBody] UpdateLiveStatusRequest request) {
         UserId? id = TryGetUserId();
         if (id == null)
             return Problem(Errors.Auth.InvalidCred);
