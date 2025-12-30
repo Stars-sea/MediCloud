@@ -2,6 +2,7 @@ using MassTransit;
 using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Record.Contracts;
+using MediCloud.Application.Record.Contracts.Mappers;
 using MediCloud.Application.Record.Contracts.Result;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.User.ValueObjects;
@@ -22,7 +23,7 @@ public class AddRecordCommandHandler(
         Result dbCreateResult = await recordRepository.CreateRecordAsync(record);
 
         if (!dbCreateResult.IsSuccess) return dbCreateResult.Errors;
-        return new AddRecordCommandResult(record.Id, record.CreatedOn);
+        return record.MapAddRecordResult();
     }
 
 }

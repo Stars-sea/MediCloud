@@ -4,6 +4,7 @@ using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Protos;
 using MediCloud.Application.Common.Settings;
 using MediCloud.Application.Live.Contracts;
+using MediCloud.Application.Live.Contracts.Mappers;
 using MediCloud.Application.Live.Contracts.Results;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;
@@ -60,7 +61,7 @@ public class OpenLiveCommandHandler(
             live.Id
         );
 
-        return new OpenLiveCommandResult(live.Id.ToString(), live.LiveName, "...", resp.Url, passphrase);
+        return live.MapOpenLiveResult("...", resp.Url, resp.Code);
     }
 
 }

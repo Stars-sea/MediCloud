@@ -49,7 +49,7 @@ public class RecordController(
     [HttpGet("{recordId:guid}/images")]
     public async Task<ActionResult<IEnumerable<string>>> GetImages(Guid recordId) {
         var findRecordResult = await mediator.SendRequest(recordId.ToFindByIdQuery());
-        return findRecordResult.Match(record => Ok(record.Images), Problem);
+        return findRecordResult.Match(record => Ok(record.ImageUrls), Problem);
     }
 
     [HttpGet("{recordId:guid}/images/{imageName}")]

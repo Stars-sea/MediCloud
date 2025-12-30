@@ -12,7 +12,6 @@ public static partial class AuthMappers {
     
     public static partial RegisterCommand MapCommand(this RegisterRequest request);
 
-    [MapNestedProperties(nameof(AuthenticationResult.User))]
     public static partial AuthenticationResponse MapResp(this AuthenticationResult result);
 
 }

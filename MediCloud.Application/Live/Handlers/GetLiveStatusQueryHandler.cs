@@ -3,8 +3,8 @@ using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Protos;
 using MediCloud.Application.Live.Contracts;
+using MediCloud.Application.Live.Contracts.Mappers;
 using MediCloud.Application.Live.Contracts.Results;
-using MediCloud.Application.Live.Mappers;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.Live.ValueObjects;
@@ -31,7 +31,7 @@ public class GetLiveStatusQueryHandler(
 
         GetStreamStatusResponse response = await GetLiveStatus(live.Id);
 
-        return live.MapResult(response.Url, response.Code);
+        return live.MapGetStatusResult(response.Url, response.Code);
     }
 
 }

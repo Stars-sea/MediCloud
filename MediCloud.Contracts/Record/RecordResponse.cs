@@ -11,7 +11,7 @@ public sealed record RecordResponse(
     string              Id,
     string              OwnerId,
     string              Title,
-    IEnumerable<string> Images,
+    IEnumerable<string> ImageUrls,
     string              Remarks,
     DateTimeOffset      CreatedOn
 );
