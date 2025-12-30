@@ -11,12 +11,12 @@ namespace MediCloud.Api.Common.Mappers;
 [Mapper]
 public static partial class RecordMappers {
 
-    public static RecordId ToRecordId(this string recordId)
-        => RecordId.Factory.Create(Guid.Parse(recordId));
+    public static RecordId ToRecordId(this Guid recordId)
+        => RecordId.Factory.Create(recordId);
 
     public static partial AddRecordCommand MapCommand(this CreateRecordRequest request, UserId userId);
 
-    public static FindRecordByIdQuery ToFindByIdQuery(this string recordId)
+    public static FindRecordByIdQuery ToFindByIdQuery(this Guid recordId)
         => new(recordId.ToRecordId());
 
     [MapperIgnoreSource(nameof(Record.IsDeleted))]
@@ -29,7 +29,7 @@ public static partial class RecordMappers {
     [MapperIgnoreSource(nameof(Record.IsDeleted))]
     [MapperIgnoreSource(nameof(Record.Images))]
     [MapperIgnoreSource(nameof(Record.Remarks))]
-    public static partial SimpleRecordResponse MapSimpleResp(this Record record);
+    private static partial SimpleRecordResponse MapSimpleResp(this Record record);
 
     public static partial ICollection<SimpleRecordResponse> MapResps(this ICollection<Record> records);
 

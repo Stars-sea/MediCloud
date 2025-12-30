@@ -24,17 +24,14 @@ public class RecordController(
         return createRecordResult.Match(r => Ok(r.MapResp()), Problem);
     }
 
-    [HttpGet("{recordId}")]
-    public async Task<ActionResult<RecordResponse>> FindRecord(string recordId) {
-        // UserId? userId = TryGetUserId();
-        // if (userId is null) return Problem(Errors.Auth.InvalidCred);
-
+    [HttpGet("{recordId:guid}")]
+    public async Task<ActionResult<RecordResponse>> FindRecord(Guid recordId) {
         var findRecordResult = await mediator.SendRequest(recordId.ToFindByIdQuery());
         return findRecordResult.Match(r => Ok(r.MapResp()), Problem);
     }
 
-    [HttpPost("{recordId}/images")]
-    public async Task<ActionResult<string>> UploadImage(string recordId, IFormFile file) {
+    [HttpPost("{recordId:guid}/images")]
+    public async Task<ActionResult<string>> UploadImage(Guid recordId, IFormFile file) {
         UserId? userId = TryGetUserId();
         if (userId is null) return Problem(Errors.Auth.InvalidCred);
 
@@ -49,14 +46,14 @@ public class RecordController(
         return addImageResult.Match(Ok, Problem);
     }
 
-    [HttpGet("{recordId}/images")]
-    public async Task<ActionResult<IEnumerable<string>>> GetImages(string recordId) {
+    [HttpGet("{recordId:guid}/images")]
+    public async Task<ActionResult<IEnumerable<string>>> GetImages(Guid recordId) {
         var findRecordResult = await mediator.SendRequest(recordId.ToFindByIdQuery());
         return findRecordResult.Match(record => Ok(record.Images), Problem);
     }
 
-    [HttpGet("{recordId}/images/{imageName}")]
-    public async Task<ActionResult<string>> GetImage(string recordId, string imageName) {
+    [HttpGet("{recordId:guid}/images/{imageName}")]
+    public async Task<ActionResult<string>> GetImage(Guid recordId, string imageName) {
         RecordId id = recordId.ToRecordId();
 
         var findRecordImageResult = await mediator.SendRequest(new GetRecordImageUrlQuery(id, imageName));
