@@ -8,13 +8,12 @@ using MediCloud.Application.Live.Contracts.Results;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.Live.ValueObjects;
-using MediCloud.Domain.User.ValueObjects;
+using MediCloud.Domain.LiveRoom.Enums;
 using Microsoft.Extensions.Options;
 
 namespace MediCloud.Application.Live.Handlers;
 
 public class OpenLiveCommandHandler(
-    IUserRepository              userRepository,
     ILiveRepository              liveRepository,
     ILiveRoomRepository          liveRoomRepository,
     Livestream.LivestreamClient  livestreamClient,
@@ -36,21 +35,16 @@ public class OpenLiveCommandHandler(
         OpenLiveCommand                 request,
         ConsumeContext<OpenLiveCommand> ctx
     ) {
-        (string liveName, UserId userId) = request;
+        LiveId liveId = request.LiveId;
+        if (await liveRepository.FindLiveById(liveId) is not { } live ||
+            live.OwnerId != request.UserId)
+            return Errors.Live.LiveNotFound;
 
-        if (await userRepository.FindByIdAsync(UserId.Factory.Create(userId)) is not { } user)
-            return Errors.User.UserNotFound;
-
-        if (await liveRoomRepository.GetLiveRoomFromOwnerAsync(user) is not { } liveRoom)
+        if (await liveRoomRepository.FindByIdAsync(live.LiveRoomId) is not { } liveRoom)
             return Errors.Live.LiveRoomNotFound;
 
-        var createLiveResult = liveRoom.CreateLive(liveName);
-        if (!createLiveResult.IsSuccess) return createLiveResult.Errors;
-
-        var saveLiveRoomResult = await liveRoomRepository.SaveAsync();
-        if (!saveLiveRoomResult.IsSuccess) return saveLiveRoomResult.Errors;
-
-        Domain.Live.Live live = createLiveResult.Value!;
+        if (liveRoom.Status != LiveRoomStatus.Available)
+            return Errors.Live.LiveFailedToStart;
 
         Result startResult = live.Start();
         if (!startResult.IsSuccess) return startResult.Errors;
@@ -66,8 +60,7 @@ public class OpenLiveCommandHandler(
             live.Id
         );
 
-        return new OpenLiveCommandResult(live.Id.ToString(), liveName, "...", resp.Url, passphrase);
+        return new OpenLiveCommandResult(live.Id.ToString(), live.LiveName, "...", resp.Url, passphrase);
     }
 
 }
-

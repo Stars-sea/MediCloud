@@ -19,7 +19,7 @@ public class UpdateLiveStatusCommandHandler(
     private async Task<Result> StartLiveAsync(Domain.Live.Live live, ConsumeContext<UpdateLiveStatusCommand> ctx) {
         var response = await ctx.Request<OpenLiveCommand, Result<OpenLiveCommandResult>>(
             bus,
-            new OpenLiveCommand(live.LiveName, live.OwnerId)
+            new OpenLiveCommand(live.OwnerId, live.Id)
         );
 
         return response.Message;
