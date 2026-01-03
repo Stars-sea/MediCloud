@@ -1,4 +1,4 @@
-﻿namespace MediCloud.Domain.Live;
+﻿namespace MediCloud.Domain.Live.Enums;
 
 public enum LiveStatus {
 

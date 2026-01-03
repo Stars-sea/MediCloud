@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.Common.Models;
+using MediCloud.Domain.Live.Enums;
 using MediCloud.Domain.Live.ValueObjects;
 using MediCloud.Domain.LiveRoom.ValueObjects;
 using MediCloud.Domain.User.ValueObjects;

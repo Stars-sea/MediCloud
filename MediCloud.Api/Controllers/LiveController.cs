@@ -13,16 +13,6 @@ public class LiveController(
     IMediator mediator
 ) : ApiController {
 
-    [HttpPost("/live-rooms")]
-    public async Task<ActionResult> CreateLiveRoom([FromBody] CreateLiveRoomRequest request) {
-        UserId? id = TryGetUserId();
-        if (id == null)
-            return Problem(Errors.Auth.InvalidCred);
-
-        var createResult = await mediator.SendRequest(request.MapCommand(id));
-        return createResult.Match<ActionResult>(Ok, Problem);
-    }
-
     [HttpPut]
     public async Task<ActionResult<CreateLiveResponse>> CreateLive([FromBody] CreateLiveRequest request) {
         UserId? id = TryGetUserId();

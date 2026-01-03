@@ -1,4 +1,4 @@
-using MediCloud.Domain.Live;
+using MediCloud.Domain.Live.Enums;
 using MediCloud.Domain.Live.ValueObjects;
 using MediCloud.Domain.LiveRoom.ValueObjects;
 using MediCloud.Domain.User.ValueObjects;

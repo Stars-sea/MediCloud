@@ -9,11 +9,13 @@ public interface ILiveRoomRepository {
 
     Task<LiveRoom?> FindByIdAsync(LiveRoomId id);
 
-    Task<LiveRoom?> GetLiveRoomFromOwnerAsync(User user);
+    Task<LiveRoom?> FindByOwnerIdAsync(User user);
+    
+    Task<Domain.Live.Live?> FindActiveLiveInRoomAsync(LiveRoomId roomId);
 
     Task<User?> GetOwnerAsync(LiveRoom room);
 
-    IAsyncEnumerable<Domain.Live.Live> GetLivesFromLiveRoom(LiveRoom room);
+    IAsyncEnumerable<Domain.Live.Live> GetLivesFromLiveRoom(LiveRoomId roomId);
 
     Task<Result> CreateAsync(LiveRoom room);
 

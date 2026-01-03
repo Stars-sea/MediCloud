@@ -1,4 +1,3 @@
-using MediCloud.Domain.Live.ValueObjects;
 using MediCloud.Domain.LiveRoom;
 using MediCloud.Domain.LiveRoom.Enums;
 using MediCloud.Domain.LiveRoom.ValueObjects;
@@ -11,11 +10,6 @@ namespace MediCloud.Infrastructure.Persistence.Configurations;
 public sealed class LiveRoomConfiguration : IEntityTypeConfiguration<LiveRoom> {
 
     public void Configure(EntityTypeBuilder<LiveRoom> builder) {
-        ConfigureLiveRoomsTable(builder);
-        ConfigureLiveIdsTable(builder);
-    }
-
-    private static void ConfigureLiveRoomsTable(EntityTypeBuilder<LiveRoom> builder) {
         builder.Property(l => l.Id)
                .ValueGeneratedNever()
                .HasConversion(
@@ -35,24 +29,6 @@ public sealed class LiveRoomConfiguration : IEntityTypeConfiguration<LiveRoom> {
         builder.Property(l => l.Status).HasConversion<string>();
 
         builder.HasQueryFilter(l => l.Status != LiveRoomStatus.Deleted);
-    }
-
-    private static void ConfigureLiveIdsTable(EntityTypeBuilder<LiveRoom> builder) {
-        builder.OwnsMany(l => l.LiveIds, lid => {
-                lid.ToTable("LiveLiveRoomIds");
-
-                lid.WithOwner().HasForeignKey(nameof(LiveRoomId));
-
-                lid.HasKey("Id");
-
-                lid.Property(l => l.Value)
-                   .ValueGeneratedNever()
-                   .HasColumnName("LiveLiveRoomId");
-            }
-        );
-
-        builder.Metadata.FindNavigation(nameof(LiveRoom.LiveIds))
-               ?.SetPropertyAccessMode(PropertyAccessMode.Field);
     }
 
 }

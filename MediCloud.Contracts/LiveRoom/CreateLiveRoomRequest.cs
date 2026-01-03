@@ -1,4 +1,4 @@
-namespace MediCloud.Contracts.Live;
+namespace MediCloud.Contracts.LiveRoom;
 
 public sealed record CreateLiveRoomRequest(
     string RoomName

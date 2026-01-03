@@ -15,7 +15,7 @@ public static partial class RecordMappers {
 
     public static partial AddRecordCommand MapCommand(this CreateRecordRequest request, UserId userId);
 
-    public static FindRecordByIdQuery ToFindByIdQuery(this Guid recordId)
+    public static FindRecordByIdQuery ToFindRecordByIdQuery(this Guid recordId)
         => new(recordId.ToRecordId());
 
     public static partial RecordResponse MapResp(this FindRecordByIdQueryResult record);

@@ -24,7 +24,7 @@ public class CreateLiveCommandHandler(
         if (user is null)
             return Errors.User.UserNotFound;
 
-        LiveRoom? liveRoom = await liveRoomRepository.GetLiveRoomFromOwnerAsync(user);
+        LiveRoom? liveRoom = await liveRoomRepository.FindByOwnerIdAsync(user);
         if (liveRoom is null)
             return Errors.Live.LiveRoomNotFound;
 

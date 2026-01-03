@@ -1,6 +1,6 @@
 ﻿using MassTransit.Mediator;
 using MediCloud.Domain.Common;
-using MediCloud.Domain.Live;
+using MediCloud.Domain.Live.Enums;
 using MediCloud.Domain.Live.ValueObjects;
 using MediCloud.Domain.User.ValueObjects;
 

@@ -5,7 +5,7 @@ using MediCloud.Application.Live.Contracts;
 using MediCloud.Application.Live.Contracts.Results;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;
-using MediCloud.Domain.Live;
+using MediCloud.Domain.Live.Enums;
 using MediCloud.Domain.Live.ValueObjects;
 using MediCloud.Domain.User.ValueObjects;
 

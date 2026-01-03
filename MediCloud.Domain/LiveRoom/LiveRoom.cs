@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.Common.Models;
-using MediCloud.Domain.Live.ValueObjects;
 using MediCloud.Domain.LiveRoom.Enums;
 using MediCloud.Domain.LiveRoom.ValueObjects;
 using MediCloud.Domain.User.ValueObjects;
@@ -13,8 +12,6 @@ using MediCloud.Domain.User.ValueObjects;
 namespace MediCloud.Domain.LiveRoom;
 
 public sealed class LiveRoom : AggregateRoot<LiveRoomId, Guid> {
-
-    private readonly HashSet<LiveId> _liveIds;
 
     [JsonConstructor]
     private LiveRoom() { }
@@ -26,8 +23,6 @@ public sealed class LiveRoom : AggregateRoot<LiveRoomId, Guid> {
     ) : base(liveRoomId) {
         OwnerId  = ownerId;
         RoomName = roomName;
-
-        _liveIds = [];
     }
 
     public UserId OwnerId { get; private set; }
@@ -36,8 +31,6 @@ public sealed class LiveRoom : AggregateRoot<LiveRoomId, Guid> {
     public string RoomName { get; private set; }
 
     public LiveRoomStatus Status { get; private set; } = LiveRoomStatus.Available;
-
-    public IReadOnlySet<LiveId> LiveIds => _liveIds;
 
     public Result<Live.Live> CreateLive(string liveName) {
         switch (Status) {
@@ -50,8 +43,6 @@ public sealed class LiveRoom : AggregateRoot<LiveRoomId, Guid> {
         if (Status != LiveRoomStatus.Available) return Errors.Live.LiveFailedToCreate;
 
         Live.Live live = Live.Live.Factory.Create(liveName, OwnerId, Id);
-        _liveIds.Add(live.Id);
-
         Status = LiveRoomStatus.Pending;
 
         return live;
