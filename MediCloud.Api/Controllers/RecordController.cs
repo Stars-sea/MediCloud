@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MediCloud.Api.Controllers;
 
-[Route("record")]
+[Route("records")]
 public class RecordController(
     IMediator mediator
 ) : ApiController {
@@ -26,7 +26,7 @@ public class RecordController(
 
     [HttpGet("{recordId:guid}")]
     public async Task<ActionResult<RecordResponse>> FindRecord(Guid recordId) {
-        var findRecordResult = await mediator.SendRequest(recordId.ToFindByIdQuery());
+        var findRecordResult = await mediator.SendRequest(recordId.ToFindRecordByIdQuery());
         return findRecordResult.Match(r => Ok(r.MapResp()), Problem);
     }
 
@@ -48,7 +48,7 @@ public class RecordController(
 
     [HttpGet("{recordId:guid}/images")]
     public async Task<ActionResult<IEnumerable<string>>> GetImages(Guid recordId) {
-        var findRecordResult = await mediator.SendRequest(recordId.ToFindByIdQuery());
+        var findRecordResult = await mediator.SendRequest(recordId.ToFindRecordByIdQuery());
         return findRecordResult.Match(record => Ok(record.ImageUrls), Problem);
     }
 

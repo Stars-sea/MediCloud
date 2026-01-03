@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MediCloud.Api.Controllers;
 
-[Route("profile")]
+[Route("profiles")]
 public class ProfileController(
     IMediator mediator
 ) : ApiController {
@@ -36,9 +36,22 @@ public class ProfileController(
     }
 
     [HttpGet("{username}")]
-    public async Task<ActionResult<ProfileResponse>> GetProfile(string username) {
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProfileResponse))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MyProfileResponse))]
+    public async Task<ActionResult> GetProfile(string username) {
+        UserId? id = TryGetUserId();
+        long expires = Convert.ToInt64(
+            User.FindFirst(JwtRegisteredClaimNames.Exp)!.Value
+        );
+        DateTimeOffset expiresOffset = DateTimeOffset.FromUnixTimeSeconds(expires);
+
         var findResult = await mediator.SendRequest(new FindUserByNameQuery(username));
-        return findResult.Match(user => Ok(user.MapResp()), Problem);
+        return findResult.Match(
+            user => user.Id == id
+                ? Ok(user.MapDetailedResp(expiresOffset))
+                : Ok(user.MapResp()),
+            Problem
+        );
     }
 
     [HttpPost("password")]
