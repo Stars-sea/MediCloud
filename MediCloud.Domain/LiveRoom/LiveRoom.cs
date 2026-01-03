@@ -40,7 +40,13 @@ public sealed class LiveRoom : AggregateRoot<LiveRoomId, Guid> {
     public IReadOnlySet<LiveId> LiveIds => _liveIds;
 
     public Result<Live.Live> CreateLive(string liveName) {
-        if (Status == LiveRoomStatus.Banned) return Errors.Live.LiveRoomBanned;
+        switch (Status) {
+            case LiveRoomStatus.Banned:
+                return Errors.Live.LiveRoomBanned;
+            case LiveRoomStatus.Pending or LiveRoomStatus.Active:
+                return Errors.Live.LiveRoomBusy;
+        }
+
         if (Status != LiveRoomStatus.Available) return Errors.Live.LiveFailedToCreate;
 
         Live.Live live = Live.Live.Factory.Create(liveName, OwnerId, Id);
@@ -50,14 +56,14 @@ public sealed class LiveRoom : AggregateRoot<LiveRoomId, Guid> {
 
         return live;
     }
-    
+
     public Result StartLive() {
         if (Status != LiveRoomStatus.Pending)
             return Errors.Live.LiveFailedToStart;
         Status = LiveRoomStatus.Active;
         return Result.Ok;
     }
-    
+
     public Result StopLive() {
         if (Status != LiveRoomStatus.Active)
             return Errors.Live.LiveFailedToStop;
@@ -73,7 +79,7 @@ public sealed class LiveRoom : AggregateRoot<LiveRoomId, Guid> {
     }
 
     public Result Ban() {
-        if (Status != LiveRoomStatus.Available)
+        if (Status is LiveRoomStatus.Banned or LiveRoomStatus.Deleted)
             return Errors.Live.LiveRoomFailedToBan;
         Status = LiveRoomStatus.Banned;
         return Result.Ok;

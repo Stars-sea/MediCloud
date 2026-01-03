@@ -26,7 +26,8 @@ public class CreateLiveRoomCommandHandler(
         await liveRoomRepository.CreateAsync(liveRoom);
         user.LiveRoomId = liveRoom.Id;
 
-        return await liveRoomRepository.SaveAsync();
+        Result dbResult = await liveRoomRepository.SaveAsync();
+        return !dbResult.IsSuccess ? Errors.Live.LiveRoomFailedToCreate : Result.Ok;
     }
 
 }

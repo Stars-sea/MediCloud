@@ -39,6 +39,11 @@ public static partial class Errors {
             "Failed to save live room."
         );
 
+        public static Error LiveRoomBusy => Error.Conflict(
+            "LiveRoom.Busy",
+            "Live room is busy."
+        );
+
         public static Error LiveRoomFailedToCreate => Error.Conflict(
             "LiveRoom.FailedToCreate",
             "Failed to create live room."
