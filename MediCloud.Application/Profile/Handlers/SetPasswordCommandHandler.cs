@@ -16,7 +16,8 @@ public class SetPasswordCommandHandler(
             !await userRepository.VerifyPasswordAsync(user, request.OldPassword))
             return Errors.Auth.InvalidCred;
 
-        return await userRepository.SetPasswordAsync(user, request.NewPassword);
+        Result dbResult = await userRepository.SetPasswordAsync(user, request.NewPassword) & await userRepository.SaveAsync();
+        return !dbResult.IsSuccess ? Errors.User.FailedToSave : Result.Ok;
     }
 
 }

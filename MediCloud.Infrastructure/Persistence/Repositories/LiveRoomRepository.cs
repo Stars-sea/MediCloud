@@ -35,8 +35,7 @@ public class LiveRoomRepository(
 
     public async Task<Result> CreateAsync(LiveRoom room) {
         await dbContext.LiveRooms.AddAsync(room);
-        Result saveResult = await SaveAsync();
-        return !saveResult.IsSuccess ? Errors.Live.LiveRoomFailedToCreate : Result.Ok;
+        return Result.Ok;
     }
 
     public async Task<Result> SaveAsync() {

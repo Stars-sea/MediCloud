@@ -16,21 +16,13 @@ public class RecordRepository(
 
     public async Task<Result> CreateRecordAsync(Record record) {
         await dbContext.Records.AddAsync(record);
-
-        try { await dbContext.SaveChangesAsync(); }
-        catch (Exception) { return Errors.Record.RecordFailedToCreate; }
-
         return Result.Ok;
     }
 
-    public async Task<Result> AddRecordImageAsync(Record record, string imageName) {
+    public Task<Result> AddRecordImageAsync(Record record, string imageName) {
         record.AddImage(imageName);
         dbContext.Update(record);
-
-        try { await dbContext.SaveChangesAsync(); }
-        catch (Exception) { return Errors.Record.RecordFailedToUpdate; }
-        
-        return Result.Ok;
+        return Task.FromResult(Result.Ok);
     }
 
     public async Task<Result> DeleteRecordAsync(RecordId id) {
@@ -43,9 +35,14 @@ public class RecordRepository(
 
         record.Delete();
         dbContext.Update(record);
+        
+        return Result.Ok;
+    }
+
+    public async Task<Result> SaveAsync() {
         try { await dbContext.SaveChangesAsync(); }
         catch (Exception) { return Errors.Record.RecordFailedToUpdate; }
-        
+
         return Result.Ok;
     }
 

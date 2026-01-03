@@ -19,8 +19,8 @@ public class DeleteCommandHandler(
         if (!await userRepository.VerifyPasswordAsync(user, request.Password))
             return Errors.Auth.InvalidCred;
 
-        await userRepository.DeleteAsync(user);
-        return Result.Ok;
+        Result dbResult = await userRepository.RemoveAsync(user) & await userRepository.SaveAsync();
+        return !dbResult.IsSuccess ? Errors.Record.RecordFailedToDelete : Result.Ok;
     }
 
 }

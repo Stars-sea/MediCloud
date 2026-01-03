@@ -34,11 +34,8 @@ public class CreateLiveCommandHandler(
 
         Domain.Live.Live live = createResult.Value!;
 
-        Result result = await liveRepository.CreateAsync(live);
-        if (!result.IsSuccess)
-            return result.Errors;
-
-        return live.Id;
+        Result result = await liveRepository.CreateAsync(live) & await liveRepository.SaveAsync();
+        return result.WithValueIfOk(live.Id);
     }
 
 }

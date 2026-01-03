@@ -16,4 +16,6 @@ public interface IRecordRepository {
 
     Task<List<Domain.Record.Record>> GetAllRecordsAsync(UserId ownerId);
 
+    Task<Result> SaveAsync();
+
 }

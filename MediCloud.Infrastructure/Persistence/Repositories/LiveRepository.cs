@@ -17,8 +17,7 @@ public class LiveRepository(
 
     public async Task<Result> CreateAsync(Live live) {
         await dbContext.Lives.AddAsync(live);
-        var saveResult = await SaveAsync();
-        return !saveResult.IsSuccess ? Errors.Live.LiveFailedToCreate : Result.Ok;
+        return Result.Ok;
     }
 
     public async Task<Result> SaveAsync() {

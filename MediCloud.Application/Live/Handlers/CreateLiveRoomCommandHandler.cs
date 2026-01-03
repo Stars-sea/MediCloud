@@ -23,7 +23,10 @@ public class CreateLiveRoomCommandHandler(
             return Errors.Live.LiveRoomAlreadyExists;
 
         LiveRoom liveRoom = LiveRoom.Factory.Create(userId, roomName);
-        return await liveRoomRepository.CreateAsync(liveRoom);
+        await liveRoomRepository.CreateAsync(liveRoom);
+        user.LiveRoomId = liveRoom.Id;
+
+        return await liveRoomRepository.SaveAsync();
     }
 
 }

@@ -56,7 +56,7 @@ public abstract class ApplicationTestBase {
         IUserRepository     repo  = scope.ServiceProvider.GetRequiredService<IUserRepository>();
 
         User   user   = User.Factory.Create(DefaultEmail, DefaultUsername);
-        Result result = await repo.CreateAsync(user, DefaultPassword);
+        Result result = await repo.CreateAsync(user, DefaultPassword) & await repo.SaveAsync();
 
         AssertResult(result);
     }
@@ -67,7 +67,7 @@ public abstract class ApplicationTestBase {
         IUserRepository     repo  = scope.ServiceProvider.GetRequiredService<IUserRepository>();
 
         if (await repo.FindByEmailAsync(DefaultEmail) is { } user)
-            await repo.DeleteAsync(user);
+            await repo.RemoveAsync(user);
     }
 
     protected static void AssertResult(Result result, bool isSuccess = true) {

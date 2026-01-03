@@ -45,7 +45,24 @@ public sealed class LiveRoom : AggregateRoot<LiveRoomId, Guid> {
 
         Live.Live live = Live.Live.Factory.Create(liveName, OwnerId, Id);
         _liveIds.Add(live.Id);
+
+        Status = LiveRoomStatus.Pending;
+
         return live;
+    }
+    
+    public Result StartLive() {
+        if (Status != LiveRoomStatus.Pending)
+            return Errors.Live.LiveFailedToStart;
+        Status = LiveRoomStatus.Active;
+        return Result.Ok;
+    }
+    
+    public Result StopLive() {
+        if (Status != LiveRoomStatus.Active)
+            return Errors.Live.LiveFailedToStop;
+        Status = LiveRoomStatus.Available;
+        return Result.Ok;
     }
 
     public Result Unban() {

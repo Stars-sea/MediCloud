@@ -19,11 +19,10 @@ public class AddRecordCommandHandler(
     ) {
         (UserId userId, string title, string remarks) = request;
 
-        var    record         = Domain.Record.Record.Factory.Create(userId, title, remarks);
-        Result dbCreateResult = await recordRepository.CreateRecordAsync(record);
+        var    record = Domain.Record.Record.Factory.Create(userId, title, remarks);
+        Result result = await recordRepository.CreateRecordAsync(record) & await recordRepository.SaveAsync();
 
-        if (!dbCreateResult.IsSuccess) return dbCreateResult.Errors;
-        return record.MapAddRecordResult();
+        return result.WithValueIfOk(() => record.MapAddRecordResult());
     }
 
 }

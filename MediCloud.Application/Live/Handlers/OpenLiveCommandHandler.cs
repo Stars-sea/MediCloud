@@ -44,14 +44,14 @@ public class OpenLiveCommandHandler(
         if (await liveRoomRepository.FindByIdAsync(live.LiveRoomId) is not { } liveRoom)
             return Errors.Live.LiveRoomNotFound;
 
-        if (liveRoom.Status != LiveRoomStatus.Available)
+        if (liveRoom.Status != LiveRoomStatus.Pending)
             return Errors.Live.LiveFailedToStart;
 
-        Result startResult = live.Start();
+        Result startResult = liveRoom.StartLive() & live.Start();
         if (!startResult.IsSuccess) return startResult.Errors;
 
-        Result createResult = await liveRepository.CreateAsync(live);
-        if (!createResult.IsSuccess) return createResult.Errors;
+        Result dbResult = await liveRepository.SaveAsync();
+        if (!dbResult.IsSuccess) return dbResult.Errors;
 
         const string passphrase = "";// TODO
 

@@ -26,14 +26,15 @@ public class RegisterCommandHandler(
 
         User user = User.Factory.Create(request.Email, request.Username);
 
-        Result result = await userRepository.CreateAsync(user, request.Password);
+        Result result = await userRepository.CreateAsync(user, request.Password) & await userRepository.SaveAsync();
         if (!result.IsSuccess) return result.Errors;
 
         Result<JwtGenerateResult> generateResult = jwtTokenGenerator.GenerateToken(user);
         if (!generateResult.IsSuccess) return generateResult.Errors;
 
         user.UpdateLastLoginAt();
-        await userRepository.SaveAsync();
+        result = await userRepository.SaveAsync();
+        if (!result.IsSuccess) return result.Errors;
 
         (string token, DateTimeOffset expires) = generateResult.Value!;
         return user.MapResult(token, expires);

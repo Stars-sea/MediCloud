@@ -41,7 +41,7 @@ public class AddRecordImageCommandHandler(
             return Errors.Record.RecordFailedToSaveImage;
         }
 
-        var result = await recordRepository.AddRecordImageAsync(record, name);
+        var result = await recordRepository.AddRecordImageAsync(record, name) & await recordRepository.SaveAsync();
         if (result.IsSuccess) return name;
 
         logger.LogWarning("Failed to add image {Name} in database", name);

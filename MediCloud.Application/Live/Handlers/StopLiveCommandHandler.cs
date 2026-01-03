@@ -10,6 +10,7 @@ namespace MediCloud.Application.Live.Handlers;
 
 public class StopLiveCommandHandler(
     ILiveRepository             liveRepository,
+    ILiveRoomRepository         liveRoomRepository,
     Livestream.LivestreamClient livestreamClient
 ) : IRequestHandler<StopLiveCommand, Result> {
 
@@ -17,6 +18,9 @@ public class StopLiveCommandHandler(
         if (await liveRepository.FindLiveById(request.LiveId) is not { } live ||
             live.OwnerId != request.UserId)
             return Errors.Live.LiveNotFound;
+        
+        if (await liveRoomRepository.FindByIdAsync(live.LiveRoomId) is not { } liveRoom)
+            return Errors.Live.LiveRoomNotFound;
 
         try {
             await livestreamClient.StopPullStreamAsync(new StopPullStreamRequest {
@@ -26,7 +30,7 @@ public class StopLiveCommandHandler(
         }
         catch { return Errors.Live.LiveFailedToStop; }
 
-        Result result = live.Stop();
+        Result result = live.Stop() & liveRoom.StopLive();
         if (!result.IsSuccess) return result.Errors;
 
         return await liveRepository.SaveAsync();

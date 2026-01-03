@@ -16,9 +16,9 @@ public interface IUserRepository {
 
     Task<Result> CreateAsync(User user, string password);
 
-    Task<Result> SaveAsync();
+    Task<Result> RemoveAsync(User user);
 
-    Task<Result> DeleteAsync(User user);
+    Task<Result> SaveAsync();
 
     Task<Result> SetPasswordAsync(User user, string password);
 

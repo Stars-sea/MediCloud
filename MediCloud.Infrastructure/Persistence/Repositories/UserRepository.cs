@@ -40,8 +40,12 @@ public class UserRepository(
         user.PasswordHash = passwordHasher.HashPassword(password);
         await dbContext.Users.AddAsync(user);
 
-        Result savingResult = await SaveAsync();
-        return !savingResult.IsSuccess ? Errors.User.FailedToCreate : Result.Ok;
+        return Result.Ok;
+    }
+
+    public Task<Result> RemoveAsync(User user) {
+        dbContext.Users.Remove(user);
+        return Task.FromResult(Result.Ok);
     }
 
     public async Task<Result> SaveAsync() {
@@ -51,16 +55,10 @@ public class UserRepository(
         return Result.Ok;
     }
 
-    public async Task<Result> DeleteAsync(User user) {
-        dbContext.Users.Remove(user);
-        Result saveResult = await SaveAsync();
-        return !saveResult.IsSuccess ? Errors.User.FailedToDelete : Result.Ok;
-    }
-
-    public async Task<Result> SetPasswordAsync(User user, string password) {
+    public Task<Result> SetPasswordAsync(User user, string password) {
         user.PasswordHash = passwordHasher.HashPassword(password);
         user.UpdateSecurityStamp();
-        return await SaveAsync();
+        return Task.FromResult(Result.Ok);
     }
 
 }

@@ -40,7 +40,7 @@ public class AuthenticationTest : ApplicationTestBase {
                 return;
             }
 
-            Result deleteResult = await userRepository.DeleteAsync(user);
+            Result deleteResult = await userRepository.RemoveAsync(user);
             AssertResult(deleteResult);
         }
     }
