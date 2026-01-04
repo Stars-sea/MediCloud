@@ -19,6 +19,8 @@ public static partial class LiveRoomMappers {
     public static GetLiveRoomInfoByOwnerIdQuery ToGetLiveRoomQuery(this UserId ownerId) => new(ownerId);
 
     public static GetLivesOfLiveRoomQuery ToGetLivesOfLiveRoomQuery(this LiveRoomId liveRoomId) => new(liveRoomId);
+    
+    public static GetLivesOfUserQuery ToGetLivesOfUserQuery(this UserId userId) => new(userId);
 
     public static partial GetLiveRoomInfoResponse MapResp(this GetLiveRoomInfoQueryResult result);
     
