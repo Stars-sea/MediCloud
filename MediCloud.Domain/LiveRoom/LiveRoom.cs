@@ -35,9 +35,9 @@ public sealed class LiveRoom : AggregateRoot<LiveRoomId, Guid> {
     public Result<Live.Live> CreateLive(string liveName) {
         switch (Status) {
             case LiveRoomStatus.Banned:
-                return Errors.Live.LiveRoomBanned;
+                return Errors.LiveRoom.LiveRoomBanned;
             case LiveRoomStatus.Pending or LiveRoomStatus.Active:
-                return Errors.Live.LiveRoomBusy;
+                return Errors.LiveRoom.LiveRoomBusy;
         }
 
         if (Status != LiveRoomStatus.Available) return Errors.Live.LiveFailedToCreate;
@@ -64,21 +64,21 @@ public sealed class LiveRoom : AggregateRoot<LiveRoomId, Guid> {
 
     public Result Unban() {
         if (Status != LiveRoomStatus.Banned)
-            return Errors.Live.LiveRoomFailedToUnban;
+            return Errors.LiveRoom.LiveRoomFailedToUnban;
         Status = LiveRoomStatus.Available;
         return Result.Ok;
     }
 
     public Result Ban() {
         if (Status is LiveRoomStatus.Banned or LiveRoomStatus.Deleted)
-            return Errors.Live.LiveRoomFailedToBan;
+            return Errors.LiveRoom.LiveRoomFailedToBan;
         Status = LiveRoomStatus.Banned;
         return Result.Ok;
     }
 
     public Result Delete() {
         if (Status == LiveRoomStatus.Deleted)
-            return Errors.Live.LiveRoomFailedToDelete;
+            return Errors.LiveRoom.LiveRoomFailedToDelete;
         Status = LiveRoomStatus.Deleted;
         return Result.Ok;
     }

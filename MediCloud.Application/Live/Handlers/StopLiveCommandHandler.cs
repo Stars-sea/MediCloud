@@ -20,7 +20,7 @@ public class StopLiveCommandHandler(
             return Errors.Live.LiveNotFound;
         
         if (await liveRoomRepository.FindByIdAsync(live.LiveRoomId) is not { } liveRoom)
-            return Errors.Live.LiveRoomNotFound;
+            return Errors.LiveRoom.LiveRoomNotFound;
 
         try {
             await livestreamClient.StopPullStreamAsync(new StopPullStreamRequest {

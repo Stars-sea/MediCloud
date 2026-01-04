@@ -42,7 +42,7 @@ public class OpenLiveCommandHandler(
             return Errors.Live.LiveNotFound;
 
         if (await liveRoomRepository.FindByIdAsync(live.LiveRoomId) is not { } liveRoom)
-            return Errors.Live.LiveRoomNotFound;
+            return Errors.LiveRoom.LiveRoomNotFound;
 
         if (liveRoom.Status != LiveRoomStatus.Pending)
             return Errors.Live.LiveFailedToStart;

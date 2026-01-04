@@ -19,14 +19,14 @@ public class CreateLiveRoomCommandHandler(
             return Errors.User.UserNotFound;
 
         if (user.LiveRoomId is not null)
-            return Errors.Live.LiveRoomAlreadyExists;
+            return Errors.LiveRoom.LiveRoomAlreadyExists;
 
         Domain.LiveRoom.LiveRoom liveRoom = Domain.LiveRoom.LiveRoom.Factory.Create(userId, roomName);
         await liveRoomRepository.CreateAsync(liveRoom);
         user.LiveRoomId = liveRoom.Id;
 
         Result dbResult = await liveRoomRepository.SaveAsync();
-        return !dbResult.IsSuccess ? Errors.Live.LiveRoomFailedToCreate : Result.Ok;
+        return !dbResult.IsSuccess ? Errors.LiveRoom.LiveRoomFailedToCreate : Result.Ok;
     }
 
 }

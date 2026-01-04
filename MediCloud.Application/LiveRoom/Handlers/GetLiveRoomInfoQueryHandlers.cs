@@ -9,7 +9,7 @@ using MediCloud.Domain.Common.Errors;
 
 namespace MediCloud.Application.LiveRoom.Handlers;
 
-public class GetLiveRoomInfoQueryHandler(
+public class GetLiveRoomInfoQueryHandlers(
     IUserRepository     userRepository,
     ILiveRoomRepository liveRoomRepository
 ) : IRequestHandler<GetLiveRoomInfoByIdQuery, Result<GetLiveRoomInfoQueryResult>>,
@@ -26,7 +26,7 @@ public class GetLiveRoomInfoQueryHandler(
         ConsumeContext<GetLiveRoomInfoByIdQuery> ctx
     ) {
         if (await liveRoomRepository.FindByIdAsync(request.LiveRoomId) is not { } liveRoom)
-            return Errors.Live.LiveRoomNotFound;
+            return Errors.LiveRoom.LiveRoomNotFound;
 
         return await MapResultAsync(liveRoom);
     }
@@ -39,7 +39,7 @@ public class GetLiveRoomInfoQueryHandler(
             return Errors.User.UserNotFound;
 
         if (user.LiveRoomId == null || await liveRoomRepository.FindByIdAsync(user.LiveRoomId) is not { } liveRoom)
-            return Errors.Live.LiveRoomNotFound;
+            return Errors.LiveRoom.LiveRoomNotFound;
 
         return await MapResultAsync(liveRoom);
     }

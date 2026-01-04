@@ -19,7 +19,7 @@ public class LiveRoomRepository(
         return await dbContext.LiveRooms.FindAsync(id);
     }
 
-    public async Task<LiveRoom?> FindByOwnerIdAsync(User user) {
+    public async Task<LiveRoom?> FindByOwnerAsync(User user) {
         if (user.LiveRoomId == null) return null;
         return await FindByIdAsync(user.LiveRoomId);
     }
@@ -40,7 +40,7 @@ public class LiveRoomRepository(
         return dbContext.Lives.Where(live => live.LiveRoomId == roomId);
     }
 
-    public IAsyncEnumerable<Live> GetLivesFromLiveRoom(LiveRoomId roomId) {
+    public IAsyncEnumerable<Live> GetLivesFromLiveRoomId(LiveRoomId roomId) {
         return GetLivesQuery(roomId).ToAsyncEnumerable();
     }
 
@@ -51,7 +51,7 @@ public class LiveRoomRepository(
 
     public async Task<Result> SaveAsync() {
         try { await dbContext.SaveChangesAsync(); }
-        catch (Exception) { return Errors.Live.LiveRoomFailedToSave; }
+        catch (Exception) { return Errors.LiveRoom.LiveRoomFailedToSave; }
 
         return Result.Ok;
     }

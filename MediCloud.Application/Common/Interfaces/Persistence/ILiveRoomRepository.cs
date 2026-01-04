@@ -8,7 +8,7 @@ public interface ILiveRoomRepository {
 
     Task<Domain.LiveRoom.LiveRoom?> FindByIdAsync(LiveRoomId id);
 
-    Task<Domain.LiveRoom.LiveRoom?> FindByOwnerIdAsync(User user);
+    Task<Domain.LiveRoom.LiveRoom?> FindByOwnerAsync(User user);
 
     Task<Domain.Live.Live?> FindActiveLiveInRoomAsync(LiveRoomId roomId);
 
@@ -16,7 +16,7 @@ public interface ILiveRoomRepository {
 
     Task<User?> GetOwnerAsync(Domain.LiveRoom.LiveRoom room);
 
-    IAsyncEnumerable<Domain.Live.Live> GetLivesFromLiveRoom(LiveRoomId roomId);
+    IAsyncEnumerable<Domain.Live.Live> GetLivesFromLiveRoomId(LiveRoomId roomId);
 
     Task<Result> CreateAsync(Domain.LiveRoom.LiveRoom room);
 
