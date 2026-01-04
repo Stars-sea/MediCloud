@@ -31,6 +31,12 @@ public class LiveRoomController(
         return getResult.Match(r => Ok(r.MapResp()), Problem);
     }
 
+    [HttpGet("{liveRoomId:guid}/lives")]
+    public async Task<ActionResult<GetLivesOfLiveRoomResponse>> GetLivesOfLiveRoom([FromRoute] Guid liveRoomId) {
+        Result<GetLivesOfLiveRoomQueryResult> getResult = await mediator.SendRequest(liveRoomId.ToLiveRoomId().ToGetLivesOfLiveRoomQuery());
+        return getResult.Match(r => Ok(r.MapResp()), Problem);
+    }
+
     [HttpGet("me")]
     public async Task<ActionResult<GetLiveRoomInfoResponse>> GetLiveRoomInfoByOwner() {
         UserId? ownerId = TryGetUserId();

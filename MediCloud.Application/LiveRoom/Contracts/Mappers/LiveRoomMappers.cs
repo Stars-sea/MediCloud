@@ -13,4 +13,12 @@ internal static partial class LiveRoomMappers {
         LiveId?                       pendingLiveId
     );
 
+    [MapperIgnoreSource(nameof(Domain.Live.Live.OwnerId))]
+    [MapperIgnoreSource(nameof(Domain.Live.Live.LiveRoomId))]
+    private static partial SimpleLiveInfo MapSimpleLiveInfo(this Domain.Live.Live live);
+
+    public static ValueTask<List<SimpleLiveInfo>> MapSimpleLiveInfoList(this IAsyncEnumerable<Domain.Live.Live> lives) {
+        return lives.Select(l => l.MapSimpleLiveInfo()).ToListAsync();
+    }
+
 }
