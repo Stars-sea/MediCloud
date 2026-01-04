@@ -3,12 +3,13 @@ using MediCloud.Domain.LiveRoom.Enums;
 using MediCloud.Domain.LiveRoom.ValueObjects;
 using MediCloud.Domain.User.ValueObjects;
 
-namespace MediCloud.Application.Live.Contracts.Results;
+namespace MediCloud.Application.LiveRoom.Contracts.Results;
 
 public sealed record GetLiveRoomInfoQueryResult(
     LiveRoomId     Id,
     UserId         OwnerId,
     string         RoomName,
     LiveRoomStatus Status,
-    LiveId?        ActiveLiveId
+    LiveId?        ActiveLiveId,
+    LiveId?        PendingLiveId
 );

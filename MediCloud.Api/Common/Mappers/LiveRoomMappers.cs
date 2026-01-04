@@ -1,5 +1,5 @@
-﻿using MediCloud.Application.Live.Contracts;
-using MediCloud.Application.Live.Contracts.Results;
+﻿using MediCloud.Application.LiveRoom.Contracts;
+using MediCloud.Application.LiveRoom.Contracts.Results;
 using MediCloud.Contracts.LiveRoom;
 using MediCloud.Domain.LiveRoom.ValueObjects;
 using MediCloud.Domain.User.ValueObjects;

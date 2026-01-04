@@ -1,7 +1,7 @@
 ﻿using MassTransit;
 using MassTransit.Mediator;
 using MediCloud.Api.Common.Mappers;
-using MediCloud.Application.Live.Contracts.Results;
+using MediCloud.Application.LiveRoom.Contracts.Results;
 using MediCloud.Contracts.LiveRoom;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;

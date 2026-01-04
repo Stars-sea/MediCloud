@@ -1,13 +1,12 @@
 using MassTransit;
 using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Persistence;
-using MediCloud.Application.Live.Contracts;
+using MediCloud.Application.LiveRoom.Contracts;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;
-using MediCloud.Domain.LiveRoom;
 using MediCloud.Domain.User.ValueObjects;
 
-namespace MediCloud.Application.Live.Handlers;
+namespace MediCloud.Application.LiveRoom.Handlers;
 
 public class CreateLiveRoomCommandHandler(
     IUserRepository     userRepository,
@@ -22,7 +21,7 @@ public class CreateLiveRoomCommandHandler(
         if (user.LiveRoomId is not null)
             return Errors.Live.LiveRoomAlreadyExists;
 
-        LiveRoom liveRoom = LiveRoom.Factory.Create(userId, roomName);
+        Domain.LiveRoom.LiveRoom liveRoom = Domain.LiveRoom.LiveRoom.Factory.Create(userId, roomName);
         await liveRoomRepository.CreateAsync(liveRoom);
         user.LiveRoomId = liveRoom.Id;
 

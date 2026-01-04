@@ -5,5 +5,6 @@ public record GetLiveRoomInfoResponse(
     string         OwnerId,
     string         RoomName,
     LiveRoomStatus Status,
-    string?        ActiveLiveId
+    string?        ActiveLiveId,
+    string?        PendingLiveId
 );

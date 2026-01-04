@@ -5,7 +5,6 @@ using MediCloud.Application.Live.Contracts;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.Live.ValueObjects;
-using MediCloud.Domain.LiveRoom;
 using MediCloud.Domain.User;
 using MediCloud.Domain.User.ValueObjects;
 
@@ -24,7 +23,7 @@ public class CreateLiveCommandHandler(
         if (user is null)
             return Errors.User.UserNotFound;
 
-        LiveRoom? liveRoom = await liveRoomRepository.FindByOwnerIdAsync(user);
+        Domain.LiveRoom.LiveRoom? liveRoom = await liveRoomRepository.FindByOwnerIdAsync(user);
         if (liveRoom is null)
             return Errors.Live.LiveRoomNotFound;
 
