@@ -7,6 +7,7 @@ using MediCloud.Application.Live.Contracts.Mappers;
 using MediCloud.Application.Live.Contracts.Results;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;
+using MediCloud.Domain.Live.Enums;
 using MediCloud.Domain.Live.ValueObjects;
 
 namespace MediCloud.Application.Live.Handlers;
@@ -29,9 +30,12 @@ public class GetLiveByIdQueryHandler(
         if (await liveRepository.FindLiveById(request.LiveId) is not { } live)
             return Errors.Live.LiveNotFound;
 
-        GetStreamStatusResponse response = await GetLiveStatus(live.Id);
+        GetStreamStatusResponse? response = null;
+        if (live.Status == LiveStatus.Streaming) {
+            response = await GetLiveStatus(request.LiveId);
+        }
 
-        return live.MapGetStatusResult(response.Url, response.Code);
+        return live.MapGetStatusResult(response?.Url, response?.Code);
     }
 
 }

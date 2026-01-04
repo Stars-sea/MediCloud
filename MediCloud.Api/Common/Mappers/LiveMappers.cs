@@ -24,8 +24,8 @@ public static partial class LiveMappers {
 
     [MapperIgnoreSource(nameof(GetLiveByIdQueryResult.PostUrl))]
     [MapperIgnoreSource(nameof(GetLiveByIdQueryResult.Passphrase))]
-    public static partial LiveStatusResponse MapResp(this GetLiveByIdQueryResult result);
+    public static partial LiveInfoResponse MapResp(this GetLiveByIdQueryResult result);
 
-    public static partial DetailedLiveStatusResponse MapDetailedResp(this GetLiveByIdQueryResult result);
+    public static partial DetailedLiveInfoResponse MapDetailedResp(this GetLiveByIdQueryResult result);
 
 }

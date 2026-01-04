@@ -46,12 +46,13 @@ public class LiveRoomController(
         Result<GetLiveRoomInfoQueryResult> getResult = await mediator.SendRequest(ownerId.ToGetLiveRoomQuery());
         return getResult.Match(r => Ok(r.MapResp()), Problem);
     }
-    
+
+    [HttpGet("-/lives")]
     [HttpGet("me/lives")]
     public async Task<ActionResult<GetLivesOfLiveRoomResponse>> GetLivesOfMyLiveRoom() {
         UserId? ownerId = TryGetUserId();
         if (ownerId == null) return Problem(Errors.Auth.InvalidCred);
-        
+
         Result<GetLivesOfLiveRoomQueryResult> getResult = await mediator.SendRequest(ownerId.ToGetLivesOfUserQuery());
         return getResult.Match(r => Ok(r.MapResp()), Problem);
     }

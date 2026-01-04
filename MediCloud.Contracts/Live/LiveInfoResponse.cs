@@ -1,6 +1,6 @@
 namespace MediCloud.Contracts.Live;
 
-public sealed record LiveStatusResponse(
+public sealed record LiveInfoResponse(
     string     LiveId,
     string     RoomId,
     string     OwnerId,
@@ -10,7 +10,7 @@ public sealed record LiveStatusResponse(
     DateTime?  EndedAt
 );
 
-public sealed record DetailedLiveStatusResponse(
+public sealed record DetailedLiveInfoResponse(
     string     LiveId,
     string     RoomId,
     string     OwnerId,
@@ -18,6 +18,6 @@ public sealed record DetailedLiveStatusResponse(
     LiveStatus Status,
     DateTime?  StartedAt,
     DateTime?  EndedAt,
-    string     PostUrl,
-    string     Passphrase
+    string?    PostUrl,
+    string?    Passphrase
 );

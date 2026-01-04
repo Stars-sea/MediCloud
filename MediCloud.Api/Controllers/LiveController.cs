@@ -24,8 +24,8 @@ public class LiveController(
     }
 
     [HttpGet("{liveId:guid}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LiveStatusResponse))]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DetailedLiveStatusResponse))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LiveInfoResponse))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DetailedLiveInfoResponse))]
     public async Task<ActionResult> GetLiveStatus(Guid liveId) {
         UserId? id           = TryGetUserId();
         var     statusResult = await mediator.SendRequest(liveId.ToLiveStatusQuery());

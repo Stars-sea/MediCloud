@@ -8,7 +8,7 @@ internal static partial class LiveMappers {
 
     [MapProperty(nameof(Domain.Live.Live.Id), nameof(GetLiveByIdQueryResult.LiveId))]
     [MapProperty(nameof(Domain.Live.Live.LiveRoomId), nameof(GetLiveByIdQueryResult.RoomId))]
-    public static partial GetLiveByIdQueryResult MapGetStatusResult(this Domain.Live.Live live, string postUrl, string passphrase);
+    public static partial GetLiveByIdQueryResult MapGetStatusResult(this Domain.Live.Live live, string? postUrl, string? passphrase);
 
     [MapperIgnoreSource(nameof(Domain.Live.Live.LiveRoomId))]
     [MapperIgnoreSource(nameof(Domain.Live.Live.OwnerId))]
