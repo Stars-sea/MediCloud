@@ -5,6 +5,6 @@ using MediCloud.Domain.Live.ValueObjects;
 
 namespace MediCloud.Application.Live.Contracts;
 
-public sealed record GetLiveStatusQuery(
+public sealed record GetLiveByIdQuery(
     LiveId LiveId
-) : Request<Result<GetLiveStatusQueryResult>>;
+) : Request<Result<GetLiveByIdQueryResult>>;

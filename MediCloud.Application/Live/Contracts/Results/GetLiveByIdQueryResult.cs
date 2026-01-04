@@ -5,7 +5,7 @@ using MediCloud.Domain.User.ValueObjects;
 
 namespace MediCloud.Application.Live.Contracts.Results;
 
-public sealed record GetLiveStatusQueryResult(
+public sealed record GetLiveByIdQueryResult(
     LiveId     LiveId,
     LiveRoomId RoomId,
     UserId     OwnerId,

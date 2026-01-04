@@ -11,10 +11,10 @@ using MediCloud.Domain.Live.ValueObjects;
 
 namespace MediCloud.Application.Live.Handlers;
 
-public class GetLiveStatusQueryHandler(
+public class GetLiveByIdQueryHandler(
     ILiveRepository             liveRepository,
     Livestream.LivestreamClient liveStreamClient
-) : IRequestHandler<GetLiveStatusQuery, Result<GetLiveStatusQueryResult>> {
+) : IRequestHandler<GetLiveByIdQuery, Result<GetLiveByIdQueryResult>> {
 
     private async ValueTask<GetStreamStatusResponse> GetLiveStatus(LiveId liveId) {
         return await liveStreamClient.GetStreamStatusAsync(new GetStreamStatusRequest {
@@ -22,9 +22,9 @@ public class GetLiveStatusQueryHandler(
         });
     }
 
-    public async Task<Result<GetLiveStatusQueryResult>> Handle(
-        GetLiveStatusQuery                 request,
-        ConsumeContext<GetLiveStatusQuery> ctx
+    public async Task<Result<GetLiveByIdQueryResult>> Handle(
+        GetLiveByIdQuery                 request,
+        ConsumeContext<GetLiveByIdQuery> ctx
     ) {
         if (await liveRepository.FindLiveById(request.LiveId) is not { } live)
             return Errors.Live.LiveNotFound;

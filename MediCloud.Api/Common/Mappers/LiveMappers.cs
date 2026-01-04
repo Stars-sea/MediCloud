@@ -16,16 +16,16 @@ public static partial class LiveMappers {
 
     public static partial CreateLiveCommand MapCommand(this CreateLiveRequest request, UserId userId);
 
-    public static GetLiveStatusQuery ToLiveStatusQuery(this Guid liveId) => new(liveId.ToLiveId());
+    public static GetLiveByIdQuery ToLiveStatusQuery(this Guid liveId) => new(liveId.ToLiveId());
 
     public static partial UpdateLiveStatusCommand MapCommand(this UpdateLiveStatusRequest request, LiveId liveId, UserId userId);
 
     public static partial DomainStatus MapDomain(this ContractStatus result);
 
-    [MapperIgnoreSource(nameof(GetLiveStatusQueryResult.PostUrl))]
-    [MapperIgnoreSource(nameof(GetLiveStatusQueryResult.Passphrase))]
-    public static partial LiveStatusResponse MapResp(this GetLiveStatusQueryResult result);
+    [MapperIgnoreSource(nameof(GetLiveByIdQueryResult.PostUrl))]
+    [MapperIgnoreSource(nameof(GetLiveByIdQueryResult.Passphrase))]
+    public static partial LiveStatusResponse MapResp(this GetLiveByIdQueryResult result);
 
-    public static partial DetailedLiveStatusResponse MapDetailedResp(this GetLiveStatusQueryResult result);
+    public static partial DetailedLiveStatusResponse MapDetailedResp(this GetLiveByIdQueryResult result);
 
 }
