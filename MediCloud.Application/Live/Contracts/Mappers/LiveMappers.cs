@@ -8,7 +8,7 @@ internal static partial class LiveMappers {
 
     [MapProperty(nameof(Domain.Live.Live.Id), nameof(GetLiveByIdQueryResult.LiveId))]
     [MapProperty(nameof(Domain.Live.Live.LiveRoomId), nameof(GetLiveByIdQueryResult.RoomId))]
-    public static partial GetLiveByIdQueryResult MapGetStatusResult(this Domain.Live.Live live, string? postUrl, string? passphrase);
+    private static partial GetLiveByIdQueryResult MapGetStatusResultInternal(this Domain.Live.Live live, Uri? postUrl, string? passphrase);
 
     [MapperIgnoreSource(nameof(Domain.Live.Live.LiveRoomId))]
     [MapperIgnoreSource(nameof(Domain.Live.Live.OwnerId))]
@@ -16,6 +16,28 @@ internal static partial class LiveMappers {
     [MapperIgnoreSource(nameof(Domain.Live.Live.StartedAt))]
     [MapperIgnoreSource(nameof(Domain.Live.Live.EndedAt))]
     [MapProperty(nameof(Domain.Live.Live.Id), nameof(OpenLiveCommandResult.LiveId))]
-    public static partial OpenLiveCommandResult MapOpenLiveResult(this Domain.Live.Live live, string watchUrl, string postUrl, string passphrase);
+    private static partial OpenLiveCommandResult MapOpenLiveResultInternal(this Domain.Live.Live live, Uri postUrl, string passphrase);
+
+    private static Uri FormatSrtUrl(string srtDomain, uint port, string passphrase)
+        => string.IsNullOrEmpty(passphrase)
+            ? new Uri($"srt://{srtDomain}:{port}?mode=caller")
+            : new Uri($"srt://{srtDomain}:{port}?mode=caller&passphrase={passphrase}");
+
+    extension(Domain.Live.Live live) {
+
+        public GetLiveByIdQueryResult MapGetStatusResult(string srtDomain, uint? port, string? passphrase) {
+            if (port is null || passphrase is null)
+                return live.MapGetStatusResultInternal(null, null);
+
+            Uri postUrl = FormatSrtUrl(srtDomain, port.Value, passphrase);
+            return live.MapGetStatusResultInternal(postUrl, passphrase);
+        }
+
+        public OpenLiveCommandResult MapOpenLiveResult(string srtDomain, uint port, string passphrase) {
+            Uri postUrl = FormatSrtUrl(srtDomain, port, passphrase);
+            return live.MapOpenLiveResultInternal(postUrl, passphrase);
+        }
+
+    }
 
 }

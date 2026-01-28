@@ -18,16 +18,15 @@ public class OpenLiveCommandHandler(
     ILiveRepository              liveRepository,
     ILiveRoomRepository          liveRoomRepository,
     Livestream.LivestreamClient  livestreamClient,
-    IOptions<LivestreamSettings> liveStreamingOption
+    IOptions<LivestreamSettings> livestreamSettings
 ) : IRequestHandler<OpenLiveCommand, Result<OpenLiveCommandResult>> {
 
-    private LivestreamSettings LivestreamSettings => liveStreamingOption.Value;
+    private string SrtDomain => livestreamSettings.Value.SrtDomain;
 
-    private async ValueTask<StartPullStreamResponse> StartPullStreamAsync(string url, string passphrase, LiveId liveId) {
+    private async ValueTask<StartPullStreamResponse> StartPullStreamAsync(string passphrase, LiveId liveId) {
         return await livestreamClient.StartPullStreamAsync(new StartPullStreamRequest {
-                Url        = url,
-                Passphrase = passphrase,
-                LiveId     = liveId.ToString()
+                LiveId     = liveId.ToString(),
+                Passphrase = passphrase
             }
         );
     }
@@ -56,12 +55,11 @@ public class OpenLiveCommandHandler(
         const string passphrase = "";// TODO
 
         var resp = await StartPullStreamAsync(
-            LivestreamSettings.SrtServer,
             passphrase,
             live.Id
         );
 
-        return live.MapOpenLiveResult("...", resp.Url, resp.Code);
+        return live.MapOpenLiveResult(SrtDomain, resp.Port, resp.Passphrase);
     }
 
 }

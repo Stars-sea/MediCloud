@@ -6,6 +6,6 @@ public class LivestreamSettings {
 
     public string GrpcServer { get; set; } = null!;
 
-    public string SrtServer { get; set; } = null!;
+    public string SrtDomain { get; set; } = null!;
 
 }

@@ -13,6 +13,6 @@ public sealed record GetLiveByIdQueryResult(
     LiveStatus Status,
     DateTime?  StartedAt,
     DateTime?  EndedAt,
-    string?    PostUrl,
+    Uri?       PostUrl,
     string?    Passphrase
 );
