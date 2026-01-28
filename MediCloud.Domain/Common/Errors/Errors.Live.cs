@@ -29,19 +29,24 @@ public static partial class Errors {
             "Failed to create live."
         );
 
-        public static Error LiveNotFound => Error.Conflict(
+        public static Error LiveNotFound => Error.NotFound(
             "Live.NotFound",
             "Live not found."
         );
 
-        public static Error LiveFailedToStop => Error.Conflict(
+        public static Error LiveFailedToStop => Error.Unexpected(
             "Live.FailedToStop",
             "Failed to stop live stream."
         );
 
-        public static Error LiveFailedToStart => Error.Conflict(
+        public static Error LiveFailedToStart => Error.Unexpected(
             "Live.FailedToStart",
             "Failed to start live stream."
+        );
+        
+        public static Error LiveInternalError => Error.Unexpected(
+            "Live.InternalError",
+            "An internal error occurred in live service."
         );
 
     }

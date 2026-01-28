@@ -59,7 +59,7 @@ public record Result<T>(T? Value, params Error[] Errors) : Result(Errors) where 
         return false;
     }
 
-    public Result Map<TResult>(Func<T, TResult> mapper) where TResult : class {
+    public Result<TResult> Map<TResult>(Func<T, TResult> mapper) where TResult : class {
         return IsSuccess ? new Result<TResult>(mapper(Value!)) : new Result<TResult>(null, Errors);
     }
 

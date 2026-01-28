@@ -19,6 +19,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Minio;
 
+// ReSharper disable UnusedMethodReturnValue.Local
+// ReSharper disable ConvertToExtensionBlock
+
 namespace MediCloud.Infrastructure;
 
 public static class DependencyInjection {
@@ -84,13 +87,13 @@ public static class DependencyInjection {
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
                         options.TokenValidationParameters = new TokenValidationParameters {
-                            ValidateIssuer = true,
-                            ValidateAudience = true,
-                            ValidateLifetime = true,
+                            ValidateIssuer           = true,
+                            ValidateAudience         = true,
+                            ValidateLifetime         = true,
                             ValidateIssuerSigningKey = true,
-                            ValidIssuer = jwtSettings.Issuer,
-                            ValidAudience = jwtSettings.Audience,
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
+                            ValidIssuer              = jwtSettings.Issuer,
+                            ValidAudience            = jwtSettings.Audience,
+                            IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
                         };
                         options.MapInboundClaims = false;
 
@@ -107,6 +110,7 @@ public static class DependencyInjection {
         services.AddGrpcClient<Livestream.LivestreamClient>(options
             => options.Address = new Uri(livestreamSettings.GrpcServer)
         );
+        services.AddScoped<ILivestreamService, LivestreamService>();
         return services;
     }
 
