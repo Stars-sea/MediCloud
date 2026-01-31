@@ -43,10 +43,15 @@ public static partial class Errors {
             "Live.FailedToStart",
             "Failed to start live stream."
         );
-        
+
         public static Error LiveInternalError => Error.Unexpected(
             "Live.InternalError",
             "An internal error occurred in live service."
+        );
+
+        public static Error LiveOperationCanceled => Error.Conflict(
+            "Live.OperationCanceled",
+            "Operation canceled."
         );
 
     }
