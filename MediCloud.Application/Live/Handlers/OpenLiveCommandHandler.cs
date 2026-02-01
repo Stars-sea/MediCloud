@@ -18,6 +18,7 @@ public class OpenLiveCommandHandler(
     ILiveRepository              liveRepository,
     ILiveRoomRepository          liveRoomRepository,
     ILivestreamService           livestreamService,
+    ILivestreamMonitorQueue      livestreamMonitorQueue,
     IOptions<LivestreamSettings> livestreamSettings
 ) : IRequestHandler<OpenLiveCommand, Result<OpenLiveCommandResult>> {
 
@@ -42,6 +43,8 @@ public class OpenLiveCommandHandler(
 
         var resp = await livestreamService.StartPullStreamAsync(liveId, passphrase);
         if (!resp.IsSuccess) return Errors.Live.LiveFailedToStart;
+
+        await livestreamMonitorQueue.QueueLiveIdAsync(liveId);
 
         Result startResult = liveRoom.StartLive() & live.Start();
         if (!startResult.IsSuccess) return startResult.Errors;

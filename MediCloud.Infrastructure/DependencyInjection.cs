@@ -111,6 +111,8 @@ public static class DependencyInjection {
             => options.Address = new Uri(livestreamSettings.GrpcServer)
         );
         services.AddScoped<ILivestreamService, LivestreamService>();
+        services.AddSingleton<ILivestreamMonitorQueue, LivestreamMonitorQueue>();
+        services.AddHostedService<LivestreamStatusSyncWorker>();
         return services;
     }
 
