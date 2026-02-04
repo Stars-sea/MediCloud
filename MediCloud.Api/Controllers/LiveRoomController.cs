@@ -1,5 +1,4 @@
-﻿using MassTransit;
-using MassTransit.Mediator;
+﻿using Mediator;
 using MediCloud.Api.Common.Mappers;
 using MediCloud.Application.LiveRoom.Contracts.Results;
 using MediCloud.Contracts.LiveRoom;
@@ -21,19 +20,19 @@ public class LiveRoomController(
         if (id == null)
             return Problem(Errors.Auth.InvalidCred);
 
-        var createResult = await mediator.SendRequest(request.MapCommand(id));
+        var createResult = await mediator.Send(request.MapCommand(id));
         return createResult.Match<ActionResult>(Ok, Problem);
     }
 
     [HttpGet("{liveRoomId:guid}")]
     public async Task<ActionResult<GetLiveRoomInfoResponse>> GetLiveRoomInfo([FromRoute] Guid liveRoomId) {
-        Result<GetLiveRoomInfoQueryResult> getResult = await mediator.SendRequest(liveRoomId.ToLiveRoomId().ToGetLiveRoomQuery());
+        Result<GetLiveRoomInfoQueryResult> getResult = await mediator.Send(liveRoomId.ToLiveRoomId().ToGetLiveRoomQuery());
         return getResult.Match(r => Ok(r.MapResp()), Problem);
     }
 
     [HttpGet("{liveRoomId:guid}/lives")]
     public async Task<ActionResult<GetLivesOfLiveRoomResponse>> GetLivesOfLiveRoom([FromRoute] Guid liveRoomId) {
-        Result<GetLivesOfLiveRoomQueryResult> getResult = await mediator.SendRequest(liveRoomId.ToLiveRoomId().ToGetLivesOfLiveRoomQuery());
+        Result<GetLivesOfLiveRoomQueryResult> getResult = await mediator.Send(liveRoomId.ToLiveRoomId().ToGetLivesOfLiveRoomQuery());
         return getResult.Match(r => Ok(r.MapResp()), Problem);
     }
 
@@ -43,7 +42,7 @@ public class LiveRoomController(
         if (ownerId == null)
             return Problem(Errors.Auth.InvalidCred);
 
-        Result<GetLiveRoomInfoQueryResult> getResult = await mediator.SendRequest(ownerId.ToGetLiveRoomQuery());
+        Result<GetLiveRoomInfoQueryResult> getResult = await mediator.Send(ownerId.ToGetLiveRoomQuery());
         return getResult.Match(r => Ok(r.MapResp()), Problem);
     }
 
@@ -53,7 +52,7 @@ public class LiveRoomController(
         UserId? ownerId = TryGetUserId();
         if (ownerId == null) return Problem(Errors.Auth.InvalidCred);
 
-        Result<GetLivesOfLiveRoomQueryResult> getResult = await mediator.SendRequest(ownerId.ToGetLivesOfUserQuery());
+        Result<GetLivesOfLiveRoomQueryResult> getResult = await mediator.Send(ownerId.ToGetLivesOfUserQuery());
         return getResult.Match(r => Ok(r.MapResp()), Problem);
     }
 

@@ -1,4 +1,4 @@
-using MassTransit.Mediator;
+using Mediator;
 using MediCloud.Application.Live.Contracts.Results;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.Live.ValueObjects;
@@ -7,4 +7,4 @@ namespace MediCloud.Application.Live.Contracts;
 
 public sealed record GetLiveByIdQuery(
     LiveId LiveId
-) : Request<Result<GetLiveByIdQueryResult>>;
+) : IQuery<Result<GetLiveByIdQueryResult>>;

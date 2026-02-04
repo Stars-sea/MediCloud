@@ -1,5 +1,4 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using MassTransit;
 using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Persistence;
@@ -13,7 +12,7 @@ public class AuthenticationTest : ApplicationTestBase {
     [Test]
     [TestCase(DefaultEmail, DefaultUsername, DefaultPassword)]
     public async Task TestRegisterDuplicateEmail(string email, string username, string password) {
-        var registerResult = await Mediator.SendRequest(new RegisterCommand(username, email, password));
+        var registerResult = await Mediator.Send(new RegisterCommand(username, email, password));
 
         AssertResult(registerResult, false);
     }
@@ -25,7 +24,7 @@ public class AuthenticationTest : ApplicationTestBase {
     [TestCase("test@test1.com", "test_user", "123456", false)]
     public async Task TestRegister(string email, string username, string password, bool isSuccess) {
         using (Assert.EnterMultipleScope()) {
-            var registerResult = await Mediator.SendRequest(new RegisterCommand(username, email, password));
+            var registerResult = await Mediator.Send(new RegisterCommand(username, email, password));
 
             AssertResult(registerResult, isSuccess);
 
@@ -49,7 +48,7 @@ public class AuthenticationTest : ApplicationTestBase {
     [TestCase(DefaultEmail, DefaultPassword, true)]
     [TestCase(DefaultEmail, "123456", false)]
     public async Task TestLogin(string email, string password, bool isSuccess) {
-        var loginResult = await Mediator.SendRequest(new LoginQuery(email, password));
+        var loginResult = await Mediator.Send(new LoginQuery(email, password));
 
         AssertResult(loginResult, isSuccess);
     }
@@ -57,7 +56,7 @@ public class AuthenticationTest : ApplicationTestBase {
     [Test]
     public async Task TestRefresh() {
         // #1 Login
-        var loginResult = await Mediator.SendRequest(new LoginQuery(DefaultEmail, DefaultPassword));
+        var loginResult = await Mediator.Send(new LoginQuery(DefaultEmail, DefaultPassword));
         AssertResult(loginResult);
 
         // #2 Read token
@@ -68,7 +67,7 @@ public class AuthenticationTest : ApplicationTestBase {
         string expires = token.Claims.First(c => c.Type == JwtRegisteredClaimNames.Exp).Value;
 
         // #3 Refresh
-        var refreshResult = await Mediator.SendRequest(new RefreshTokenCommand(email, jti, expires));
+        var refreshResult = await Mediator.Send(new RefreshTokenCommand(email, jti, expires));
         AssertResult(refreshResult);
 
         IJwtTokenBlacklist blacklist = Provider.GetRequiredService<IJwtTokenBlacklist>();

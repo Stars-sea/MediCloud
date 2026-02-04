@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using MassTransit;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
@@ -30,8 +29,8 @@ public static class DependencyInjection {
         services.AddPersistence(configuration)
                 .AddCachingService(configuration)
                 .AddAuth(configuration)
-                .AddLivestream(configuration)
-                .AddMassTransit(configuration);
+                .AddLivestream(configuration);
+                // .AddMassTransit(configuration);
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
@@ -114,23 +113,6 @@ public static class DependencyInjection {
         services.AddSingleton<ILivestreamMonitorQueue, LivestreamMonitorQueue>();
         services.AddHostedService<LivestreamStatusSyncWorker>();
         return services;
-    }
-
-    private static IServiceCollection AddMassTransit(this IServiceCollection services, IConfiguration configuration) {
-        services.AddMassTransit(options => {
-                options.UsingRabbitMq(ConfigureRabbitMq);
-                options.AddDelayedMessageScheduler();
-
-                options.AddConsumers(typeof(Application.DependencyInjection).Assembly);
-            }
-        );
-        return services;
-
-        void ConfigureRabbitMq(IBusRegistrationContext context, IRabbitMqBusFactoryConfigurator cfg) {
-            cfg.Host(configuration.GetConnectionString("RabbitMQ"));
-            cfg.ConfigureEndpoints(context);
-            cfg.UseDelayedMessageScheduler();
-        }
     }
 
 }

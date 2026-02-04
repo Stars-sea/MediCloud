@@ -1,5 +1,4 @@
-using MassTransit;
-using MediCloud.Application.Common.Interfaces;
+using Mediator;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
 using MediCloud.Application.Live.Contracts;
@@ -12,11 +11,11 @@ public class StopLiveCommandHandler(
     ILiveRepository     liveRepository,
     ILiveRoomRepository liveRoomRepository,
     ILivestreamService  livestreamService
-) : IRequestHandler<StopLiveCommand, Result> {
+) : ICommandHandler<StopLiveCommand, Result> {
 
-    public async Task<Result> Handle(StopLiveCommand request, ConsumeContext<StopLiveCommand> ctx) {
-        if (await liveRepository.FindLiveById(request.LiveId) is not { } live ||
-            live.OwnerId != request.UserId)
+    public async ValueTask<Result> Handle(StopLiveCommand command, CancellationToken cancellationToken) {
+        if (await liveRepository.FindLiveById(command.LiveId) is not { } live ||
+            live.OwnerId != command.UserId)
             return Errors.Live.LiveNotFound;
 
         if (await liveRoomRepository.FindByIdAsync(live.LiveRoomId) is not { } liveRoom)

@@ -1,5 +1,4 @@
-using MassTransit;
-using MediCloud.Application.Common.Interfaces;
+using Mediator;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Profile.Contracts;
 using MediCloud.Domain.Common;
@@ -9,14 +8,14 @@ namespace MediCloud.Application.Profile.Handlers;
 
 public class DeleteCommandHandler(
     IUserRepository userRepository
-) : IRequestHandler<DeleteCommand> {
+) : ICommandHandler<DeleteCommand, Result> {
 
-    public async Task<Result> Handle(DeleteCommand request, ConsumeContext<DeleteCommand> ctx) {
-        if (await userRepository.FindByEmailAsync(request.Email) is not { } user ||
-            !user.Username.Equals(request.Username, StringComparison.OrdinalIgnoreCase))
+    public async ValueTask<Result> Handle(DeleteCommand command, CancellationToken cancellationToken) {
+        if (await userRepository.FindByEmailAsync(command.Email) is not { } user ||
+            !user.Username.Equals(command.Username, StringComparison.OrdinalIgnoreCase))
             return Errors.Auth.UsernameEmailNotMatch;
 
-        if (!await userRepository.VerifyPasswordAsync(user, request.Password))
+        if (!await userRepository.VerifyPasswordAsync(user, command.Password))
             return Errors.Auth.InvalidCred;
 
         Result dbResult = await userRepository.RemoveAsync(user) & await userRepository.SaveAsync();

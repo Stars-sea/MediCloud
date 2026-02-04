@@ -1,5 +1,4 @@
-using MassTransit;
-using MediCloud.Application.Common.Interfaces;
+using Mediator;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
 using MediCloud.Application.Common.Settings;
@@ -17,15 +16,12 @@ public class GetLiveByIdQueryHandler(
     ILiveRepository              liveRepository,
     ILivestreamService           livestreamService,
     IOptions<LivestreamSettings> livestreamSettings
-) : IRequestHandler<GetLiveByIdQuery, Result<GetLiveByIdQueryResult>> {
+) : IQueryHandler<GetLiveByIdQuery, Result<GetLiveByIdQueryResult>> {
 
     private string SrtDomain => livestreamSettings.Value.SrtDomain;
 
-    public async Task<Result<GetLiveByIdQueryResult>> Handle(
-        GetLiveByIdQuery                 request,
-        ConsumeContext<GetLiveByIdQuery> ctx
-    ) {
-        if (await liveRepository.FindLiveById(request.LiveId) is not { } live)
+    public async ValueTask<Result<GetLiveByIdQueryResult>> Handle(GetLiveByIdQuery query, CancellationToken cancellationToken) {
+        if (await liveRepository.FindLiveById(query.LiveId) is not { } live)
             return Errors.Live.LiveNotFound;
 
         // TODO: Sync status

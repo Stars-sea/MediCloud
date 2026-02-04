@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
-using MassTransit;
-using MassTransit.Mediator;
+using Mediator;
 using MediCloud.Api.Common.Mappers;
 using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Authentication.Contracts.Results;
@@ -23,14 +22,14 @@ public class AuthenticationController(
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<ActionResult<AuthenticationResponse>> Login([FromBody] LoginRequest request) {
-        var loginResult = await mediator.SendRequest(request.MapQuery());
+        var loginResult = await mediator.Send(request.MapQuery());
         return loginResult.Match(TokenCreated, Problem);
     }
 
     [HttpPost("register")]
     [AllowAnonymous]
     public async Task<ActionResult<AuthenticationResponse>> Register([FromBody] RegisterRequest request) {
-        var registerResult = await mediator.SendRequest(request.MapCommand());
+        var registerResult = await mediator.Send(request.MapCommand());
         return registerResult.Match(TokenCreated, Problem);
     }
 
@@ -41,7 +40,7 @@ public class AuthenticationController(
         string jti          = User.FindFirst(JwtRegisteredClaimNames.Jti)!.Value;
         string expiresStamp = User.FindFirst(JwtRegisteredClaimNames.Exp)!.Value;
 
-        var refreshResult = await mediator.SendRequest(new RefreshTokenCommand(email, jti, expiresStamp));
+        var refreshResult = await mediator.Send(new RefreshTokenCommand(email, jti, expiresStamp));
         return refreshResult.Match(TokenCreated, Problem);
     }
 

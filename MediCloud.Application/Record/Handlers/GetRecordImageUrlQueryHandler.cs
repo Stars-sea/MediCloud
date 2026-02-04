@@ -1,5 +1,4 @@
-using MassTransit;
-using MediCloud.Application.Common.Interfaces;
+using Mediator;
 using MediCloud.Application.Common.Interfaces.Services.Storage;
 using MediCloud.Application.Common.Settings;
 using MediCloud.Application.Record.Contracts;
@@ -15,19 +14,16 @@ public class GetRecordImageUrlQueryHandler(
     IImageStorage                          imageStorage,
     IOptions<MinioSettings>                minioSettings,
     ILogger<GetRecordImageUrlQueryHandler> logger
-) : IRequestHandler<GetRecordImageUrlQuery, Result<string>> {
+) : IQueryHandler<GetRecordImageUrlQuery, Result<string>> {
 
     private int UrlExpirySeconds => minioSettings.Value.UrlExpiryMinutes <= 0
         ? 24 * 60 * 60
         : minioSettings.Value.UrlExpiryMinutes * 60;
 
-    public async Task<Result<string>> Handle(
-        GetRecordImageUrlQuery                 request,
-        ConsumeContext<GetRecordImageUrlQuery> ctx
-    ) {
-        (RecordId id, string imageName) = request;
+    public async ValueTask<Result<string>> Handle(GetRecordImageUrlQuery query, CancellationToken cancellationToken) {
+        (RecordId id, string imageName) = query;
 
-        try { return await imageStorage.PresignedGetUrlAsync(id.ToString(), imageName, UrlExpirySeconds); }
+        try { return await imageStorage.PresignedGetUrlAsync(id.ToString(), imageName, UrlExpirySeconds, cancellationToken); }
         catch (Exception e) {
             logger.LogWarning(e, "Failed to get image url");
             return Errors.Record.RecordImageNotFound;

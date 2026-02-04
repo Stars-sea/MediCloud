@@ -1,5 +1,4 @@
 using System.Text;
-using MassTransit;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
@@ -22,8 +21,7 @@ public static class DependencyInjection {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration) {
         services.AddPersistence(configuration)
                 .AddCachingService()
-                .AddAuth(configuration)
-                .AddMassTransitTest();
+                .AddAuth(configuration);
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
@@ -75,19 +73,19 @@ public static class DependencyInjection {
         return services;
     }
 
-    private static IServiceCollection AddMassTransitTest(this IServiceCollection services) {
-        services.AddMassTransitTestHarness(options => {
-                options.UsingInMemory((context, cfg) => {
-                        cfg.ConfigureEndpoints(context);
-                        cfg.UseDelayedMessageScheduler();
-                    }
-                );
-                options.AddDelayedMessageScheduler();
-                
-                options.AddConsumers(typeof(MediCloud.Application.DependencyInjection).Assembly);
-            }
-        );
-        return services;
-    }
+    // private static IServiceCollection AddMassTransitTest(this IServiceCollection services) {
+    //     services.AddMassTransitTestHarness(options => {
+    //             options.UsingInMemory((context, cfg) => {
+    //                     cfg.ConfigureEndpoints(context);
+    //                     cfg.UseDelayedMessageScheduler();
+    //                 }
+    //             );
+    //             options.AddDelayedMessageScheduler();
+    //             
+    //             options.AddConsumers(typeof(MediCloud.Application.DependencyInjection).Assembly);
+    //         }
+    //     );
+    //     return services;
+    // }
 
 }

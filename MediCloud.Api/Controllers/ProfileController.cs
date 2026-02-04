@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
-using MassTransit;
-using MassTransit.Mediator;
+using Mediator;
 using MediCloud.Api.Common.Mappers;
 using MediCloud.Application.Profile.Contracts;
 using MediCloud.Contracts.Profile;
@@ -22,7 +21,7 @@ public class ProfileController(
         if (id == null)
             return Problem(Errors.Auth.InvalidCred);
 
-        var findResult = await mediator.SendRequest(new FindUserByIdQuery(id));
+        var findResult = await mediator.Send(new FindUserByIdQuery(id));
         if (!findResult.IsSuccess) return Problem(findResult.Errors);
 
         User user = findResult.Value!;
@@ -45,7 +44,7 @@ public class ProfileController(
         );
         DateTimeOffset expiresOffset = DateTimeOffset.FromUnixTimeSeconds(expires);
 
-        var findResult = await mediator.SendRequest(new FindUserByNameQuery(username));
+        var findResult = await mediator.Send(new FindUserByNameQuery(username));
         return findResult.Match(
             user => user.Id == id
                 ? Ok(user.MapDetailedResp(expiresOffset))
@@ -58,7 +57,7 @@ public class ProfileController(
     public async Task<ActionResult> SetPassword([FromBody] ChangePasswordRequest request) {
         string email = User.FindFirst(JwtRegisteredClaimNames.Email)!.Value;
 
-        var setPasswordResult = await mediator.SendRequest(request.ToCommand(email));
+        var setPasswordResult = await mediator.Send(request.ToCommand(email));
         return setPasswordResult.Match<ActionResult>(Ok, Problem);
     }
 
@@ -66,7 +65,7 @@ public class ProfileController(
     public async Task<ActionResult<DeleteResponse>> Delete(string username, [FromBody] DeleteRequest request) {
         string email = User.FindFirst(JwtRegisteredClaimNames.Email)!.Value;
 
-        var deleteResult = await mediator.SendRequest(request.ToCommand(username, email));
+        var deleteResult = await mediator.Send(request.ToCommand(username, email));
         return deleteResult.Match(() => Ok(new DeleteResponse(username, email)), Problem);
     }
 

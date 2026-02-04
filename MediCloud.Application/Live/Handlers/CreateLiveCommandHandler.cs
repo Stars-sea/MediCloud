@@ -1,5 +1,4 @@
-﻿using MassTransit;
-using MediCloud.Application.Common.Interfaces;
+﻿using Mediator;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Live.Contracts;
 using MediCloud.Domain.Common;
@@ -14,10 +13,10 @@ public class CreateLiveCommandHandler(
     IUserRepository     userRepository,
     ILiveRepository     liveRepository,
     ILiveRoomRepository liveRoomRepository
-) : IRequestHandler<CreateLiveCommand, Result<LiveId>> {
+) : ICommandHandler<CreateLiveCommand, Result<LiveId>> {
 
-    public async Task<Result<LiveId>> Handle(CreateLiveCommand request, ConsumeContext<CreateLiveCommand> ctx) {
-        (UserId userId, string liveName) = request;
+    public async ValueTask<Result<LiveId>> Handle(CreateLiveCommand command, CancellationToken cancellationToken) {
+        (UserId userId, string liveName) = command;
 
         User? user = await userRepository.FindByIdAsync(userId);
         if (user is null)

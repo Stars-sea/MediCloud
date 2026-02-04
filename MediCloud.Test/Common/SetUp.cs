@@ -14,6 +14,7 @@ public class SetUp {
         ConfigurationManager configurationManager = new();
         configurationManager.AddJsonFile(SettingsFileName, false, true);
 
+        _services.AddMediator();
         _services.AddApplication();
         _services.AddInfrastructure(configurationManager);
     }

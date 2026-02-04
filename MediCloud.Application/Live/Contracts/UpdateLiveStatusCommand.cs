@@ -1,4 +1,4 @@
-﻿using MassTransit.Mediator;
+﻿using Mediator;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.Live.Enums;
 using MediCloud.Domain.Live.ValueObjects;
@@ -11,4 +11,4 @@ public sealed record UpdateLiveStatusCommand(
     LiveId      LiveId,
     string?     LiveName,
     LiveStatus? Status
-) : Request<Result>;
+) : ICommand<Result>;

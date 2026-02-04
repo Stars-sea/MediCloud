@@ -1,5 +1,4 @@
-using MassTransit;
-using MediCloud.Application.Common.Interfaces;
+using Mediator;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.LiveRoom.Contracts;
 using MediCloud.Domain.Common;
@@ -11,10 +10,10 @@ namespace MediCloud.Application.LiveRoom.Handlers;
 public class CreateLiveRoomCommandHandler(
     IUserRepository     userRepository,
     ILiveRoomRepository liveRoomRepository
-) : IRequestHandler<CreateLiveRoomCommand, Result> {
+) : ICommandHandler<CreateLiveRoomCommand, Result> {
 
-    public async Task<Result> Handle(CreateLiveRoomCommand request, ConsumeContext<CreateLiveRoomCommand> ctx) {
-        (UserId userId, string roomName) = request;
+    public async ValueTask<Result> Handle(CreateLiveRoomCommand command, CancellationToken cancellationToken) {
+        (UserId userId, string roomName) = command;
         if (await userRepository.FindByIdAsync(userId) is not { } user)
             return Errors.User.UserNotFound;
 

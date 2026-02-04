@@ -1,5 +1,4 @@
-﻿using MassTransit;
-using MediCloud.Application.Common.Interfaces;
+﻿using Mediator;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.LiveRoom.Contracts;
 using MediCloud.Application.LiveRoom.Contracts.Mappers;
@@ -13,25 +12,19 @@ namespace MediCloud.Application.LiveRoom.Handlers;
 public class GetLivesQueryHandlers(
     IUserRepository     userRepository,
     ILiveRoomRepository liveRoomRepository
-) : IRequestHandler<GetLivesOfLiveRoomQuery, Result<GetLivesOfLiveRoomQueryResult>>,
-    IRequestHandler<GetLivesOfUserQuery, Result<GetLivesOfLiveRoomQueryResult>> {
+) : IQueryHandler<GetLivesOfLiveRoomQuery, Result<GetLivesOfLiveRoomQueryResult>>,
+    IQueryHandler<GetLivesOfUserQuery, Result<GetLivesOfLiveRoomQueryResult>> {
 
-    public async Task<Result<GetLivesOfLiveRoomQueryResult>> Handle(
-        GetLivesOfLiveRoomQuery                 request,
-        ConsumeContext<GetLivesOfLiveRoomQuery> ctx
-    ) {
-        var lives = await liveRoomRepository.GetLivesFromLiveRoomId(request.LiveRoomId).MapSimpleLiveInfoList();
+    public async ValueTask<Result<GetLivesOfLiveRoomQueryResult>> Handle(GetLivesOfLiveRoomQuery query, CancellationToken cancellationToken) {
+        var lives = await liveRoomRepository.GetLivesFromLiveRoomId(query.LiveRoomId).MapSimpleLiveInfoList();
         return new GetLivesOfLiveRoomQueryResult(
-            request.LiveRoomId,
+            query.LiveRoomId,
             lives
         );
     }
 
-    public async Task<Result<GetLivesOfLiveRoomQueryResult>> Handle(
-        GetLivesOfUserQuery                 request,
-        ConsumeContext<GetLivesOfUserQuery> ctx
-    ) {
-        User? user = await userRepository.FindByIdAsync(request.UserId);
+    public async ValueTask<Result<GetLivesOfLiveRoomQueryResult>> Handle(GetLivesOfUserQuery query, CancellationToken cancellationToken) {
+        User? user = await userRepository.FindByIdAsync(query.UserId);
         if (user is null) return Errors.User.UserNotFound;
 
         var liveRoom = await liveRoomRepository.FindByOwnerAsync(user);

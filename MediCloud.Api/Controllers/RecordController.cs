@@ -1,5 +1,4 @@
-using MassTransit;
-using MassTransit.Mediator;
+using Mediator;
 using MediCloud.Api.Common.Mappers;
 using MediCloud.Application.Record.Contracts;
 using MediCloud.Contracts.Record;
@@ -20,13 +19,13 @@ public class RecordController(
         UserId? userId = TryGetUserId();
         if (userId is null) return Problem(Errors.Auth.InvalidCred);
 
-        var createRecordResult = await mediator.SendRequest(request.MapCommand(userId));
+        var createRecordResult = await mediator.Send(request.MapCommand(userId));
         return createRecordResult.Match(r => Ok(r.MapResp()), Problem);
     }
 
     [HttpGet("{recordId:guid}")]
     public async Task<ActionResult<RecordResponse>> FindRecord(Guid recordId) {
-        var findRecordResult = await mediator.SendRequest(recordId.ToFindRecordByIdQuery());
+        var findRecordResult = await mediator.Send(recordId.ToFindRecordByIdQuery());
         return findRecordResult.Match(r => Ok(r.MapResp()), Problem);
     }
 
@@ -37,18 +36,18 @@ public class RecordController(
 
         RecordId id = recordId.ToRecordId();
 
-        var verifyOwnerResult = await mediator.SendRequest(new VerifyRecordOwnerQuery(id, userId));
+        var verifyOwnerResult = await mediator.Send(new VerifyRecordOwnerQuery(id, userId));
         if (!verifyOwnerResult.IsSuccess)
             return Problem(verifyOwnerResult.Errors);
 
         await using var stream         = file.OpenReadStream();
-        var             addImageResult = await mediator.SendRequest(new AddRecordImageCommand(id, stream));
+        var             addImageResult = await mediator.Send(new AddRecordImageCommand(id, stream));
         return addImageResult.Match(Ok, Problem);
     }
 
     [HttpGet("{recordId:guid}/images")]
     public async Task<ActionResult<IEnumerable<string>>> GetImages(Guid recordId) {
-        var findRecordResult = await mediator.SendRequest(recordId.ToFindRecordByIdQuery());
+        var findRecordResult = await mediator.Send(recordId.ToFindRecordByIdQuery());
         return findRecordResult.Match(record => Ok(record.ImageUrls), Problem);
     }
 
@@ -56,7 +55,7 @@ public class RecordController(
     public async Task<ActionResult<string>> GetImage(Guid recordId, string imageName) {
         RecordId id = recordId.ToRecordId();
 
-        var findRecordImageResult = await mediator.SendRequest(new GetRecordImageUrlQuery(id, imageName));
+        var findRecordImageResult = await mediator.Send(new GetRecordImageUrlQuery(id, imageName));
         return findRecordImageResult.Match(Ok, Problem);
     }
 
@@ -65,7 +64,7 @@ public class RecordController(
         UserId? userId = TryGetUserId();
         if (userId is null) return Problem(Errors.Auth.InvalidCred);
 
-        var findRecordsResult = await mediator.SendRequest(new FindRecordsByOwnerIdQuery(userId));
+        var findRecordsResult = await mediator.Send(new FindRecordsByOwnerIdQuery(userId));
         return findRecordsResult.Match(r => Ok(r.MapResps()), Problem);
     }
 

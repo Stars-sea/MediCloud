@@ -1,5 +1,4 @@
-using MassTransit;
-using MediCloud.Application.Common.Interfaces;
+using Mediator;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Profile.Contracts;
 using MediCloud.Domain.Common;
@@ -10,13 +9,13 @@ namespace MediCloud.Application.Profile.Handlers;
 
 public class FindUserByIdQueryHandler(
     IUserRepository userRepository
-) : IRequestHandler<FindUserByIdQuery, Result<User>> {
+) : IQueryHandler<FindUserByIdQuery, Result<User>> {
 
-    public async Task<Result<User>> Handle(FindUserByIdQuery request, ConsumeContext<FindUserByIdQuery> ctx) {
-        try {
-            return await userRepository.FindByIdAsync(request.UserId) ?? throw new NullReferenceException();
-        }
-        catch { return Errors.Auth.InvalidCred; }
+    public async ValueTask<Result<User>> Handle(FindUserByIdQuery query, CancellationToken cancellationToken) {
+        if (await userRepository.FindByIdAsync(query.UserId) is not { } user)
+            return Errors.Auth.InvalidCred;
+
+        return user;
     }
 
 }

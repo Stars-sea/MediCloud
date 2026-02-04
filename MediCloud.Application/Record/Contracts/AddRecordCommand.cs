@@ -1,4 +1,4 @@
-using MassTransit.Mediator;
+using Mediator;
 using MediCloud.Application.Record.Contracts.Result;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.User.ValueObjects;
@@ -9,4 +9,4 @@ public sealed record AddRecordCommand(
     UserId UserId,
     string Title,
     string Remarks
-) : Request<Result<AddRecordCommandResult>>;
+) : ICommand<Result<AddRecordCommandResult>>;

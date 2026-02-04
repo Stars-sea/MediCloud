@@ -1,4 +1,4 @@
-using MassTransit.Mediator;
+using Mediator;
 using MediCloud.Application.Authentication.Contracts.Results;
 using MediCloud.Domain.Common;
 
@@ -7,4 +7,4 @@ namespace MediCloud.Application.Authentication.Contracts;
 public record LoginQuery(
     string Email,
     string Password
-) : Request<Result<AuthenticationResult>>;
+) : IQuery<Result<AuthenticationResult>>;

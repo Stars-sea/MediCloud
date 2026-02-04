@@ -1,5 +1,4 @@
-using MassTransit;
-using MediCloud.Application.Common.Interfaces;
+using Mediator;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services.Storage;
 using MediCloud.Application.Record.Contracts;
@@ -14,18 +13,15 @@ public class AddRecordImageCommandHandler(
     IImageStorage                         imageStorage,
     IRecordRepository                     recordRepository,
     ILogger<AddRecordImageCommandHandler> logger
-) : IRequestHandler<AddRecordImageCommand, Result<string>> {
+) : ICommandHandler<AddRecordImageCommand, Result<string>> {
 
-    private async Task RemoveImageSilentlyAsync(string prefix, string name, CancellationToken token = default) {
+    private async Task RemoveImageSilentlyAsync(string prefix, string name, CancellationToken token) {
         try { await imageStorage.RemoveImageAsync(prefix, name, token); }
         catch (Exception) { logger.LogDebug("Removing image {Prefix}/{Name} failed", prefix, name); }
     }
 
-    public async Task<Result<string>> Handle(
-        AddRecordImageCommand                 request,
-        ConsumeContext<AddRecordImageCommand> ctx
-    ) {
-        (RecordId id, Stream stream) = request;
+    public async ValueTask<Result<string>> Handle(AddRecordImageCommand command, CancellationToken cancellationToken) {
+        (RecordId id, Stream stream) = command;
 
         Domain.Record.Record? record = await recordRepository.FindRecordByIdAsync(id);
         if (record is null) return Errors.Record.RecordNotFound;
@@ -33,10 +29,10 @@ public class AddRecordImageCommandHandler(
         string prefix = record.Id.ToString();
         string name   = Guid.NewGuid().ToString();
 
-        try { await imageStorage.PutImageAsync(prefix, name, stream); }
+        try { await imageStorage.PutImageAsync(prefix, name, stream, cancellationToken); }
         catch (Exception e) {
             logger.LogWarning(e, "Failed to save image");
-            await RemoveImageSilentlyAsync(prefix, name);
+            await RemoveImageSilentlyAsync(prefix, name, cancellationToken);
 
             return Errors.Record.RecordFailedToSaveImage;
         }
@@ -45,7 +41,7 @@ public class AddRecordImageCommandHandler(
         if (result.IsSuccess) return name;
 
         logger.LogWarning("Failed to add image {Name} in database", name);
-        await RemoveImageSilentlyAsync(prefix, name);
+        await RemoveImageSilentlyAsync(prefix, name, cancellationToken);
 
         return Errors.Record.RecordFailedToSaveImage;
     }

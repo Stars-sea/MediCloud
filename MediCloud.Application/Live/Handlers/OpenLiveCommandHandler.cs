@@ -1,5 +1,4 @@
-using MassTransit;
-using MediCloud.Application.Common.Interfaces;
+using Mediator;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Common.Interfaces.Services;
 using MediCloud.Application.Common.Settings;
@@ -20,17 +19,14 @@ public class OpenLiveCommandHandler(
     ILivestreamService           livestreamService,
     ILivestreamMonitorQueue      livestreamMonitorQueue,
     IOptions<LivestreamSettings> livestreamSettings
-) : IRequestHandler<OpenLiveCommand, Result<OpenLiveCommandResult>> {
+) : ICommandHandler<OpenLiveCommand, Result<OpenLiveCommandResult>> {
 
     private string SrtDomain => livestreamSettings.Value.SrtDomain;
 
-    public async Task<Result<OpenLiveCommandResult>> Handle(
-        OpenLiveCommand                 request,
-        ConsumeContext<OpenLiveCommand> ctx
-    ) {
-        LiveId liveId = request.LiveId;
+    public async ValueTask<Result<OpenLiveCommandResult>> Handle(OpenLiveCommand command, CancellationToken cancellationToken) {
+        LiveId liveId = command.LiveId;
         if (await liveRepository.FindLiveById(liveId) is not { } live ||
-            live.OwnerId != request.UserId)
+            live.OwnerId != command.UserId)
             return Errors.Live.LiveNotFound;
 
         if (await liveRoomRepository.FindByIdAsync(live.LiveRoomId) is not { } liveRoom)
@@ -41,7 +37,7 @@ public class OpenLiveCommandHandler(
 
         const string passphrase = "";// TODO
 
-        var resp = await livestreamService.StartPullStreamAsync(liveId, passphrase);
+        var resp = await livestreamService.StartPullStreamAsync(liveId, passphrase, cancellationToken);
         if (!resp.IsSuccess) return Errors.Live.LiveFailedToStart;
 
         await livestreamMonitorQueue.QueueLiveIdAsync(liveId);

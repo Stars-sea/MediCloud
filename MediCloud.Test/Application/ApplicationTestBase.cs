@@ -1,5 +1,4 @@
-using MassTransit.Mediator;
-using MassTransit.Testing;
+using Mediator;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.User;
@@ -16,7 +15,6 @@ public abstract class ApplicationTestBase {
     public const string DefaultPassword = "4lQBrce_QU17ksd";
 
     protected ServiceProvider Provider;
-    protected ITestHarness    Harness;
     protected IMediator       Mediator;
 
     [OneTimeSetUp]
@@ -30,10 +28,7 @@ public abstract class ApplicationTestBase {
         }
         // FINISH Scoped init
 
-        Harness  = Provider.GetRequiredService<ITestHarness>();
         Mediator = Provider.GetRequiredService<IMediator>();
-
-        await Harness.Start();
     }
 
     [OneTimeTearDown]
@@ -44,8 +39,6 @@ public abstract class ApplicationTestBase {
             await dbContext.Database.EnsureDeletedAsync();
         }
         // FINISH Scoped cleanup
-
-        await Harness.Stop();
 
         await Provider.DisposeAsync();
     }

@@ -1,5 +1,4 @@
-using MassTransit;
-using MassTransit.Mediator;
+using Mediator;
 using MediCloud.Api.Common.Mappers;
 using MediCloud.Contracts.Live;
 using MediCloud.Domain.Common.Errors;
@@ -19,7 +18,7 @@ public class LiveController(
         if (id == null)
             return Problem(Errors.Auth.InvalidCred);
 
-        var createResult = await mediator.SendRequest(request.MapCommand(id));
+        var createResult = await mediator.Send(request.MapCommand(id));
         return createResult.Match(r => Ok(new CreateLiveResponse(r.ToString())), Problem);
     }
 
@@ -28,7 +27,7 @@ public class LiveController(
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DetailedLiveInfoResponse))]
     public async Task<ActionResult> GetLiveStatus(Guid liveId) {
         UserId? id           = TryGetUserId();
-        var     statusResult = await mediator.SendRequest(liveId.ToLiveStatusQuery());
+        var     statusResult = await mediator.Send(liveId.ToLiveStatusQuery());
         return statusResult.Match(
             r => Ok(r.OwnerId == id ? r.MapDetailedResp() : r.MapResp()),
             Problem
@@ -41,7 +40,7 @@ public class LiveController(
         if (id == null)
             return Problem(Errors.Auth.InvalidCred);
 
-        var updateResult = await mediator.SendRequest(request.MapCommand(liveId.ToLiveId(), id));
+        var updateResult = await mediator.Send(request.MapCommand(liveId.ToLiveId(), id));
 
         if (!updateResult.IsSuccess)
             return Problem(updateResult.Errors);

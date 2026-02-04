@@ -1,4 +1,4 @@
-using MassTransit.Mediator;
+using Mediator;
 using MediCloud.Application.Authentication.Contracts.Results;
 using MediCloud.Domain.Common;
 
@@ -8,4 +8,4 @@ public record RefreshTokenCommand(
     string Email,
     string Jti,
     string ExpiresStamp
-) : Request<Result<AuthenticationResult>>;
+) : ICommand<Result<AuthenticationResult>>;

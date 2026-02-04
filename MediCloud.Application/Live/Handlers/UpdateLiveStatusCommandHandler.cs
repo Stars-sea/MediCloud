@@ -1,8 +1,6 @@
-﻿using MassTransit;
-using MediCloud.Application.Common.Interfaces;
+﻿using Mediator;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Application.Live.Contracts;
-using MediCloud.Application.Live.Contracts.Results;
 using MediCloud.Domain.Common;
 using MediCloud.Domain.Common.Errors;
 using MediCloud.Domain.Live.Enums;
@@ -12,27 +10,9 @@ using MediCloud.Domain.User.ValueObjects;
 namespace MediCloud.Application.Live.Handlers;
 
 public class UpdateLiveStatusCommandHandler(
-    ILiveRepository liveRepository,
-    IBus            bus
-) : IRequestHandler<UpdateLiveStatusCommand, Result> {
-
-    private async Task<Result> StartLiveAsync(Domain.Live.Live live, ConsumeContext<UpdateLiveStatusCommand> ctx) {
-        var response = await ctx.Request<OpenLiveCommand, Result<OpenLiveCommandResult>>(
-            bus,
-            new OpenLiveCommand(live.OwnerId, live.Id)
-        );
-
-        return response.Message;
-    }
-
-    private async Task<Result> StopLiveAsync(Domain.Live.Live live, ConsumeContext<UpdateLiveStatusCommand> ctx) {
-        var response = await ctx.Request<StopLiveCommand, Result>(
-            bus,
-            new StopLiveCommand(live.OwnerId, live.Id)
-        );
-
-        return response.Message;
-    }
+    IMediator       mediator,
+    ILiveRepository liveRepository
+) : ICommandHandler<UpdateLiveStatusCommand, Result> {
 
     private async Task<Result> RenameLiveAsync(Domain.Live.Live live, string liveName) {
         Result renameResult = live.Rename(liveName);
@@ -41,8 +21,8 @@ public class UpdateLiveStatusCommandHandler(
         return await liveRepository.SaveAsync();
     }
 
-    public async Task<Result> Handle(UpdateLiveStatusCommand request, ConsumeContext<UpdateLiveStatusCommand> ctx) {
-        (UserId userId, LiveId liveId, string? liveName, LiveStatus? status) = request;
+    public async ValueTask<Result> Handle(UpdateLiveStatusCommand command, CancellationToken cancellationToken) {
+        (UserId userId, LiveId liveId, string? liveName, LiveStatus? status) = command;
 
         Domain.Live.Live? live = await liveRepository.FindLiveById(liveId);
         if (live is null || live.OwnerId != userId)
@@ -52,16 +32,17 @@ public class UpdateLiveStatusCommandHandler(
             case null: break;
             case LiveStatus.Streaming:
             {
-                Result startResult = await StartLiveAsync(live, ctx);
+                Result startResult = await mediator.Send(new OpenLiveCommand(live.OwnerId, live.Id), cancellationToken);
                 if (!startResult.IsSuccess) return startResult.Errors;
                 break;
             }
             case LiveStatus.Stopped:
             {
-                Result stopResult = await StopLiveAsync(live, ctx);
+                Result stopResult = await  mediator.Send(new StopLiveCommand(live.OwnerId, live.Id), cancellationToken);
                 if (!stopResult.IsSuccess) return stopResult.Errors;
                 break;
             }
+            case LiveStatus.Pending:
             default:
                 return Errors.Live.LiveInvalidStatus;
         }

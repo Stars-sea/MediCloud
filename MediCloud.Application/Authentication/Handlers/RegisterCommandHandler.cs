@@ -1,9 +1,8 @@
-using MassTransit;
+using Mediator;
 using MediCloud.Application.Authentication.Contracts;
 using MediCloud.Application.Authentication.Contracts.Mappers;
 using MediCloud.Application.Authentication.Contracts.Results;
 using MediCloud.Application.Common.Contracts.Authentication;
-using MediCloud.Application.Common.Interfaces;
 using MediCloud.Application.Common.Interfaces.Authentication;
 using MediCloud.Application.Common.Interfaces.Persistence;
 using MediCloud.Domain.Common;
@@ -15,18 +14,15 @@ namespace MediCloud.Application.Authentication.Handlers;
 public class RegisterCommandHandler(
     IUserRepository    userRepository,
     IJwtTokenGenerator jwtTokenGenerator
-) : IRequestHandler<RegisterCommand, Result<AuthenticationResult>> {
+) : ICommandHandler<RegisterCommand, Result<AuthenticationResult>> {
 
-    public async Task<Result<AuthenticationResult>> Handle(
-        RegisterCommand                 request,
-        ConsumeContext<RegisterCommand> ctx
-    ) {
-        if (await userRepository.FindByEmailAsync(request.Email) is not null)
+    public async ValueTask<Result<AuthenticationResult>> Handle(RegisterCommand command, CancellationToken cancellationToken) {
+        if (await userRepository.FindByEmailAsync(command.Email) is not null)
             return Errors.User.DuplicateEmail;
 
-        User user = User.Factory.Create(request.Email, request.Username);
+        User user = User.Factory.Create(command.Email, command.Username);
 
-        Result result = await userRepository.CreateAsync(user, request.Password) & await userRepository.SaveAsync();
+        Result result = await userRepository.CreateAsync(user, command.Password) & await userRepository.SaveAsync();
         if (!result.IsSuccess) return result.Errors;
 
         Result<JwtGenerateResult> generateResult = jwtTokenGenerator.GenerateToken(user);
