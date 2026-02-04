@@ -15,7 +15,9 @@ public static class DependencyInjection {
     }
 
     private static IServiceCollection ConfigureMediator(this IServiceCollection services) {
-        return services.AddMediator();
+        return services.AddMediator(options => {
+            options.ServiceLifetime = ServiceLifetime.Scoped;
+        });
     }
 
 }
